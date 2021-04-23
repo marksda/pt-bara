@@ -4,9 +4,11 @@ import Home from './components/pages/Home';
 
 class RoutePage extends React.Component {
     render() {
-        <Switch>
-            <Route exact path="/" component={Home} />
-        </Switch>
+        return (
+            <Switch>
+                <Route exact path="/" component={Home} />
+            </Switch>
+        );
     }
 }
 

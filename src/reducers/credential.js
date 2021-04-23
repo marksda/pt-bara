@@ -40,7 +40,7 @@ const loadLocalProfileStorage = () => {
     }
 }
 
-export default function(state = initialState, action) {
+export default function credential(state = initialState, action) {
     switch (action.type) {
         case USER_LOADED:
             let userProfile = {

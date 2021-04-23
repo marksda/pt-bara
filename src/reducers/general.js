@@ -8,7 +8,7 @@ const initialState = {
     restful_domain: `${getDomain()}:8080/PTBARA-war`
 };
 
-export default function(state = initialState, action) {
+export default function general(state = initialState, action) {
     switch (action.type) {
         default:
             return state;
