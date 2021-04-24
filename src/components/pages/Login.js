@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { withStyles } from '@material-ui/core/styles';
 
-const styles = (theme) => ({
+const styles = theme => ({
     containerButton: {
         float: 'right'
     },
@@ -27,6 +27,22 @@ const styles = (theme) => ({
     }
 });
 
+const mapStateToProps = store => {
+    return {
+        authorizationNotify: store.notification.authorization_notify,
+        credential: store.credential.credential_profile,
+        headerAuthorization: store.credential.header_authorization,
+        restfulServer: store.general.restful_domain,
+    };
+};
+
+const mapDispatchToProps = dispatch => {    
+    return {
+      setUser: data => dispatch(setUser(data)),
+      setCredential: data => dispatch(setCredential(data))
+    };
+};
+
 class Login extends React.Component {
     constructor(props) {
 		super(props);
@@ -40,39 +56,45 @@ class Login extends React.Component {
         const { isProgress } = this.state;
         let page = null;
 
-        page =
-        <Paper variant="outlined" className={"container-login"}>
-            {
-                isProgress === true ? <LinearProgress classes={{root: classes.progresBorderIndikator}}/> : null
-            }
-            <div className="container-login-body">
-            <Typography component="div" className={classes.verticalSpacing32}>
-                <Box fontWeight="500" fontSize="h6.fontSize" textAlign="center" m={1}>
-                    Sign in
-                </Box>
-                <Box textAlign="center" m={1}>
-                    untuk lanjut ke sistem informasi keuangan
-                </Box>
-            </Typography>
-            <TextField 
-                classes={{ root: classes.verticalSpacing48 }} 
-                id="outlined-basic" 
-                label="User name" 
-                variant="outlined" 
-                fullWidth={true}
-                autoFocus={true}/>
-            <Typography component="div" className={classes.verticalSpacing24}>
-                <Box textAlign="left" fontWeight="400" fontSize={12} m={0}>
-                Gunakan mode private untuk sign in, jika memakai komputer atau gadget orang lain.
-                </Box>
-            </Typography>
-            <Button variant="contained" color="primary" size="large" style={{width: 100, float: 'right'}}>                
-            Next
-            </Button>
-            </div>
-        </Paper>;
-        return(page);
+        if(authorizationNotify === 'authorization') {
+	    	return <Redirect to="/main" />;
+	    }
+        else{
+            page =
+            <Paper variant="outlined" className={"container-login"}>
+                {
+                    isProgress === true ? <LinearProgress classes={{root: classes.progresBorderIndikator}}/> : null
+                }
+                <div className="container-login-body">
+                <Typography component="div" className={classes.verticalSpacing32}>
+                    <Box fontWeight="500" fontSize="h6.fontSize" textAlign="center" m={1}>
+                        Sign in
+                    </Box>
+                    <Box textAlign="center" m={1}>
+                        untuk lanjut ke sistem informasi keuangan
+                    </Box>
+                </Typography>
+                <TextField 
+                    classes={{ root: classes.verticalSpacing48 }} 
+                    id="outlined-basic" 
+                    label="User name" 
+                    variant="outlined" 
+                    fullWidth={true}
+                    autoFocus={true}/>
+                <Typography component="div" className={classes.verticalSpacing24}>
+                    <Box textAlign="left" fontWeight="400" fontSize={12} m={0}>
+                    Gunakan mode private untuk sign in, jika memakai komputer atau gadget orang lain.
+                    </Box>
+                </Typography>
+                <Button variant="contained" color="primary" size="large" style={{width: 100, float: 'right'}}>                
+                Next
+                </Button>
+                </div>
+            </Paper>;
+            
+            return(page);
+        }        
     }
 }
 
-export default withStyles(styles)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(Login));
