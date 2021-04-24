@@ -8,7 +8,7 @@ const initialState = {
         accountRealName: null
     },
     credential_profile: {
-        id: 5,
+        id: 0,
         token: null
     },
     header_authorization: {
