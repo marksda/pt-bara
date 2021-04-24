@@ -53,7 +53,7 @@ class Login extends React.Component {
 		};
 	}
     render() {
-        const { classes } = this.props;
+        const { classes, authorizationNotify } = this.props;
         const { isProgress } = this.state;
         let page = null;
 
@@ -81,7 +81,8 @@ class Login extends React.Component {
                     label="User name" 
                     variant="outlined" 
                     fullWidth={true}
-                    autoFocus={true}/>
+                    autoFocus={true}
+                />
                 <Typography component="div" className={classes.verticalSpacing24}>
                     <Box textAlign="left" fontWeight="400" fontSize={12} m={0}>
                     Gunakan mode private untuk sign in, jika memakai komputer atau gadget orang lain.
