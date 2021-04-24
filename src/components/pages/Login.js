@@ -7,6 +7,8 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
+import { connect } from "react-redux";
+import { Redirect } from "react-router-dom";
 import { setUser, setCredential } from "../../actions/login-action";
 import { withStyles } from '@material-ui/core/styles';
 
