@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 // import clsx from 'clsx';
@@ -81,6 +82,20 @@ class Login extends React.Component {
 
     validateUsername = () => {
         console.log('cek remote user name');
+        let self = this;
+        axios({
+            method: 'get',
+            url: `${url_base}:8080/BARA-war/login/user`,
+            params: {
+                user: self.userName
+            }
+        })
+        .then((r) => {
+            console.log(r);
+        })
+        .catch((e) => {
+            console.log(r);
+        });
     }
 
     verifikasiUserName = () => {
