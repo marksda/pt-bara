@@ -5,7 +5,7 @@ const getDomain = () => {
 
 const initialState = {
     domain: getDomain(),
-    restful_domain: `${getDomain()}:8080/PTBARA-war`
+    restful_domain: `${getDomain()}:8080/BARA-war`
 };
 
 export default function general(state = initialState, action) {

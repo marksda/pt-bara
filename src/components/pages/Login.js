@@ -81,20 +81,27 @@ class Login extends React.Component {
     }
 
     validateUsername = () => {
-        console.log('cek remote user name');
+        const { restfulServer } = this.props;
         let self = this;
         axios({
             method: 'get',
-            url: `${url_base}:8080/BARA-war/login/user`,
+            url: `${restfulServer}/login/user`,
             params: {
-                user: self.userName
+                username: self.userName
             }
         })
         .then((r) => {
-            console.log(r);
+            
+            if(r.data.status === 200) {
+                this.setState({isProgress: false, isDisabled: false});
+            }
+            else {
+                self.errorUserNameMessage = `User name : ${self.userName} tidak dikenali`;
+                self.setState({isErrorUserName: true, isProgress: false, isDisabled: false});
+            }
         })
         .catch((e) => {
-            console.log(r);
+            console.log(e);
         });
     }
 
