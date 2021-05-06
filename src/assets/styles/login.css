@@ -11,3 +11,25 @@
 .header-login {
     margin-bottom: 48px;
 }
+.slide-in {
+    float: left;
+    width: 50%;
+    padding: 5px 20px;
+    transition: all .5s ease;
+}
+.slide-in.from-left {
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+}
+.slide-in.from-right {
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
+}
+.slide-in.show.from-left {
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
+}
+.slide-in.show.from-right {
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+}

@@ -59,6 +59,7 @@ class Login extends React.Component {
 
         this.errorUserNameMessage = null;
         this.userName = '';
+        this.userProfile = {};
 	}
 
     handleBtnShowStep2Click = (e) => {
@@ -93,7 +94,8 @@ class Login extends React.Component {
         .then((r) => {
             
             if(r.data.status === 200) {
-                this.setState({isProgress: false, isDisabled: false});
+                self.setState({isProgress: false, isDisabled: false});
+                self.userProfile = {...r.data.user};
             }
             else {
                 self.errorUserNameMessage = `User name : ${self.userName} tidak dikenali`;
