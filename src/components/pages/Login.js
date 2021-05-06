@@ -62,6 +62,10 @@ class Login extends React.Component {
         this.userProfile = {};
 	}
 
+    componentDidMount() {
+        this.showStep(1);
+    }
+    
     handleBtnShowStep2Click = (e) => {
         e.preventDefault();
         if(this.verifikasiUserName()) {
@@ -81,6 +85,17 @@ class Login extends React.Component {
         this.userName = e.target.value;
     }
 
+    showStep = (step) => {
+        let elusername = document.getElementById("step1");
+        let elpassword = document.getElementById("step2");
+        if(step === 1) {            
+            elusername.classList.add("show");
+        }
+        else if(step === 2) {
+            elpassword.classList.add("show");            
+        }
+    }
+
     validateUsername = () => {
         const { restfulServer } = this.props;
         let self = this;
@@ -96,6 +111,7 @@ class Login extends React.Component {
             if(r.data.status === 200) {
                 self.setState({isProgress: false, isDisabled: false});
                 self.userProfile = {...r.data.user};
+                self.showStep(2);
             }
             else {
                 self.errorUserNameMessage = `User name : ${self.userName} tidak dikenali`;
@@ -143,7 +159,7 @@ class Login extends React.Component {
                             untuk lanjut ke sistem informasi keuangan
                         </Box>
                     </Typography>
-                    <section id="step1" className="slide-in from-left show">
+                    <section id="step1" className="slide-in from-left">
                         <TextField
                             autoFocus={true} 
                             classes={{ root: classes.verticalSpacing48 }} 
