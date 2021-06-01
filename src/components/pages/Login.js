@@ -63,7 +63,7 @@ class Login extends React.Component {
 	}
 
     componentDidMount() {
-        this.showStep(1);
+        // this.showStep(1);
     }
     
     handleBtnShowStep2Click = (e) => {
@@ -159,37 +159,42 @@ class Login extends React.Component {
                             untuk lanjut ke sistem informasi keuangan
                         </Box>
                     </Typography>
-                    <section id="step1" className="slide-in from-left">
-                        <TextField
-                            autoFocus={true} 
-                            classes={{ root: classes.verticalSpacing48 }} 
-                            disabled={isDisabled}
-                            error={isErrorUserName} 
-                            fullWidth={true}
-                            id="outlined-basic" 
-                            label="User name"
-                            onChange={this.onChangeUsername}
-                            onKeyUp={this.handleKeyUpUsername}
-                            variant="outlined"
-                            required={true}
-                            helperText={this.errorUserNameMessage}
-                        />
-                        <Typography component="div" className={classes.verticalSpacing24}>
-                            <Box textAlign="left" fontWeight="400" fontSize={12} m={0}>
-                            Gunakan mode private untuk sign in, jika memakai komputer atau gadget orang lain.
-                            </Box>
-                        </Typography>
-                        <Button 
-                            variant="contained" 
-                            color="primary" 
-                            size="large" 
-                            disabled={isDisabled}
-                            style={{width: 100, float: 'right'}}
-                            onClick={this.handleBtnShowStep2Click}
-                        >                
-                        Next
-                        </Button>
-                    </section>
+                    <div className="slide-in-container">
+                        <section id="step1" className="slide-in from-left show">
+                            <TextField
+                                autoFocus={true} 
+                                classes={{ root: classes.verticalSpacing48 }} 
+                                disabled={isDisabled}
+                                error={isErrorUserName} 
+                                fullWidth={true}
+                                id="outlined-basic" 
+                                label="User name"
+                                onChange={this.onChangeUsername}
+                                onKeyUp={this.handleKeyUpUsername}
+                                variant="outlined"
+                                required={true}
+                                helperText={this.errorUserNameMessage}
+                            />
+                            <Typography component="div" className={classes.verticalSpacing24}>
+                                <Box textAlign="left" fontWeight="400" fontSize={12} m={0}>
+                                Gunakan mode private untuk sign in, jika memakai komputer atau gadget orang lain.
+                                </Box>
+                            </Typography>
+                            <Button 
+                                variant="contained" 
+                                color="primary" 
+                                size="large" 
+                                disabled={isDisabled}
+                                style={{width: 100, float: 'right'}}
+                                onClick={this.handleBtnShowStep2Click}
+                            >                
+                            Next
+                            </Button>
+                        </section>                        
+                        <section id="step2" className="slide-in from-left">
+                            <div style={{width: 100, height: 100, background: 'yellow'}}></div>
+                        </section>                      
+                    </div>
                 </div>
             </Paper>;
             

@@ -1,6 +1,7 @@
 .container-login {
-    display: flex;
-    flex-direction: column;
+    /* display: flex;
+    flex-direction: column; */
+    display: block;
     max-width: 450px;
     height: 400px;
     margin: 100px auto;
@@ -11,19 +12,23 @@
 .header-login {
     margin-bottom: 48px;
 }
+.slide-in-container {
+    width: 200%;
+    height: 400px;
+}
 .slide-in {
     float: left;
-    width: calc(100% - 40px);
+    width: calc(50% - 48px); 
     padding: 5px 20px;
     transition: all .5s ease;
 }
 .slide-in.from-left {
-    transform: translateX(-100%);
-    -webkit-transform: translateX(-100%);
+    transform: translateX(-110%);
+    -webkit-transform: translateX(-110%);
 }
 .slide-in.from-right {
-    transform: translateX(0);
-    -webkit-transform: translateX(0);
+    transform: translateX(70);
+    -webkit-transform: translateX(70);
 }
 .slide-in.show.from-left {
     transform: translateX(0);
