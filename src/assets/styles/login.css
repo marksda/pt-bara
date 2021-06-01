@@ -26,6 +26,9 @@
     transform: translateX(-110%);
     -webkit-transform: translateX(-110%);
 }
+.slide-in.from-left.hide {
+    display: none;
+}
 .slide-in.from-right {
     transform: translateX(70);
     -webkit-transform: translateX(70);
@@ -37,4 +40,8 @@
 .slide-in.show.from-right {
     transform: translateX(-100%);
     -webkit-transform: translateX(-100%);
+}
+.subjudul {
+    display: flex;
+    justify-content: center;
 }

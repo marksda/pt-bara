@@ -1,8 +1,10 @@
 import React from 'react';
+import Avatar from '@material-ui/core/Avatar';
 import axios from 'axios';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-// import clsx from 'clsx';
+import { deepOrange, deepPurple } from '@material-ui/core/colors';
+import clsx from 'clsx';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
@@ -28,7 +30,16 @@ const styles = theme => ({
     },
     progresBorderIndikator: {
         borderRadius: '3px 3px 0px 0px'
-    }
+    },
+    orange: {
+        color: theme.palette.getContrastText(deepOrange[500]),
+        backgroundColor: deepOrange[500],
+    },
+    smallAvatar: {
+        width: 22,
+        height: 22,
+        fontSize: 10,
+    },
 });
 
 const mapStateToProps = store => {
@@ -54,7 +65,8 @@ class Login extends React.Component {
 		this.state = {
 			isProgress: false,
             isDisabled: false,
-            isErrorUserName: false
+            isErrorUserName: false,
+            step: 1
 		};
 
         this.errorUserNameMessage = null;
@@ -88,11 +100,27 @@ class Login extends React.Component {
     showStep = (step) => {
         let elusername = document.getElementById("step1");
         let elpassword = document.getElementById("step2");
-        if(step === 1) {            
+        if(step === 1) {    
+            document.getElementById("judul").textContent = "Sign in";
+            let elsubjudul = document.getElementById("subjudul");
+            elsubjudul.textContent = 'untuk lanjut ke sistem informasi keuangan';
+            elsubjudul.style.marginTop = 8;
+            elsubjudul.style.marginBottom = 8;
+            elpassword.classList.add("hide");
+            elusername.classList.remove("hide");        
             elusername.classList.add("show");
+            this.setState({step: 1});
         }
         else if(step === 2) {
-            elpassword.classList.add("show");            
+            document.getElementById("judul").textContent = "SELAMAT DATANG DI SIK BARA";
+            let elsubjudul = document.getElementById("subjudul");
+            elsubjudul.textContent = this.userProfile.nama;
+            elsubjudul.style.marginTop = 0;
+            elsubjudul.style.marginBottom = 0;
+            elusername.classList.add("hide");
+            elpassword.classList.remove("hide");
+            elpassword.classList.add("show");    
+            this.setState({step: 2});        
         }
     }
 
@@ -114,7 +142,7 @@ class Login extends React.Component {
                 self.showStep(2);
             }
             else {
-                self.errorUserNameMessage = `User name : ${self.userName} tidak dikenali`;
+                self.errorUserNameMessage = `maaf user name ${self.userName} tidak dikenali`;
                 self.setState({isErrorUserName: true, isProgress: false, isDisabled: false});
             }
         })
@@ -138,7 +166,7 @@ class Login extends React.Component {
 
     render() {
         const { authorizationNotify, classes } = this.props;
-        const { isDisabled, isErrorUserName, isProgress } = this.state;
+        const { isDisabled, isErrorUserName, isProgress, step } = this.state;
         let page = null;
 
         if(authorizationNotify === 'authorization') {
@@ -152,12 +180,17 @@ class Login extends React.Component {
                 }
                 <div className="container-login-body">
                     <Typography component="div" className={classes.verticalSpacing32}>
-                        <Box fontWeight="500" fontSize="h6.fontSize" textAlign="center" m={1}>
+                        <Box id="judul" fontWeight="500" fontSize="h6.fontSize" textAlign="center" m={1}>
                             Sign in
                         </Box>
-                        <Box textAlign="center" m={1}>
-                            untuk lanjut ke sistem informasi keuangan
-                        </Box>
+                        <div className="subjudul">
+                            {
+                                step === 2 ? <Avatar className={clsx(classes.orange, classes.smallAvatar)}>{this.userProfile.nama[0]}</Avatar> : null
+                            }
+                            <Box id="subjudul" textAlign="center" m={1}>
+                                untuk lanjut ke sistem informasi keuangan
+                            </Box>
+                        </div>
                     </Typography>
                     <div className="slide-in-container">
                         <section id="step1" className="slide-in from-left show">
@@ -191,8 +224,22 @@ class Login extends React.Component {
                             Next
                             </Button>
                         </section>                        
-                        <section id="step2" className="slide-in from-left">
-                            <div style={{width: 100, height: 100, background: 'yellow'}}></div>
+                        <section id="step2" className="slide-in from-left hide">
+                            <TextField
+                                autoFocus={true} 
+                                classes={{ root: classes.verticalSpacing48 }} 
+                                disabled={isDisabled}
+                                error={isErrorUserName} 
+                                fullWidth={true}
+                                id="outlined-basic" 
+                                label="Password"
+                                onChange={this.onChangeUsername}
+                                onKeyUp={this.handleKeyUpUsername}
+                                variant="outlined"
+                                required={true}
+                                helperText={this.errorUserNameMessage}
+                                type="password"
+                            />
                         </section>                      
                     </div>
                 </div>
