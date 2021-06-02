@@ -150,27 +150,29 @@ class Login extends React.Component {
             elpassword.classList.remove("hide");
             elpassword.classList.add("show");    
             let divElmPassword = elpassword.firstChild;
-            console.log(divElmPassword);
             divElmPassword.style.marginBottom = '0px';
             this.setState({step: 2});        
         }
     }
 
     validatePassword = () => {
+        console.log(this.userProfile);
         const { restfulServer } = this.props;
         let self = this;
         axios({
             method: 'get',
             url: `${restfulServer}/login/password`,
             params: {
-                username: self.userName
+                id: self.userProfile.nip,
+                password: self.password
             }
         })
-        .then((r) => {            
+        .then((r) => {         
+            console.log(r.data);   
             if(r.data.status === 200) {
                 self.setState({isProgress: false, isDisabled: false});
-                self.userProfile = {...r.data.user};
-                self.showStep(2);
+                // self.userProfile = {...r.data.user};
+                // self.showStep(2);
             }
             else {
                 self.errorPasswordMessage = `Password salah. Silahkan dicoba lagi`;
@@ -210,7 +212,7 @@ class Login extends React.Component {
     }
 
     verifikasiPassword = () => {
-        if(this.password.length < 8) {
+        if(this.password.length < 3) {
             this.errorPasswordMessage = "Password harus diisi minimal 8 karakter";
             this.setState({isErrorPassword: true});
             return false;
