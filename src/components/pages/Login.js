@@ -3,8 +3,10 @@ import Avatar from '@material-ui/core/Avatar';
 import axios from 'axios';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import { deepOrange, deepPurple } from '@material-ui/core/colors';
+import Checkbox from '@material-ui/core/Checkbox';
+import { deepOrange } from '@material-ui/core/colors';
 import clsx from 'clsx';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
@@ -66,10 +68,12 @@ class Login extends React.Component {
 			isProgress: false,
             isDisabled: false,
             isErrorUserName: false,
+            isShowPassword: false,
             step: 1
 		};
 
         this.errorUserNameMessage = null;
+        this.password = '';
         this.userName = '';
         this.userProfile = {};
 	}
@@ -85,12 +89,20 @@ class Login extends React.Component {
         }
     }
 
+    handleChangeShowPassword = (e) => {
+        this.setState({isShowPassword: e.target.checked});
+    }
+
     handleKeyUpUsername = (e) => {
         if (e.key === 'Enter') {
             if(this.verifikasiUserName()) {
                 this.validateUsername();
             }
         }
+    }
+
+    onChangePassword = (e) => {
+        this.password = e.target.value;
     }
 
     onChangeUsername = (e) => {
@@ -111,7 +123,7 @@ class Login extends React.Component {
             elusername.classList.add("show");
             this.setState({step: 1});
         }
-        else if(step === 2) {
+        else if(step === 2) {            
             document.getElementById("judul").textContent = "SELAMAT DATANG DI SIK BARA";
             let elsubjudul = document.getElementById("subjudul");
             elsubjudul.textContent = this.userProfile.nama;
@@ -120,6 +132,9 @@ class Login extends React.Component {
             elusername.classList.add("hide");
             elpassword.classList.remove("hide");
             elpassword.classList.add("show");    
+            let divElmPassword = elpassword.firstChild;
+            console.log(divElmPassword);
+            divElmPassword.style.marginBottom = '0px';
             this.setState({step: 2});        
         }
     }
@@ -166,7 +181,7 @@ class Login extends React.Component {
 
     render() {
         const { authorizationNotify, classes } = this.props;
-        const { isDisabled, isErrorUserName, isProgress, step } = this.state;
+        const { isDisabled, isErrorUserName, isProgress, isShowPassword, step } = this.state;
         let page = null;
 
         if(authorizationNotify === 'authorization') {
@@ -233,12 +248,23 @@ class Login extends React.Component {
                                 fullWidth={true}
                                 id="outlined-basic" 
                                 label="Password"
-                                onChange={this.onChangeUsername}
+                                onChange={this.onChangePassword}
                                 onKeyUp={this.handleKeyUpUsername}
                                 variant="outlined"
                                 required={true}
                                 helperText={this.errorUserNameMessage}
-                                type="password"
+                                type={isShowPassword === true ? "text" : "password"}
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={isShowPassword}
+                                        color="primary"
+                                        onChange={this.handleChangeShowPassword}
+                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                    />
+                                }
+                                label='Tunjukkan password'
                             />
                         </section>                      
                     </div>
