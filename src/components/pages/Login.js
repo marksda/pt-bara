@@ -67,11 +67,13 @@ class Login extends React.Component {
 		this.state = {
 			isProgress: false,
             isDisabled: false,
+            isErrorPassword: false,
             isErrorUserName: false,
             isShowPassword: false,
             step: 1
 		};
 
+        this.errorPasswordMessage = null;
         this.errorUserNameMessage = null;
         this.password = '';
         this.userName = '';
@@ -80,6 +82,13 @@ class Login extends React.Component {
 
     componentDidMount() {
         // this.showStep(1);
+    }
+
+    handleBtnPasswordClick = (e) => {
+        e.preventDefault();
+        if(this.verifikasiPassword()) {
+            this.validatePassword();
+        }
     }
     
     handleBtnShowStep2Click = (e) => {
@@ -91,6 +100,14 @@ class Login extends React.Component {
 
     handleChangeShowPassword = (e) => {
         this.setState({isShowPassword: e.target.checked});
+    }
+
+    handleKeyUpPassword = (e) => {
+        if (e.key === 'Enter') {
+            if(this.verifikasiPassword()) {
+                this.validatePassword();
+            }
+        }
     }
 
     handleKeyUpUsername = (e) => {
@@ -139,6 +156,32 @@ class Login extends React.Component {
         }
     }
 
+    validatePassword = () => {
+        const { restfulServer } = this.props;
+        let self = this;
+        axios({
+            method: 'get',
+            url: `${restfulServer}/login/password`,
+            params: {
+                username: self.userName
+            }
+        })
+        .then((r) => {            
+            if(r.data.status === 200) {
+                self.setState({isProgress: false, isDisabled: false});
+                self.userProfile = {...r.data.user};
+                self.showStep(2);
+            }
+            else {
+                self.errorPasswordMessage = `Password salah. Silahkan dicoba lagi`;
+                self.setState({isErrorPassword: true, isProgress: false, isDisabled: false});
+            }
+        })
+        .catch((e) => {
+            console.log(e);
+        });
+    }
+
     validateUsername = () => {
         const { restfulServer } = this.props;
         let self = this;
@@ -166,6 +209,19 @@ class Login extends React.Component {
         });
     }
 
+    verifikasiPassword = () => {
+        if(this.password.length < 8) {
+            this.errorPasswordMessage = "Password harus diisi minimal 8 karakter";
+            this.setState({isErrorPassword: true});
+            return false;
+        }
+        else {
+            this.errorPasswordMessage = '';
+            this.setState({isErrorPassword: false, isProgress: true, isDisabled: true});
+            return true;
+        }
+    }
+
     verifikasiUserName = () => {
         if(this.userName.length === 0) {
             this.errorUserNameMessage = "User name harus diisi";
@@ -181,7 +237,7 @@ class Login extends React.Component {
 
     render() {
         const { authorizationNotify, classes } = this.props;
-        const { isDisabled, isErrorUserName, isProgress, isShowPassword, step } = this.state;
+        const { isDisabled, isErrorPassword, isErrorUserName, isProgress, isShowPassword, step } = this.state;
         let page = null;
 
         if(authorizationNotify === 'authorization') {
@@ -244,15 +300,15 @@ class Login extends React.Component {
                                 autoFocus={true} 
                                 classes={{ root: classes.verticalSpacing48 }} 
                                 disabled={isDisabled}
-                                error={isErrorUserName} 
+                                error={isErrorPassword} 
                                 fullWidth={true}
                                 id="outlined-basic" 
                                 label="Password"
                                 onChange={this.onChangePassword}
-                                onKeyUp={this.handleKeyUpUsername}
+                                onKeyUp={this.handleKeyUpPassword}
                                 variant="outlined"
                                 required={true}
-                                helperText={this.errorUserNameMessage}
+                                helperText={this.errorPasswordMessage}
                                 type={isShowPassword === true ? "text" : "password"}
                             />
                             <FormControlLabel
@@ -266,6 +322,16 @@ class Login extends React.Component {
                                 }
                                 label='Tunjukkan password'
                             />
+                            <Button 
+                                variant="contained" 
+                                color="primary" 
+                                size="large" 
+                                disabled={isDisabled}
+                                style={{width: 100, float: 'right', marginTop: 100}}
+                                onClick={this.handleBtnPasswordClick}
+                            >                
+                            Next
+                            </Button>
                         </section>                      
                     </div>
                 </div>
