@@ -303,7 +303,7 @@ class Login extends React.Component {
                                 error={isErrorPassword} 
                                 fullWidth={true}
                                 id="outlined-basic" 
-                                label="Password"
+                                label="Masukkan password anda"
                                 onChange={this.onChangePassword}
                                 onKeyUp={this.handleKeyUpPassword}
                                 variant="outlined"
