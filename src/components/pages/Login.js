@@ -157,7 +157,7 @@ class Login extends React.Component {
 
     validatePassword = () => {
         console.log(this.userProfile);
-        const { restfulServer } = this.props;
+        const { restfulServer, setCredential } = this.props;
         let self = this;
         axios({
             method: 'get',
@@ -170,6 +170,7 @@ class Login extends React.Component {
         .then((r) => {         
             console.log(r.data);   
             if(r.data.status === 200) {
+                setCredential(r.data.keterangan);
                 self.setState({isProgress: false, isDisabled: false});
                 // self.userProfile = {...r.data.user};
                 // self.showStep(2);

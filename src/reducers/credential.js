@@ -68,7 +68,7 @@ export default function credential(state = initialState, action) {
                 [USER_PROFILE]: initialState.userProfile,
                 [CREDENTIAL]: initialState.credential_profile,
                 [HEADER_AUTHORIZATION]: initialState.header_authorization
-            }
+            };
         default:
             let cr = loadLocalCredentialStorage();
             let pfl = loadLocalProfileStorage();
