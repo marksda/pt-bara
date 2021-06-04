@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 
+import { setUnauthorization } from "../../actions/notification-action";
+
 const styles = theme => ({
     smallAvatar: {
         width: 22,
@@ -23,8 +25,7 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
-      setUser: data => dispatch(setUser(data)),
-      setCredential: data => dispatch(setCredential(data))
+        setUnauthorization: () => dispatch(setUnauthorization())
     };
 };
 

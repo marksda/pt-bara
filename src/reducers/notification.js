@@ -8,6 +8,16 @@ const initialState = {
 	authorization_notify: 'unauthorization'
 }
 
+const loadLocalStorageNotification = () => {
+    let tmpData = window.localStorage.getItem('{8e9cca41-2ddf-e5c8-5af2-6dd2f36ceae4}');
+    if(tmpData !== null){
+        return  'authorization';
+    }
+    else {
+        return  'unauthorization';
+    }
+}
+
 export default function notification(state = initialState, action) {
 	switch (action.type) {
         case AUTHORIZATION_RISE:
@@ -18,9 +28,14 @@ export default function notification(state = initialState, action) {
         case UNAUTHORIZATION_RISE:
             return {
                 ...state,
-                [AUTHORIZATION_NOTIFY]: 'unauthorization'
+                [AUTHORIZATION_NOTIFY]: action.payload
             };
         default:
-        	return(state);
+            let pfl = loadLocalStorageNotification();            
+            return {
+                ...state,
+                [AUTHORIZATION_NOTIFY]: pfl
+            }
+
     }
 }

@@ -159,7 +159,7 @@ class Login extends React.Component {
 
     validatePassword = () => {
         console.log(this.userProfile);
-        const { restfulServer, setAuthorization, setCredential } = this.props;
+        const { restfulServer, setAuthorization, setCredential, setUser } = this.props;
         let self = this;
         axios({
             method: 'get',
@@ -171,12 +171,11 @@ class Login extends React.Component {
         })
         .then((r) => {         
             console.log(r.data);   
-            if(r.data.status === 200) {
+            if(r.data.status === 200) {                
+                setUser(self.userProfile);
                 setCredential(r.data.keterangan);
                 setAuthorization();
                 self.setState({isProgress: false, isDisabled: false});
-                // self.userProfile = {...r.data.user};
-                // self.showStep(2);
             }
             else {
                 self.errorPasswordMessage = `Password salah. Silahkan dicoba lagi`;
