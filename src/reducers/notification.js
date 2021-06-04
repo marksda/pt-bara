@@ -13,7 +13,7 @@ export default function notification(state = initialState, action) {
         case AUTHORIZATION_RISE:
         	return {
                 ...state,
-                [AUTHORIZATION_NOTIFY]: 'authorization'
+                [AUTHORIZATION_NOTIFY]: action.payload
             };
         case UNAUTHORIZATION_RISE:
             return {

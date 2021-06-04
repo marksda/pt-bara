@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
+import { setAuthorization } from "../../actions/notification-action";
 import { setUser, setCredential } from "../../actions/login-action";
 import { withStyles } from '@material-ui/core/styles';
 
@@ -55,6 +56,7 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
+      setAuthorization: () => dispatch(setAuthorization()),
       setUser: data => dispatch(setUser(data)),
       setCredential: data => dispatch(setCredential(data))
     };
@@ -157,7 +159,7 @@ class Login extends React.Component {
 
     validatePassword = () => {
         console.log(this.userProfile);
-        const { restfulServer, setCredential } = this.props;
+        const { restfulServer, setAuthorization, setCredential } = this.props;
         let self = this;
         axios({
             method: 'get',
@@ -171,6 +173,7 @@ class Login extends React.Component {
             console.log(r.data);   
             if(r.data.status === 200) {
                 setCredential(r.data.keterangan);
+                setAuthorization();
                 self.setState({isProgress: false, isDisabled: false});
                 // self.userProfile = {...r.data.user};
                 // self.showStep(2);
