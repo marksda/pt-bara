@@ -158,7 +158,6 @@ class Login extends React.Component {
     }
 
     validatePassword = () => {
-        console.log(this.userProfile);
         const { restfulServer, setAuthorization, setCredential, setUser } = this.props;
         let self = this;
         axios({
@@ -170,7 +169,6 @@ class Login extends React.Component {
             }
         })
         .then((r) => {         
-            console.log(r.data);   
             if(r.data.status === 200) {                
                 setUser(self.userProfile);
                 setCredential(r.data.keterangan);
