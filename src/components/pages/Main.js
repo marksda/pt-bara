@@ -20,6 +20,7 @@ const mapStateToProps = store => {
         credential: store.credential.credential_profile,
         headerAuthorization: store.credential.header_authorization,
         restfulServer: store.general.restful_domain,
+        userProfile: store.credential.user_profile
     };
 };
 
@@ -33,12 +34,14 @@ const mapDispatchToProps = dispatch => {
 class Main extends React.Component {
     render() {
         const { authorizationNotify, classes } = this.props;
+        let page = null;
 
         if(authorizationNotify === 'unauthorization') {
 	    	return <Redirect to="/" />;
 	    }
         else{
-
+            page = <div>main</div>;
+            return(page);
         }
     }
 }
