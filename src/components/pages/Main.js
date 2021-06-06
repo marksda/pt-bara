@@ -9,6 +9,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -106,6 +107,7 @@ class Main extends React.Component {
 		super(props);
 
         this.state = {
+            itemMenuSelected: '',
             open: false
         }
     }
@@ -116,6 +118,12 @@ class Main extends React.Component {
 
     handleDrawerOpen = () => {
         this.setState({open: true});
+    }
+
+    handleItemMenuClick = (e) => {
+        if(e.currentTarget.textContent !== this.state.itemMenuSelected) {            
+            this.setState({itemMenuSelected: e.currentTarget.textContent});
+        }
     }
     
     render() {
@@ -172,10 +180,18 @@ class Main extends React.Component {
                         </IconButton>
                     </div>
                     <Divider />
-                    <List>
+                    <List
+                        dense={true}
+                        subheader={ open === true ?
+                            <ListSubheader>
+                            PENGAJUAN
+                            </ListSubheader>:
+                            null
+                        }
+                    >
                     {
-                        ['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                            <ListItem button key={text}>
+                        ['Pengajukan Baru', 'Daftar Pengajuan'].map((text, index) => (
+                            <ListItem button key={text} onClick={this.handleItemMenuClick}>
                                 <ListItemIcon>
                                     {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                                 </ListItemIcon>
@@ -185,9 +201,74 @@ class Main extends React.Component {
                     }
                     </List>
                     <Divider />
-                    <List>
+                    <List
+                        dense={true}
+                        subheader={ open === true ?
+                            <ListSubheader>
+                            PROYEK
+                            </ListSubheader>:
+                            null
+                        }
+                    >
                     {
-                        ['All mail', 'Trash', 'Spam'].map((text, index) => (
+                        ['Proyek Baru', 'Daftar Proyek'].map((text, index) => (
+                            <ListItem button key={text}>
+                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                            </ListItem>
+                        ))
+                    }
+                    </List>
+                    <Divider />
+                    <List
+                        dense={true}
+                        subheader={ open === true ?
+                            <ListSubheader>
+                            TRANSAKSI
+                            </ListSubheader>:
+                            null
+                        }
+                    >
+                    {
+                        ['Transaksi Baru', 'Daftar Transaksi'].map((text, index) => (
+                            <ListItem button key={text}>
+                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                            </ListItem>
+                        ))
+                    }
+                    </List>
+                    <Divider />
+                    <List
+                        dense={true}
+                        subheader={ open === true ?
+                            <ListSubheader>
+                            LAPORAN
+                            </ListSubheader>:
+                            null
+                        }
+                    >
+                    {
+                        ['Proyek', 'Perusahaan', 'Pajak'].map((text, index) => (
+                            <ListItem button key={text}>
+                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                            </ListItem>
+                        ))
+                    }
+                    </List>
+                    <Divider />
+                    <List
+                        dense={true}
+                        subheader={ open === true ?
+                            <ListSubheader>
+                            PENGATURAN
+                            </ListSubheader>:
+                            null
+                        }
+                    >
+                    {
+                        ['Master', 'Security', 'Profile'].map((text, index) => (
                             <ListItem button key={text}>
                             <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
                             <ListItemText primary={text} />
