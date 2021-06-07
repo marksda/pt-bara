@@ -88,8 +88,8 @@ const styles = theme => ({
 const mapStateToProps = store => {
     return {
         authorizationNotify: store.notification.authorization_notify,
-        credential: store.credential.credential_profile,
         headerAuthorization: store.credential.header_authorization,
+        listMenu: store.master.menus,
         restfulServer: store.general.restful_domain,
         userProfile: store.credential.user_profile
     };

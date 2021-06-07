@@ -18,7 +18,7 @@ const loadLocalMenuFromStorage = () => {
     }
 }
 
-export default function menu(state = initialState, action) {
+export default function master(state = initialState, action) {
     switch (action.type) {
         case MENU_LOADED:
             let ciphertextprofile = CryptoJS.AES.encrypt(JSON.stringify(action.payload), '011d62bbd146b4722db66be10581cd54');
