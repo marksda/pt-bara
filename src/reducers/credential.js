@@ -17,9 +17,9 @@ const initialState = {
 }
 
 const loadLocalCredentialStorage = () => {
-    let tmpData = window.localStorage.getItem('{ef535818-9c4d-1b92-9eea-43ad6d745c9a}');
+    let tmpData = window.localStorage.getItem('{$2a$04$uNYaQhd6v9Em48tVM/duVOYI6L1AdCMdPNvKdMJ0/mQxnmsRIN0G2}');
     if(tmpData !== null){
-        let bytes  = CryptoJS.AES.decrypt(tmpData.toString(), '6MjSltMV8cadJWcKh_nR4Ds7vc$!ftDw');
+        let bytes  = CryptoJS.AES.decrypt(tmpData.toString(), 'e4ac72eb583f85965fbaa52641546107');
         let pengaturan = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
         return pengaturan;
     }
@@ -29,9 +29,9 @@ const loadLocalCredentialStorage = () => {
 }
 
 const loadLocalProfileStorage = () => {
-    let tmpData = window.localStorage.getItem('{8e9cca41-2ddf-e5c8-5af2-6dd2f36ceae4}');
+    let tmpData = window.localStorage.getItem('{$2a$04$LEBKjg.jyXK7IJzEBHBe/erI/fRXwEiLdoWTB0Lva64GGCFXn51aG}');
     if(tmpData !== null){
-        let bytes  = CryptoJS.AES.decrypt(tmpData.toString(), '6MjSltMV8cadJWcKh_nR4Ds7vc$!ftDw');
+        let bytes  = CryptoJS.AES.decrypt(tmpData.toString(), '79cec0fc8a27bb1d1e99e5661e42f842');
         let pengaturan = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
         return pengaturan;
     }
@@ -47,15 +47,15 @@ export default function credential(state = initialState, action) {
                 accountId: action.payload.nip,
                 accountRealName: action.payload.nama
             }
-            let ciphertextprofile = CryptoJS.AES.encrypt(JSON.stringify(userProfile), '6MjSltMV8cadJWcKh_nR4Ds7vc$!ftDw');
-            window.localStorage.setItem('{8e9cca41-2ddf-e5c8-5af2-6dd2f36ceae4}', ciphertextprofile);
+            let ciphertextprofile = CryptoJS.AES.encrypt(JSON.stringify(userProfile), '79cec0fc8a27bb1d1e99e5661e42f842');
+            window.localStorage.setItem('{$2a$04$LEBKjg.jyXK7IJzEBHBe/erI/fRXwEiLdoWTB0Lva64GGCFXn51aG}', ciphertextprofile);
             return {
                 ...state,
                 [USER_PROFILE]: userProfile
             };
         case CREDENTIAL_LOADED:
-            let ciphertexttoken = CryptoJS.AES.encrypt(JSON.stringify(action.payload), '6MjSltMV8cadJWcKh_nR4Ds7vc$!ftDw');
-            window.localStorage.setItem('{ef535818-9c4d-1b92-9eea-43ad6d745c9a}', ciphertexttoken);
+            let ciphertexttoken = CryptoJS.AES.encrypt(JSON.stringify(action.payload), 'e4ac72eb583f85965fbaa52641546107');
+            window.localStorage.setItem('{$2a$04$uNYaQhd6v9Em48tVM/duVOYI6L1AdCMdPNvKdMJ0/mQxnmsRIN0G2}', ciphertexttoken);
             return {
                 ...state,
                 [CREDENTIAL]: action.payload,

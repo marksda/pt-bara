@@ -114,7 +114,9 @@ class Main extends React.Component {
 
     componentDidMount() {
         const { listMenu } = this.props;
-        this.setState({itemMenuSelected: listMenu[0].menu_item[0].nama});
+        if(listMenu.length > 0) {
+            this.setState({itemMenuSelected: listMenu[0].menu_item[0].nama});
+        }
     }
 
     handleDrawerClose = () => {
@@ -133,7 +135,7 @@ class Main extends React.Component {
     
     render() {
         const { authorizationNotify, classes, listMenu } = this.props;
-        const { open } = this.state;
+        const { itemMenuSelected, open } = this.state;
 
         let page = null;
 
@@ -162,7 +164,7 @@ class Main extends React.Component {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" noWrap>
-                            PT. BARA
+                            {itemMenuSelected}
                         </Typography>
                     </Toolbar>
                 </AppBar>
@@ -199,7 +201,11 @@ class Main extends React.Component {
                             >
                                 {
                                     item.menu_item.map((itemMenu, index) =>
-                                        <ListItem button key={itemMenu.id} onClick={this.handleItemMenuClick}>
+                                        <ListItem 
+                                            button key={itemMenu.id} 
+                                            onClick={this.handleItemMenuClick}
+                                            selected={itemMenuSelected === itemMenu.nama ? true : false}
+                                        >
                                             <ListItemIcon>
                                                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                                             </ListItemIcon>
