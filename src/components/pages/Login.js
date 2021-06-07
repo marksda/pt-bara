@@ -172,12 +172,11 @@ class Login extends React.Component {
         })
         .then((r) => {         
             if(r.data.status === 200) {         
-                console.log(r.data.keterangan);       
+                self.setState({isProgress: false, isDisabled: false});   
                 setUser(self.userProfile);
                 setCredential(r.data.keterangan.credential);
                 setMenu(r.data.keterangan.menu);
                 setAuthorization();
-                self.setState({isProgress: false, isDisabled: false});
             }
             else {
                 self.errorPasswordMessage = `Password salah. Silahkan dicoba lagi`;
