@@ -172,10 +172,11 @@ class Login extends React.Component {
             }
         })
         .then((r) => {         
-            if(r.data.status === 200) {                
+            if(r.data.status === 200) {         
+                console.log(r.data.keterangan);       
                 setUser(self.userProfile);
-                setCredential(r.data.keterangan);
-                // setMenu(r.data.keterangan);
+                setCredential(r.data.keterangan.credential);
+                setMenu(r.data.keterangan.menu);
                 setAuthorization();
                 self.setState({isProgress: false, isDisabled: false});
             }
