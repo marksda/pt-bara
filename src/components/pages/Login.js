@@ -16,7 +16,9 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { setAuthorization } from "../../actions/notification-action";
 import { setUser, setCredential } from "../../actions/login-action";
+import { setMenu } from "../../actions/master-action";
 import { withStyles } from '@material-ui/core/styles';
+import { setMenu } from '../../actions/master-action';
 
 const styles = theme => ({
     containerButton: {
@@ -57,6 +59,7 @@ const mapStateToProps = store => {
 const mapDispatchToProps = dispatch => {    
     return {
       setAuthorization: () => dispatch(setAuthorization()),
+      setMenu: data => dispatch(setMenu(data)),
       setUser: data => dispatch(setUser(data)),
       setCredential: data => dispatch(setCredential(data))
     };
@@ -172,6 +175,7 @@ class Login extends React.Component {
             if(r.data.status === 200) {                
                 setUser(self.userProfile);
                 setCredential(r.data.keterangan);
+                // setMenu(r.data.keterangan);
                 setAuthorization();
                 self.setState({isProgress: false, isDisabled: false});
             }
