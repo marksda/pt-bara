@@ -112,6 +112,11 @@ class Main extends React.Component {
         }
     }
 
+    componentDidMount() {
+        const { listMenu } = this.props;
+        this.setState({itemMenuSelected: listMenu[0].menu_item[0].nama});
+    }
+
     handleDrawerClose = () => {
         this.setState({open: false});
     }
@@ -127,7 +132,7 @@ class Main extends React.Component {
     }
     
     render() {
-        const { authorizationNotify, classes } = this.props;
+        const { authorizationNotify, classes, listMenu } = this.props;
         const { open } = this.state;
 
         let page = null;
@@ -176,106 +181,37 @@ class Main extends React.Component {
                 >
                     <div className={classes.toolbar}>
                         <IconButton onClick={this.handleDrawerClose}>
-                            <ChevronLeftIcon />
+                        <ChevronLeftIcon />
                         </IconButton>
                     </div>
-                    <Divider />
-                    <List
-                        dense={true}
-                        subheader={ open === true ?
-                            <ListSubheader>
-                            PENGAJUAN
-                            </ListSubheader>:
-                            null
-                        }
-                    >
                     {
-                        ['Pengajukan Baru', 'Daftar Pengajuan'].map((text, index) => (
-                            <ListItem button key={text} onClick={this.handleItemMenuClick}>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItem>
-                        ))
+                        listMenu.map((item, idx) => 
+                            <React.Fragment key={idx}>
+                            <Divider />
+                            <List
+                                dense={true}
+                                subheader={ open === true ?
+                                    <ListSubheader>
+                                    {item.sub_header}
+                                    </ListSubheader>:
+                                    null
+                                }
+                            >
+                                {
+                                    item.menu_item.map((itemMenu, index) =>
+                                        <ListItem button key={itemMenu.id} onClick={this.handleItemMenuClick}>
+                                            <ListItemIcon>
+                                                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                                            </ListItemIcon>
+                                            <ListItemText primary={itemMenu.nama} />
+                                        </ListItem>
+                                    )
+                                }
+                            </List>
+                            </React.Fragment>
+                        )
                     }
-                    </List>
-                    <Divider />
-                    <List
-                        dense={true}
-                        subheader={ open === true ?
-                            <ListSubheader>
-                            PROYEK
-                            </ListSubheader>:
-                            null
-                        }
-                    >
-                    {
-                        ['Proyek Baru', 'Daftar Proyek'].map((text, index) => (
-                            <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                            </ListItem>
-                        ))
-                    }
-                    </List>
-                    <Divider />
-                    <List
-                        dense={true}
-                        subheader={ open === true ?
-                            <ListSubheader>
-                            TRANSAKSI
-                            </ListSubheader>:
-                            null
-                        }
-                    >
-                    {
-                        ['Transaksi Baru', 'Daftar Transaksi'].map((text, index) => (
-                            <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                            </ListItem>
-                        ))
-                    }
-                    </List>
-                    <Divider />
-                    <List
-                        dense={true}
-                        subheader={ open === true ?
-                            <ListSubheader>
-                            LAPORAN
-                            </ListSubheader>:
-                            null
-                        }
-                    >
-                    {
-                        ['Proyek', 'Perusahaan', 'Pajak'].map((text, index) => (
-                            <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                            </ListItem>
-                        ))
-                    }
-                    </List>
-                    <Divider />
-                    <List
-                        dense={true}
-                        subheader={ open === true ?
-                            <ListSubheader>
-                            PENGATURAN
-                            </ListSubheader>:
-                            null
-                        }
-                    >
-                    {
-                        ['Master', 'Security', 'Profile'].map((text, index) => (
-                            <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                            </ListItem>
-                        ))
-                    }
-                    </List>
+                    
                 </Drawer>
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
