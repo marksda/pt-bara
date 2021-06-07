@@ -25,7 +25,7 @@ export default function master(state = initialState, action) {
             window.localStorage.setItem('{rdDFD8vOc+Vje7RJ8FUGWYiNcu3MVKcpSUP37ZjFkP8=}', ciphertextprofile);
             return {
                 ...state,
-                [MENUS]: action.payload
+                [MENUS]: [...action.payload]
             };
             default:
                 let menuLoaded = loadLocalMenuFromStorage();

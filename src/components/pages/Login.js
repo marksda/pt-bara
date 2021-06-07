@@ -15,10 +15,9 @@ import Typography from '@material-ui/core/Typography';
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { setAuthorization } from "../../actions/notification-action";
-import { setUser, setCredential } from "../../actions/login-action";
+import { setCredential, setUser } from "../../actions/login-action";
 import { setMenu } from "../../actions/master-action";
 import { withStyles } from '@material-ui/core/styles';
-import { setMenu } from '../../actions/master-action';
 
 const styles = theme => ({
     containerButton: {
@@ -161,7 +160,7 @@ class Login extends React.Component {
     }
 
     validatePassword = () => {
-        const { restfulServer, setAuthorization, setCredential, setUser } = this.props;
+        const { restfulServer, setAuthorization, setCredential, setMenu, setUser } = this.props;
         let self = this;
         axios({
             method: 'get',
