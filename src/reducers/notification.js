@@ -9,8 +9,8 @@ const initialState = {
 }
 
 const loadLocalStorageNotification = () => {
-    let tmpDataProfile = window.localStorage.getItem('{8e9cca41-2ddf-e5c8-5af2-6dd2f36ceae4}');
-    let tmpDataCredential = window.localStorage.getItem('{ef535818-9c4d-1b92-9eea-43ad6d745c9a}');
+    let tmpDataProfile = window.localStorage.getItem('{$2a$04$LEBKjg.jyXK7IJzEBHBe/erI/fRXwEiLdoWTB0Lva64GGCFXn51aG}');
+    let tmpDataCredential = window.localStorage.getItem('{$2a$04$uNYaQhd6v9Em48tVM/duVOYI6L1AdCMdPNvKdMJ0/mQxnmsRIN0G2}');
     if(tmpDataProfile !== null && tmpDataCredential !== null) {
         return  'authorization';
     }
