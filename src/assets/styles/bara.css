@@ -1,3 +1,4 @@
 .content-master {
     display: flex;
+    justify-content: center;
 }

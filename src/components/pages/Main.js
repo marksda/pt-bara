@@ -22,7 +22,7 @@ import { Redirect } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import { setUnauthorization } from "../../actions/notification-action";
 
-import Master from "./Master"
+import PengajuanBaru from "./Pengajuan-Baru"
 
 const drawerWidth = 240;
 const styles = theme => ({
@@ -164,7 +164,7 @@ class Main extends React.Component {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" noWrap>
+                        <Typography variant="h6" noWrap style={{color: 'white'}}>
                             {itemMenuSelected}
                         </Typography>
                     </Toolbar>
@@ -222,7 +222,7 @@ class Main extends React.Component {
                 </Drawer>
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    <Master />
+                    <PengajuanBaru />
                 </main>
             </div>;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Divider, Radio } from 'antd';
 
-class Master extends React.Component {
+class PengajuanBaru extends React.Component {
     constructor(props) {
 		super(props);
 
@@ -30,4 +30,4 @@ class Master extends React.Component {
     }
 }
 
-export default Master;
+export default PengajuanBaru;
