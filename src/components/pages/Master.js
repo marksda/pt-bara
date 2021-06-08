@@ -12,7 +12,7 @@ class Master extends React.Component {
     }
 
     handleChangeItemTab = (e, newValue) => {
-        this.setState({itemTabSelected: })
+        this.setState({itemTabSelected: newValue});
     }
 
     render() {
