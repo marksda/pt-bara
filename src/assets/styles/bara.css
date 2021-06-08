@@ -7,3 +7,16 @@
     vertical-align: top;
     width: 100%;
 }
+.table-container-pengajuan-baru td:nth-child(1) {
+    width: 15%;
+}
+.table-container-pengajuan-baru td:nth-child(2) {
+    width: 15%;
+}
+.table-container-cel-pengajuan-baru {
+    display: flex;
+    flex-direction: column;
+}
+.table-container-cel-pengajuan-baru>.item-label {
+    margin-bottom: 8px;
+}
