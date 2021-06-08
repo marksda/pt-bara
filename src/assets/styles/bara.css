@@ -2,3 +2,8 @@
     display: flex;
     justify-content: center;
 }
+.table-container-pengajuan-baru td {
+    padding: 0px 8px;
+    vertical-align: top;
+    width: 100%;
+}
