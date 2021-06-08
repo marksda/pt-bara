@@ -4,7 +4,9 @@ import { Provider } from "react-redux";
 import store from "./store/index";
 import { BrowserRouter as Router } from "react-router-dom";
 import RoutePage from './RoutePage';
+import './assets/styles/bara.css';
 import './assets/styles/login.css';
+import 'antd/dist/antd.css';
 
 // import './index.css';
 // import App from './App';

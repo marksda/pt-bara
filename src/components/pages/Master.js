@@ -1,34 +1,28 @@
 import React from 'react';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { Radio } from 'antd';
 
 class Master extends React.Component {
     constructor(props) {
 		super(props);
 
         this.state = {
-            itemTabSelected: 0
+            itemTabSelected: 'Proyek'
         }
     }
 
-    handleChangeItemTab = (e, newValue) => {
-        this.setState({itemTabSelected: newValue});
+    handleChangeItemTab = (e) => {
+        this.setState({ itemTabSelected: e.target.value });
     }
 
     render() {
         const { itemTabSelected } = this.state;
         let page =
-        <Tabs
-            value={itemTabSelected}
-            onChange={this.handleChangeItemTab}
-            indicatorColor="primary"
-            textColor="primary"
-            centered
-        >
-            <Tab label="Item One" />
-            <Tab label="Item Two" />
-            <Tab label="Item Three" />
-        </Tabs>;
+        <div>
+        <Radio.Group value={itemTabSelected} onChange={this.handleChangeItemTab}>
+          <Radio.Button value="Proyek">Proyek</Radio.Button>
+          <Radio.Button value="Non_Proyek">Non-Proyek</Radio.Button>
+        </Radio.Group>
+        </div>;
         return(page);
     }
 }
