@@ -2,7 +2,8 @@ import React from "react";
 import AddBoxOutlineIcon from '@material-ui/icons/AddOutlined';
 import FormAddCustomer from "../forms/Form-Add-Customer";
 import IconButton from '@material-ui/core/IconButton';
-import ProcessingDialog from '../dialog/ProcessingDialog';
+import KonfirmasiDialog from "../dialogs/Konfirmasi-Dialog";
+import ProcessingDialog from '../dialogs/Processing-Dialog';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -263,6 +264,16 @@ class TableCustomer extends React.Component {
         this.setState({openFormAddCustomer: false});
     }
 
+    handleDeleteCustomer = (status) => {        
+        if(status === true) {
+            this.setState({openConfirmasiHapusCustomer: false, openProcessingDialog: true});
+            this.deleteCustomer(this.itemCustomer);
+        }
+        else {
+            this.setState({openConfirmasiHapusCustomer: false});
+        }
+    }
+
     handleOpenFormAddCustomer = () => {
         this.setState({openFormAddCustomer: true, mode: 'add'});
     }
@@ -383,9 +394,9 @@ class TableCustomer extends React.Component {
             />
             <ProcessingDialog open={openProcessingDialog} />
             <KonfirmasiDialog 
-                open={openConfirmasiHapusDivisi} 
-                aksi={this.handleDeleteDivisi} 
-                message={`Hapus item ${this.itemDivisi.nama}`}
+                open={openConfirmasiHapusCustomer} 
+                aksi={this.handleDeleteCustomer} 
+                message={`Hapus item ${this.itemCustomer.nama}`}
             />
             {pageAdd}
 		</div>;
