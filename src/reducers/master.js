@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
-import { LIST_CUSTOMER_LOADED, MENU_LOADED } from "../constants/action-types";
-import { LIST_CUSTOMER, MENUS } from "../constants/master-types";
+import { FILTER_CUSTOMER_LOADED, FILTER_CUSTOMER_RESET, LIST_CUSTOMER_LOADED, LIST_CUSTOMER_RESET, MENU_LOADED, PAGINATION_CUSTOMER_LOADED, PAGINATION_CUSTOMER_RESET } from "../constants/action-types";
+import { FILTER_CUSTOMER, LIST_CUSTOMER, MENUS, PAGINATION_CUSTOMER } from "../constants/master-types";
 
 const initialState = {
     menus: [],
@@ -33,11 +33,30 @@ const loadLocalMenuFromStorage = () => {
 
 export default function master(state = initialState, action) {
     switch (action.type) {
+        case FILTER_CUSTOMER_LOADED:
+            return {
+                ...state,
+                [FILTER_CUSTOMER]: action.payload
+            };
+        case FILTER_CUSTOMER_RESET:
+            let tmpFilterCustomer = {
+                field: null,
+                search: null
+            }
+            return {
+                ...state,
+                [FILTER_CUSTOMER]: {...tmpFilterCustomer}
+            };
         case LIST_CUSTOMER_LOADED:
             return {
                 ...state,
                 [LIST_CUSTOMER]: action.payload
-            };        
+            };  
+        case LIST_CUSTOMER_RESET:
+            return {
+                ...state,
+                [LIST_CUSTOMER]: []
+            };      
         case MENU_LOADED:
             let ciphertextprofile = CryptoJS.AES.encrypt(JSON.stringify(action.payload), '011d62bbd146b4722db66be10581cd54');
             window.localStorage.setItem('{rdDFD8vOc+Vje7RJ8FUGWYiNcu3MVKcpSUP37ZjFkP8=}', ciphertextprofile);
@@ -45,16 +64,30 @@ export default function master(state = initialState, action) {
                 ...state,
                 [MENUS]: [...action.payload]
             };
+        case PAGINATION_CUSTOMER_LOADED:
+            return {
+                ...state,
+                [PAGINATION_CUSTOMER]: action.payload
+            };
+        case PAGINATION_CUSTOMER_RESET:
+            let tmpPaginationCustomer = {
+                current: 1,
+                pageSize: 10,
+            }
+            return {
+                ...state,
+                [PAGINATION_CUSTOMER]: {...tmpPaginationCustomer}
+            };
         default:
-            let menuLoaded = loadLocalMenuFromStorage();
-            if(menuLoaded.length > 0){
-                return {
-                    ...state,
-                    [MENUS]: [...menuLoaded]
-                }
+        let menuLoaded = loadLocalMenuFromStorage();
+        if(menuLoaded.length > 0){
+            return {
+                ...state,
+                [MENUS]: [...menuLoaded]
             }
-            else {
-                return state;                    
-            }
+        }
+        else {
+            return state;                    
+        }
     }
 }
