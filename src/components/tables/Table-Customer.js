@@ -198,8 +198,7 @@ const mapDispatchToProps = dispatch => {
         getCustomer: (url, headerAuthorization) => dispatch(getCustomer(url, headerAuthorization)),
         setFilterCustomer: (value) => dispatch(setFilterCustomer(value)),
         setPaginationCustomer: (value) => dispatch(setPaginationCustomer(value)),
-        setUrutCustomer: (value) => dispatch(setUrutCustomer(value)),
-        setUnauthorization: () => dispatch(setUnauthorization())
+        setUrutCustomer: (value) => dispatch(setUrutCustomer(value))
     };
 };
 
