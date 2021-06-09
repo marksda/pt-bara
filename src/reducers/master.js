@@ -4,7 +4,7 @@ import { FILTER_CUSTOMER, LIST_CUSTOMER, MENUS, PAGINATION_CUSTOMER, URUT_CUSTOM
 
 const initialState = {
     menus: [],
-    list_customer: [],
+    list_customer: null,
     filter_customer: {
         field: null,
         search: null

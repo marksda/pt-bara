@@ -1,6 +1,8 @@
 import React from "react";
 import AddBoxOutlineIcon from '@material-ui/icons/AddOutlined';
+import FormAddCustomer from "../forms/Form-Add-Customer";
 import IconButton from '@material-ui/core/IconButton';
+import ProcessingDialog from '../dialog/ProcessingDialog';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -15,8 +17,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
-import { setUnauthorization } from "../../actions/notification-action";
 import { getCustomer, setFilterCustomer, setPaginationCustomer, setUrutCustomer } from "../../actions/master-action";
+
+import { connect } from "react-redux";
 
 const { Title } = Typography;
 const { Search } = Input;
@@ -162,11 +165,11 @@ const EnhancedTableHead = (props) => {
 const styles = theme => ({
     root: {
         width: '100%',
-        marginTop: -20
+        // marginTop: -20
     },
     tableWrapper: {
         overflowX: 'auto',
-        marginTop: -20
+        // marginTop: -20
     },
     visuallyHidden: {
         border: 0,
@@ -201,4 +204,193 @@ const mapDispatchToProps = dispatch => {
         setUrutCustomer: (value) => dispatch(setUrutCustomer(value))
     };
 };
+
+class TableCustomer extends React.Component {
+    constructor(props) {
+        super(props); 
+        this.state = {
+        	openConfirmasiHapusCustomer: false,
+        	openFormAddCustomer: false,
+        	openProcessingDialog: false, 
+        	mode: ''
+        };
+
+        this.itemCustomer = {};
+    }
+
+    componentDidMount() {
+    	const { filterCustomer, paginationCustomer, urutCustomer } = this.props;
+        this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
+    }
+
+    handleBtnDelete = (e) => {
+        this.itemCustomer.id = e.currentTarget.dataset.id;
+        this.itemCustomer.nama = e.currentTarget.dataset.nama;
+        this.setState({openConfirmasiHapusCustomer: true});
+    }
+
+    handleBtnEdit = (e) => {
+        this.itemCustomer.id = Number(e.currentTarget.dataset.id);
+        this.itemCustomer.nama = e.currentTarget.dataset.nama;
+        this.setState({openFormAddCustomer: true, mode: 'edit'});
+    }
+
+    handleChangeFilter = (v) => {
+        const { paginationCustomer, setFilterCustomer, urutCustomer, setPaginationCustomer } = this.props;
+        let tmpPagination = {...paginationCustomer};
+        tmpPagination.current = 1;        
+        setPaginationCustomer(tmpPagination);
+        let tmpFilter = {
+            field: "m.nama",
+            search: v
+        };        
+        setFilterCustomer(tmpFilter);
+        this.loadCustomer(tmpFilter, tmpPagination, urutCustomer);
+    }
+
+    handleChangeRowsPerPage = (event) => {
+        const { filterCustomer, setPaginationCustomer, urutCustomer } = this.props;
+        let tmpPagination = {
+            current: 1,
+            pageSize: parseInt(event.target.value, 10),
+        };
+        
+        setPaginationCustomer(tmpPagination);
+        this.loadCustomer(filterCustomer, tmpPagination, urutCustomer);
+    }
+
+    handleCloseFormAddCustomer = () => {
+        this.setState({openFormAddCustomer: false});
+    }
+
+    handleOpenFormAddCustomer = () => {
+        this.setState({openFormAddCustomer: true, mode: 'add'});
+    }
+
+    handleRequestSort = (event, property) => {   
+        const { filterCustomer, paginationCustomer, setUrutCustomer, urutCustomer } = this.props;
+        let isAsc = urutCustomer.field === property && urutCustomer.order === 'asc';
+        let tmpUrut = {
+            field: property,
+            order: isAsc ? 'desc' : 'asc'
+        };
+        setUrutCustomer(tmpUrut);
+        this.loadCustomer(filterCustomer, paginationCustomer, tmpUrut);
+    }
+
+    handleToggleOpenProgressDialog = () => {
+        this.setState({openProcessingDialog: !this.state.openProcessingDialog});
+    }
+
+    loadCustomer = (filter, pagination, urut) => {
+        const { getCustomer, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/customer?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getCustomer(url, headerAuthorization);
+    }
+
+    render() {
+        const { classes, listCustomer, paginationCustomer, title, urutCustomer } = this.props;
+		const { openConfirmasiHapusCustomer, openFormAddCustomer, openProcessingDialog, mode } = this.state;
+
+        let pageAdd = null;
+        let pageRender = null;
+
+		if(openFormAddCustomer === true) {
+            pageAdd = 
+             <FormAddCustomer 
+                data={this.itemCustomer}
+                visible={openFormAddCustomer} 
+                handleClose={this.handleCloseFormAddCustomer}
+                mode={mode}
+                handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
+            />;
+        }
+
+        pageRender =
+		<div className={classes.root}>
+			<EnhancedTableToolbar 
+                handleOpen={this.handleOpenFormAddCustomer}  
+                title={title}
+                handleCari={this.handleChangeFilter}
+            />
+            <TableContainer className={classes.tableWrapper}>
+            	<Table aria-labelledby="tablecustomer">
+            		<EnhancedTableHead 
+                        classes={classes}
+                        order={urutCustomer.order}
+                        orderBy={urutCustomer.field}
+                        onRequestSort={this.handleRequestSort}
+                    />
+                    <TableBody>
+                    {
+                    	listCustomer !== null ? listCustomer.data.map((row, index) => {
+                    		return(
+                    			<TableRow 
+	                                hover
+	                                tabIndex={-1}
+	                                key={row.id}      
+	                            >
+	                            	<TableCell 
+	                                    align={'right'}
+	                                    style={{width: 40}}
+	                                >
+	                                    {(paginationCustomer.current-1)*paginationCustomer.pageSize+index+1}.
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 80}}
+	                                >
+	                                    { row.id }
+	                                </TableCell>
+	                                <TableCell 
+	                                    align={'left'}
+	                                >
+	                                    { row.nama }
+	                                </TableCell>
+	                                <TableCell 
+                                        style={{width: 80}}
+                                        align={'center'}
+                                    >
+                                        <i 
+                                            className="fas fa-pencil-alt fa-lg orange-text"
+                                            data-id={row.id}
+                                            data-nama={row.nama}
+                                            onClick={this.handleBtnEdit}
+                                            style={{marginRight: 8, cursor: 'pointer'}}
+                                        />
+                                        <i 
+                                            className="far fa-trash-alt fa-lg red-text"
+                                            data-id={row.id}
+                                            onClick={this.handleBtnDelete}
+                                            style={{cursor: 'pointer'}}
+                                        />
+                                    </TableCell>
+	                            </TableRow>
+                    		);
+                    	}):null
+                    }
+                    </TableBody>
+            	</Table>
+            </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[1,5,10,15,25,50,100]}
+                component="div"
+                count={listDivisi !== null ? listDivisi.total:0}
+                rowsPerPage={paginationDivisi.pageSize}
+                page={paginationDivisi.current-1}
+                onChangePage={this.handleChangePage}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+            />
+            <ProcessingDialog open={openProcessingDialog} />
+            <KonfirmasiDialog 
+                open={openConfirmasiHapusDivisi} 
+                aksi={this.handleDeleteDivisi} 
+                message={`Hapus item ${this.itemDivisi.nama}`}
+            />
+            {pageAdd}
+		</div>;
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(TableCustomer));
 
