@@ -1,5 +1,6 @@
 import React from "react";
 import AddBoxOutlineIcon from '@material-ui/icons/AddOutlined';
+import axios from 'axios';
 import FormAddCustomer from "../forms/Form-Add-Customer";
 import IconButton from '@material-ui/core/IconButton';
 import KonfirmasiDialog from "../dialogs/Konfirmasi-Dialog";
@@ -222,6 +223,43 @@ class TableCustomer extends React.Component {
     componentDidMount() {
     	const { filterCustomer, paginationCustomer, urutCustomer } = this.props;
         this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
+    }
+
+    deleteCustomer = (dataCustomer) => {
+        const { 
+            filterCustomer, headerAuthorization, paginationCustomer, resetCredential, 
+            restfulServer, urutCustomer         
+        } = this.props;
+        let self = this;    
+         
+        axios({
+            method: 'delete',
+            url: `${restfulServer}/master/customer`,
+            headers: {...headerAuthorization},
+            params: dataCustomer
+        })
+        .then((r) => {  
+            self.setState({openProcessingDialog: false});  
+            if(r.data.status === 200) {
+                self.itemCustomer.id = null;
+                self.itemCustomer.nama = null;
+                self.loadCustomer(
+                    filterCustomer,
+                    paginationCustomer,
+                    urutCustomer
+                );
+            }
+            else {
+                self.itemCustomer.id = null;
+                self.itemCustomer.nama = null;
+            }
+        })
+        .catch((r) => { 
+            self.itemCustomer.id = null;
+            self.itemCustomer.nama = null;
+            self.setState({openProcessingDialog: false});
+            resetCredential();
+        });
     }
 
     handleBtnDelete = (e) => {
