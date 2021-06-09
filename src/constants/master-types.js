@@ -5,4 +5,5 @@ export const HEADER_AUTHORIZATION = "header_authorization";
 export const LIST_CUSTOMER = "list_customer";
 export const MENUS = "menus";
 export const PAGINATION_CUSTOMER = "pagination_customer";
+export const URUT_CUSTOMER = "urut_customer";
 export const USER_PROFILE = "user_profile";

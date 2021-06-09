@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
-import { FILTER_CUSTOMER_LOADED, FILTER_CUSTOMER_RESET, LIST_CUSTOMER_LOADED, LIST_CUSTOMER_RESET, MENU_LOADED, PAGINATION_CUSTOMER_LOADED, PAGINATION_CUSTOMER_RESET } from "../constants/action-types";
-import { FILTER_CUSTOMER, LIST_CUSTOMER, MENUS, PAGINATION_CUSTOMER } from "../constants/master-types";
+import { FILTER_CUSTOMER_LOADED, FILTER_CUSTOMER_RESET, LIST_CUSTOMER_LOADED, LIST_CUSTOMER_RESET, MENU_LOADED, PAGINATION_CUSTOMER_LOADED, PAGINATION_CUSTOMER_RESET, URUT_CUSTOMER_LOADED, URUT_CUSTOMER_RESET } from "../constants/action-types";
+import { FILTER_CUSTOMER, LIST_CUSTOMER, MENUS, PAGINATION_CUSTOMER, URUT_CUSTOMER } from "../constants/master-types";
 
 const initialState = {
     menus: [],
@@ -78,16 +78,30 @@ export default function master(state = initialState, action) {
                 ...state,
                 [PAGINATION_CUSTOMER]: {...tmpPaginationCustomer}
             };
-        default:
-        let menuLoaded = loadLocalMenuFromStorage();
-        if(menuLoaded.length > 0){
+        case URUT_CUSTOMER_LOADED:
             return {
                 ...state,
-                [MENUS]: [...menuLoaded]
+                [URUT_CUSTOMER]: action.payload
+            };
+        case URUT_CUSTOMER_RESET:
+            let tmpUrutCustomer = {
+                field: "m.nama",
+                order: "asc"
             }
-        }
-        else {
-            return state;                    
-        }
+            return {
+                ...state,
+                [URUT_CUSTOMER]: {...tmpUrutCustomer}
+            };
+        default:
+            let menuLoaded = loadLocalMenuFromStorage();
+            if(menuLoaded.length > 0){
+                return {
+                    ...state,
+                    [MENUS]: [...menuLoaded]
+                }
+            }
+            else {
+                return state;                    
+            }
     }
 }
