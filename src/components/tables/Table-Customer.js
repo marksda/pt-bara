@@ -222,7 +222,7 @@ class TableCustomer extends React.Component {
 
     componentDidMount() {
     	const { filterCustomer, paginationCustomer, urutCustomer } = this.props;
-        this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
+        // this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
     }
 
     deleteCustomer = (dataCustomer) => {
