@@ -22,7 +22,8 @@ import { Redirect } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import { setUnauthorization } from "../../actions/notification-action";
 
-import PengajuanBaru from "./Pengajuan-Baru"
+import Master from "./Master";
+import PengajuanBaru from "./Pengajuan-Baru";
 
 const drawerWidth = 240;
 const styles = theme => ({
@@ -139,6 +140,19 @@ class Main extends React.Component {
         const { itemMenuSelected, open } = this.state;
 
         let page = null;
+        let subPage = null;
+
+        switch (itemMenuSelected) {
+            case 'Pengajuan Baru':
+                subPage = <PengajuanBaru />;
+                break;
+            case 'Master':
+                subPage = <Master />;
+                break;
+            default:
+                subPage = null;
+                break;
+        }
 
         if(authorizationNotify === 'unauthorization') {
 	    	return <Redirect to="/" />;
@@ -222,7 +236,7 @@ class Main extends React.Component {
                 </Drawer>
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
-                    <PengajuanBaru />
+                    {subPage}
                 </main>
             </div>;
 

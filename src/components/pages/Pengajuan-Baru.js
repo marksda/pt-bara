@@ -20,7 +20,7 @@ class PengajuanBaru extends React.Component {
         const { itemTabSelected } = this.state;
         let page =
         <>
-            <div className="content-master">
+            <div className="content-flex-center">
                 <Radio.Group value={itemTabSelected} onChange={this.handleChangeItemTab}>
                     <Radio.Button value="Proyek">Proyek</Radio.Button>
                     <Radio.Button value="Non_Proyek">Non-Proyek</Radio.Button>

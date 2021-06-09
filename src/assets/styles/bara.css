@@ -1,4 +1,4 @@
-.content-master {
+.content-flex-center {
     display: flex;
     justify-content: center;
 }
@@ -8,10 +8,10 @@
     width: 100%;
 }
 .table-container-pengajuan-baru td:nth-child(1) {
-    width: 15%;
+    width: 150px;
 }
 .table-container-pengajuan-baru td:nth-child(2) {
-    width: 15%;
+    width: 250px;
 }
 .table-container-cel-pengajuan-baru {
     display: flex;
