@@ -1,6 +1,8 @@
 import React from 'react';
 import { Tabs  } from 'antd';
 
+import TableCustomer from '../forms/Form-Pengajuan-Proyek';
+
 
 const { TabPane } = Tabs;
 
@@ -23,7 +25,7 @@ class Master extends React.Component {
         <Tabs defaultActiveKey="1" centered size="large">            
             <TabPane tab="Customer" key="1">
                 <div className="content-flex-center">
-                Content of Tab Pane 4
+                    <TableCustomer title="Data Customer"/>
                 </div>
             </TabPane>
             <TabPane tab="Struktur organisasi" key="2">
