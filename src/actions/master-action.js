@@ -13,7 +13,8 @@ export const getCustomer = (url='', authorization) => {
             }
         )
         .then(
-            json => {            
+            json => {      
+                console.log(json);      
                 if(json.status === 200 ) {
                     dispatch({ type: LIST_CUSTOMER_LOADED, payload: json.keterangan });
                 }
@@ -46,5 +47,5 @@ export const setMenu = (data) => {
 }
 
 export const setUrutCustomer = (value) => {
-    return({type: URUT_DIVISI_LOADED, payload: value});
+    return({type: URUT_CUSTOMER_LOADED, payload: value});
 }

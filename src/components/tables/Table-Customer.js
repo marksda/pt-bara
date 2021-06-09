@@ -167,11 +167,11 @@ const EnhancedTableHead = (props) => {
 const styles = theme => ({
     root: {
         width: '100%',
-        // marginTop: -20
+        marginTop: -20
     },
     tableWrapper: {
         overflowX: 'auto',
-        // marginTop: -20
+        marginTop: -20
     },
     visuallyHidden: {
         border: 0,
@@ -222,7 +222,7 @@ class TableCustomer extends React.Component {
 
     componentDidMount() {
     	const { filterCustomer, paginationCustomer, urutCustomer } = this.props;
-        // this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
+        this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
     }
 
     deleteCustomer = (dataCustomer) => {
@@ -424,9 +424,9 @@ class TableCustomer extends React.Component {
             <TablePagination
                 rowsPerPageOptions={[1,5,10,15,25,50,100]}
                 component="div"
-                count={listDivisi !== null ? listDivisi.total:0}
-                rowsPerPage={paginationDivisi.pageSize}
-                page={paginationDivisi.current-1}
+                count={listCustomer !== null ? listCustomer.total:0}
+                rowsPerPage={paginationCustomer.pageSize}
+                page={paginationCustomer.current-1}
                 onChangePage={this.handleChangePage}
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
             />
@@ -438,6 +438,8 @@ class TableCustomer extends React.Component {
             />
             {pageAdd}
 		</div>;
+
+        return(pageRender);
     }
 }
 

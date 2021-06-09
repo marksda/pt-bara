@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs  } from 'antd';
 
-import TableCustomer from '../forms/Form-Pengajuan-Proyek';
+import TableCustomer from '../tables/Table-Customer';
 
 
 const { TabPane } = Tabs;
