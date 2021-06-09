@@ -15,6 +15,9 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 
+import { setUnauthorization } from "../../actions/notification-action";
+import { getCustomer, setFilterCustomer, setPaginationCustomer, setUrutCustomer } from "../../actions/master-action";
+
 const { Title } = Typography;
 const { Search } = Input;
 
@@ -187,6 +190,16 @@ const mapStateToProps = store => {
         paginationCustomer: store.master.pagination_customer,
         restfulServer: store.general.restful_domain,
         urutCustomer: store.master.urut_customer
+    };
+};
+
+const mapDispatchToProps = dispatch => {    
+    return {
+        getCustomer: (url, headerAuthorization) => dispatch(getCustomer(url, headerAuthorization)),
+        setFilterCustomer: (value) => dispatch(setFilterCustomer(value)),
+        setPaginationCustomer: (value) => dispatch(setPaginationCustomer(value)),
+        setUrutCustomer: (value) => dispatch(setUrutCustomer(value)),
+        setUnauthorization: () => dispatch(setUnauthorization())
     };
 };
 
