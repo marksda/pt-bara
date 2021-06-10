@@ -55,7 +55,7 @@ export default function master(state = initialState, action) {
         case LIST_CUSTOMER_RESET:
             return {
                 ...state,
-                [LIST_CUSTOMER]: []
+                [LIST_CUSTOMER]: null
             };      
         case MENU_LOADED:
             let ciphertextprofile = CryptoJS.AES.encrypt(JSON.stringify(action.payload), '011d62bbd146b4722db66be10581cd54');

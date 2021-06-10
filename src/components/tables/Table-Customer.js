@@ -89,6 +89,9 @@ const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
     {id: 'm.id', numerik: false, label: 'Id'},
     {id: 'm.nama', numerik: false, label: 'Nama'},  
+    {id: 'm.alamat', numerik: false, label: 'Alamat'},  
+    {id: 'm.telepone', numerik: false, label: 'Telepon'},  
+    {id: 'm.email', numerik: false, label: 'E-mail'},  
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -130,6 +133,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
+                                    style={{width: 350}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -143,6 +147,35 @@ const EnhancedTableHead = (props) => {
                                             </span>
                                         ) : null}
                                     </TableSortLabel>
+                                </TableCell>;
+                                break;
+                            case 3:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                >
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 4:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 100}}
+                                >
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 5:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 100}}
+                                >
+                                    {headCell.label}
                                 </TableCell>;
                                 break;
                             default:
@@ -298,6 +331,16 @@ class TableCustomer extends React.Component {
         this.loadCustomer(filterCustomer, tmpPagination, urutCustomer);
     }
 
+    handleChangePage = (event, newPage) => {
+        const { filterCustomer, paginationCustomer, setPaginationCustomer, urutCustomer } = this.props;
+        let tmpPagination = {
+            current: newPage+1,
+            pageSize: paginationCustomer.pageSize,
+        };
+        setPaginationCustomer(tmpPagination);
+        this.loadCustomer(filterCustomer, tmpPagination, urutCustomer);
+    }
+
     handleCloseFormAddCustomer = () => {
         this.setState({openFormAddCustomer: false});
     }
@@ -381,20 +424,39 @@ class TableCustomer extends React.Component {
 	                            >
 	                            	<TableCell 
 	                                    align={'right'}
-	                                    style={{width: 40}}
+	                                    style={{minWidth: 40, verticalAlign: 'top'}}
 	                                >
 	                                    {(paginationCustomer.current-1)*paginationCustomer.pageSize+index+1}.
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{width: 80}}
+                                        style={{minWidth: 80, verticalAlign: 'top'}}
 	                                >
 	                                    { row.id }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
+                                        style={{minWidth: 350, verticalAlign: 'top'}}
 	                                >
 	                                    { row.nama }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{verticalAlign: 'top'}}
+	                                >
+	                                    { row.alamat }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{minWidth: 100, verticalAlign: 'top'}}
+	                                >
+	                                    { row.telepone }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{minWidth: 100, verticalAlign: 'top'}}
+	                                >
+	                                    { row.email }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80}}
