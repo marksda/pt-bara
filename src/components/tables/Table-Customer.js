@@ -221,7 +221,6 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
-        authorizationNotify: store.notification.authorization_notify,
         filterCustomer: store.master.filter_customer,
         headerAuthorization: store.credential.header_authorization,
         listCustomer: store.master.list_customer,
