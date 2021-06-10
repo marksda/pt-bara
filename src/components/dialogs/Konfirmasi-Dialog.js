@@ -7,6 +7,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 
+import {
+    WarningOutlined,
+} from '@ant-design/icons';
+  
+
 
 class KonfirmasiDialog extends Component {
     constructor(props) {
@@ -35,10 +40,7 @@ class KonfirmasiDialog extends Component {
             open={this.props.open}
         >
             <DialogTitle id="confirmation-dialog-title">
-                 <i 
-                    className="fas fa-exclamation-triangle red-text pr-2"
-                >
-                </i>Warning
+                <WarningOutlined style={{fontSize: '24px', color: '#e6a833', marginRight: 8}} />Warning
             </DialogTitle>
             <DialogContent 
                 className="py-1" 
@@ -47,10 +49,10 @@ class KonfirmasiDialog extends Component {
                 <Typography variant="body1">{this.props.message}</Typography>
             </DialogContent>
             <DialogActions>
-                <Button htmlType="button" size="large" onClick={this.handleCancel} style={{width: 100}}>
+                <Button htmlType="button" size="medium" onClick={this.handleCancel} style={{width: 100}}>
                     Tidak
                 </Button>
-                <Button type="primary" htmlType="button" size="large" onClick={this.handleOk} style={{width: 100}}>
+                <Button type="primary" htmlType="button" size="medium" onClick={this.handleOk} style={{width: 100}}>
                     Ya
                 </Button>
             </DialogActions>

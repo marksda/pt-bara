@@ -314,8 +314,8 @@ class TableCustomer extends React.Component {
     }
 
     handleBtnDelete = (e) => {
-        this.itemCustomer.id = e.currentTarget.dataset.id;
-        this.itemCustomer.nama = e.currentTarget.dataset.nama;
+        const { listCustomer } = this.props;
+        this.itemCustomer = {..._.find(listCustomer.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
         this.setState({openConfirmasiHapusCustomer: true});
     }
 

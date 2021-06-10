@@ -36,7 +36,6 @@ class FormAddCustomer extends Component {
 		super(props);
 		this.state = {
 			disabledInput: false,
-            jnsBentukUsaha: null,
 		};
 
 		this.formRef = React.createRef();
@@ -48,13 +47,11 @@ class FormAddCustomer extends Component {
                
         if(mode === 'edit') {
             this.itemCustomer = {...data};
-            this.setState({ jnsBentukUsaha: this.itemCustomer.id_bentuk_usaha});
         }
     }
 
     handleChangeJenisBentukUsaha = (value) => {
-		this.setState({jnsBentukUsaha: value});
-		this.itemCustomer.idbentukusaha = Number(value);			
+		this.itemCustomer.id_bentuk_usaha = Number(value);			
 	}
 
     handleChangeNilaiText = (e) => {
@@ -153,7 +150,7 @@ class FormAddCustomer extends Component {
 
     render() {
         const { data, handleClose, listBentukUsaha, mode, visible } = this.props;
-		const { disabledInput, jnsBentukUsaha } = this.state;
+		const { disabledInput } = this.state;
 
 		let page = null;
 
@@ -177,21 +174,21 @@ class FormAddCustomer extends Component {
                     ["alamat"]: mode==='edit'?data.alamat:'',
                     ["telepone"]: mode==='edit'?data.telepone:'',
                     ["email"]: mode==='edit'?data.email:'',
+                    ["bentuk_usaha"]: mode==='edit'?data.id_bentuk_usaha:'',
                 }}
             >
                 <Form.Item 
                     label="Bentuk Usaha"
-                    nama="bentuk_usaha"
+                    name="bentuk_usaha"
                 >
                     <Select 
                         onChange={this.handleChangeJenisBentukUsaha}
                         disabled={disabledInput}
-                        value={jnsBentukUsaha}
                         style={{ width: 120 }}
                     >
                     {
                         listBentukUsaha !== null ? listBentukUsaha.data.map((row) => 
-                            <Select.Option value={row.id}>{row.nama}</Select.Option>
+                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
                         ):null
                     }	
                     </Select>
