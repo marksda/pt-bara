@@ -128,7 +128,7 @@ class FormAddCustomer extends Component {
                 
         axios({
             method: 'post',
-            url: `${restfulServer}/master/Customer`,
+            url: `${restfulServer}/master/customer`,
             headers: {...headerAuthorization},
             data: this.itemCustomer
         })
@@ -238,7 +238,7 @@ class FormAddCustomer extends Component {
                     <Button 
                         htmlType="button" 
                         onClick={this.handleReset} 
-                        disabled={disabledInput}
+                        disabled={mode==='edit'?true:disabledInput}
                         style={{marginRight: 8}}
                     >
                     Reset

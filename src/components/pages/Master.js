@@ -27,25 +27,25 @@ class Master extends React.Component {
                 <div className="content-flex-center">
                     <TableCustomer title="Data Customer"/>
                 </div>
-            </TabPane>
-            <TabPane tab="Struktur organisasi" key="2">
-                <div className="content-flex-center">
-                Content of Tab Pane 1
-                </div>
-            </TabPane>
-            <TabPane tab="Jabatan" key="3">
+            </TabPane>            
+            <TabPane tab="Jabatan" key="2">
                 <div className="content-flex-center">
                 Content of Tab Pane 2
                 </div>
             </TabPane>
-            <TabPane tab="Pegawai" key="4">
+            <TabPane tab="Pegawai" key="3">
                 <div className="content-flex-center">
                 Content of Tab Pane 3
                 </div>
             </TabPane>
-            <TabPane tab="Pengemban jabatan" key="5">
+            <TabPane tab="Pengemban jabatan" key="4">
                 <div className="content-flex-center">
                 Content of Tab Pane 3
+                </div>
+            </TabPane>
+            <TabPane tab="Struktur organisasi" key="5">
+                <div className="content-flex-center">
+                Content of Tab Pane 1
                 </div>
             </TabPane>
         </Tabs>;  

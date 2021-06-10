@@ -503,7 +503,7 @@ class TableCustomer extends React.Component {
             	</Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[1,5,10,15,25,50,100]}
+                rowsPerPageOptions={[10,15,25,50,100,250,500,1000,10000]}
                 component="div"
                 count={listCustomer !== null ? listCustomer.total:0}
                 rowsPerPage={paginationCustomer.pageSize}
