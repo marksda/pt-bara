@@ -1,12 +1,14 @@
 import React, { Component } from "react";
-import { Button, DatePicker, Form, Input, Modal, Select, Upload } from 'antd';
+import axios from 'axios';
+import { Button, Form, Input, Modal, Select } from 'antd';
 import { connect } from "react-redux";
-import { getCustomer } from "../../actions/master-action";
+import { getCustomer, getBentukUsaha } from "../../actions/master-action";
 
 const mapStateToProps = store => {
-    return {
+    return {      
         filterCustomer: store.master.filter_customer,
         headerAuthorization: store.credential.header_authorization,
+        listBentukUsaha: store.master.list_bentuk_usaha,
         paginationCustomer: store.master.pagination_customer,
         restfulServer: store.general.restful_domain,
         urutCustomer: store.master.urut_customer
@@ -15,20 +17,26 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
+        getBentukUsaha: (url, headerAuthorization) => dispatch(getBentukUsaha(url, headerAuthorization)),
         getCustomer: (url, headerAuthorization) => dispatch(getCustomer(url, headerAuthorization))
     };
 };
 
 const layout = {
-    labelCol: { span: 6 },
+    labelCol: { span: 5 },
     wrapperCol: { span: 18 },
+};
+
+const tailLayout = {
+    wrapperCol: { offset: 5, span: 16 },
 };
 
 class FormAddCustomer extends Component {
     constructor(props) {
 		super(props);
 		this.state = {
-			disabledInput: false
+			disabledInput: false,
+            jnsBentukUsaha: null,
 		};
 
 		this.formRef = React.createRef();
@@ -37,17 +45,32 @@ class FormAddCustomer extends Component {
 
     componentDidMount() {
         const { data, mode } = this.props;
-       
+               
         if(mode === 'edit') {
             this.itemCustomer = {...data};
+            this.setState({ jnsBentukUsaha: this.itemCustomer.id_bentuk_usaha});
         }
     }
 
+    handleChangeJenisBentukUsaha = (value) => {
+		this.setState({jnsBentukUsaha: value});
+		this.itemCustomer.idbentukusaha = Number(value);			
+	}
+
     handleChangeNilaiText = (e) => {
 		switch(e.currentTarget.dataset.jenis) {
+            case 'alamat':
+				this.itemCustomer.alamat = e.currentTarget.value;
+				break;
+            case 'email':
+                this.itemCustomer.email = e.currentTarget.value;
+                break;
 			case 'nama':
 				this.itemCustomer.nama = e.currentTarget.value;
 				break;
+            case 'telepone':
+                this.itemCustomer.telepone = e.currentTarget.value;
+                break;
 			default:
 		}
 	}
@@ -67,18 +90,23 @@ class FormAddCustomer extends Component {
 		this.formRef.current.resetFields();
 	}
 
+    loadCustomer = (filter, pagination, urut) => {
+        const { getCustomer, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/customer?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getCustomer(url, headerAuthorization);
+    }
+
     saveCustomer = () => {
 		const { 
 			filterCustomer, headerAuthorization, paginationCustomer, restfulServer, urutCustomer, handleClose, handleToggleOpenProgressDialog
 		} = this.props;
-		const option = {headers: { ...headerAuthorization }};
 	    let self = this;
-
+        
 	    handleToggleOpenProgressDialog();
 
 	    axios({
             method: 'put',
-            url: `${restfulServer}/master/Customer`,
+            url: `${restfulServer}/master/customer`,
             headers: {...headerAuthorization},
             data: this.itemCustomer
         })
@@ -88,19 +116,13 @@ class FormAddCustomer extends Component {
 	    	} 
 	    	self.handleReset();
             self.setState({disabledInput: false});
-            handleClose();
+            // handleClose();
             handleToggleOpenProgressDialog();
 	    })
 	    .catch((r) => {
 	    	self.setState({disabledInput: true});
 	    });
-	}
-
-    loadCustomer = (filter, pagination, urut) => {
-        const { getCustomer, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/customer?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
-        getCustomer(url, headerAuthorization);
-    }
+	}    
 
     updateCustomer = () => {
         const { filterCustomer, headerAuthorization, paginationCustomer, restfulServer, urutCustomer, handleClose } = this.props;
@@ -130,8 +152,8 @@ class FormAddCustomer extends Component {
     }
 
     render() {
-        const { data, handleClose, mode, visible } = this.props;
-		const { disabledInput } = this.state;
+        const { data, handleClose, listBentukUsaha, mode, visible } = this.props;
+		const { disabledInput, jnsBentukUsaha } = this.state;
 
 		let page = null;
 
@@ -141,22 +163,41 @@ class FormAddCustomer extends Component {
             visible={visible}
             onCancel={handleClose}
             footer={null}      
-            style={{top: 25}}      
+            style={{top: 125}}      
             width="40%"
         >
             <Form
                 {...layout}
                 name="form--Customer"
-                initialValues={{remember: true}}
                 onFinish={this.handleOnFinish}
                 ref={this.formRef}
                 initialValues={{
                     remember: true,
-                    ["nama"]: mode==='edit'?data.nama:''
+                    ["nama"]: mode==='edit'?data.nama:'',
+                    ["alamat"]: mode==='edit'?data.alamat:'',
+                    ["telepone"]: mode==='edit'?data.telepone:'',
+                    ["email"]: mode==='edit'?data.email:'',
                 }}
             >
+                <Form.Item 
+                    label="Bentuk Usaha"
+                    nama="bentuk_usaha"
+                >
+                    <Select 
+                        onChange={this.handleChangeJenisBentukUsaha}
+                        disabled={disabledInput}
+                        value={jnsBentukUsaha}
+                        style={{ width: 120 }}
+                    >
+                    {
+                        listBentukUsaha !== null ? listBentukUsaha.data.map((row) => 
+                            <Select.Option value={row.id}>{row.nama}</Select.Option>
+                        ):null
+                    }	
+                    </Select>
+                </Form.Item>
                 <Form.Item
-	                label="Nama Customer"
+	                label="Nama"
                     name="nama"
                     rules={[{required: true, message: 'Nama Customer harus diisi'}]}
                 >
@@ -166,8 +207,57 @@ class FormAddCustomer extends Component {
                         onChange={this.handleChangeNilaiText}
                     />
                 </Form.Item>
+                <Form.Item
+	                label="Alamat"
+                    name="alamat"
+                >
+                    <Input 
+                        data-jenis="alamat"
+                        disabled={disabledInput}
+                        onChange={this.handleChangeNilaiText}
+                    />
+                </Form.Item>
+                <Form.Item
+	                label="Telepone"
+                    name="telepone"
+                >
+                    <Input 
+                        data-jenis="telepone"
+                        disabled={disabledInput}
+                        onChange={this.handleChangeNilaiText}
+                    />
+                </Form.Item>
+                <Form.Item
+	                label="Email"
+                    name="email"
+                >
+                    <Input 
+                        data-jenis="email"
+                        disabled={disabledInput}
+                        onChange={this.handleChangeNilaiText}
+                    />
+                </Form.Item>
+                <Form.Item {...tailLayout}>
+                    <Button 
+                        htmlType="button" 
+                        onClick={this.handleReset} 
+                        disabled={disabledInput}
+                        style={{marginRight: 8}}
+                    >
+                    Reset
+                    </Button>
+                    <Button 
+                        type="primary" 
+                        htmlType="submit" 
+                        disabled={disabledInput}
+                    >
+                    Simpan
+                    </Button>
+                </Form.Item>
             </Form>
-        </Modal>
+        </Modal>;
+
+	    return(page);
     }
 }
 

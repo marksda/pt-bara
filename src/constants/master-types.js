@@ -7,3 +7,7 @@ export const MENUS = "menus";
 export const PAGINATION_CUSTOMER = "pagination_customer";
 export const URUT_CUSTOMER = "urut_customer";
 export const USER_PROFILE = "user_profile";
+export const FILTER_BENTUK_USAHA = "filter_bentuk_usaha";
+export const LIST_BENTUK_USAHA = "list_bentuk_usaha";
+export const PAGINATION_BENTUK_USAHA = "pagination_bentuk_usaha";
+export const URUT_BENTUK_USAHA = "urut_bentuk_usaha";

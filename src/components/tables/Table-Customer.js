@@ -15,11 +15,17 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
+import _ from 'lodash';
 
-import { Input, Typography } from 'antd';
+import { Input, Skeleton, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import {
+    DeleteOutlined,
+    EditOutlined
+} from '@ant-design/icons';
+  
 
-import { getCustomer, setFilterCustomer, setPaginationCustomer, setUrutCustomer } from "../../actions/master-action";
+import { getBentukUsaha, getCustomer, setFilterCustomer, setPaginationCustomer, setUrutCustomer } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -221,6 +227,7 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
+        filterBentukUsaha: store.master.filter_bentuk_usaha,
         filterCustomer: store.master.filter_customer,
         headerAuthorization: store.credential.header_authorization,
         listCustomer: store.master.list_customer,
@@ -232,6 +239,7 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
+        getBentukUsaha: (url, headerAuthorization) => dispatch(getBentukUsaha(url, headerAuthorization)),
         getCustomer: (url, headerAuthorization) => dispatch(getCustomer(url, headerAuthorization)),
         setFilterCustomer: (value) => dispatch(setFilterCustomer(value)),
         setPaginationCustomer: (value) => dispatch(setPaginationCustomer(value)),
@@ -253,7 +261,18 @@ class TableCustomer extends React.Component {
     }
 
     componentDidMount() {
-    	const { filterCustomer, paginationCustomer, urutCustomer } = this.props;
+    	const { filterBentukUsaha, filterCustomer, paginationCustomer, urutCustomer } = this.props;
+        let tmpPagination = {
+            current: 1,
+            pageSize: 50,
+        };
+        let tmpUrut = {
+        	field: "m.nama",
+        	order: "asc"
+        };
+
+        this.loadBentukUsaha(filterBentukUsaha, tmpPagination, tmpUrut);
+              
         this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
     }
 
@@ -301,8 +320,9 @@ class TableCustomer extends React.Component {
     }
 
     handleBtnEdit = (e) => {
-        this.itemCustomer.id = Number(e.currentTarget.dataset.id);
-        this.itemCustomer.nama = e.currentTarget.dataset.nama;
+        const { listCustomer } = this.props;
+        this.itemCustomer = {..._.find(listCustomer.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
+        this.itemCustomer.nama = this.itemCustomer.nama.split(',')[0];
         this.setState({openFormAddCustomer: true, mode: 'edit'});
     }
 
@@ -371,6 +391,12 @@ class TableCustomer extends React.Component {
 
     handleToggleOpenProgressDialog = () => {
         this.setState({openProcessingDialog: !this.state.openProcessingDialog});
+    }
+
+    loadBentukUsaha = (filter, pagination, urut) => {
+        const { getBentukUsaha, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/bentuk_usaha?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getBentukUsaha(url, headerAuthorization);
     }
 
     loadCustomer = (filter, pagination, urut) => {
@@ -458,26 +484,20 @@ class TableCustomer extends React.Component {
 	                                    { row.email }
 	                                </TableCell>
 	                                <TableCell 
-                                        style={{width: 80}}
+                                        style={{width: 80, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
-                                        <i 
-                                            className="fas fa-pencil-alt fa-lg orange-text"
-                                            data-id={row.id}
-                                            data-nama={row.nama}
-                                            onClick={this.handleBtnEdit}
-                                            style={{marginRight: 8, cursor: 'pointer'}}
-                                        />
-                                        <i 
-                                            className="far fa-trash-alt fa-lg red-text"
-                                            data-id={row.id}
-                                            onClick={this.handleBtnDelete}
-                                            style={{cursor: 'pointer'}}
-                                        />
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.id} onClick={this.handleBtnEdit} />
+                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>
                     		);
-                    	}):null
+                    	}):
+                        <TableRow>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                        </TableRow>
                     }
                     </TableBody>
             	</Table>
