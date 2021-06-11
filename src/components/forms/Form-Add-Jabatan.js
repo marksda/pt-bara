@@ -49,9 +49,15 @@ class FormAddJabatan extends Component {
     }
 
     handleChangeNilaiText = (e) => {
+        const { mode } = this.props;
 		switch(e.currentTarget.dataset.jenis) {
             case 'id':
-				this.itemJabatan.id = e.currentTarget.value;
+                if(mode === "edit") {
+                    this.itemJabatan.idbaru = e.currentTarget.value;
+                }
+				else {
+                    this.itemJabatan.id = e.currentTarget.value;
+                }
 				break;
 			case 'nama':
 				this.itemJabatan.nama = e.currentTarget.value;
