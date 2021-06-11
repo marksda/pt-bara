@@ -3,6 +3,7 @@ import { Tabs  } from 'antd';
 
 import TableCustomer from '../tables/Table-Customer';
 import TableJabatan from '../tables/Table-Jabatan';
+import TablePegawai from '../tables/Table-Pegawai';
 
 
 const { TabPane } = Tabs;
@@ -23,7 +24,7 @@ class Master extends React.Component {
             </TabPane>
             <TabPane tab="Pegawai" key="3">
                 <div className="content-flex-center">
-                Content of Tab Pane 3
+                    <TablePegawai title="Data Pegawai"/>
                 </div>
             </TabPane>
             <TabPane tab="Pengemban jabatan" key="4">
