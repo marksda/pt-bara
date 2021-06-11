@@ -44,7 +44,7 @@ class KonfirmasiDialog extends Component {
             </DialogTitle>
             <DialogContent 
                 className="py-1" 
-                style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}
+                style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginBottom: 16}}
             >               
                 <Typography variant="body1">{this.props.message}</Typography>
             </DialogContent>
@@ -52,7 +52,7 @@ class KonfirmasiDialog extends Component {
                 <Button htmlType="button" size="medium" onClick={this.handleCancel} style={{width: 100}}>
                     Tidak
                 </Button>
-                <Button type="primary" htmlType="button" size="medium" onClick={this.handleOk} style={{width: 100}}>
+                <Button type="primary" htmlType="button" size="medium" onClick={this.handleOk} style={{width: 100, marginRight: 12}}>
                     Ya
                 </Button>
             </DialogActions>
