@@ -131,7 +131,18 @@ const EnhancedTableHead = (props) => {
                                         align={'left'}
                                         style={{width: 80}}
                                     >
-                                        {headCell.label}
+                                        <TableSortLabel
+                                            active={orderBy === headCell.id}
+                                            direction={orderBy === headCell.id ? order : 'desc'}
+                                            onClick={createSortHandler(headCell.id)}
+                                        >
+                                            {headCell.label}
+                                            {orderBy === headCell.id ? (
+                                                <span className={classes.visuallyHidden}>
+                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                                </span>
+                                            ) : null}
+                                        </TableSortLabel>
                                     </TableCell>;
                                     break;
                             case 2:
@@ -494,6 +505,24 @@ class TableCustomer extends React.Component {
                     		);
                     	}):
                         <TableRow>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
                             <TableCell>
                                 <Skeleton active />
                             </TableCell>

@@ -128,7 +128,18 @@ const EnhancedTableHead = (props) => {
                                         align={'left'}
                                         style={{width: 80}}
                                     >
-                                        {headCell.label}
+                                        <TableSortLabel
+                                            active={orderBy === headCell.id}
+                                            direction={orderBy === headCell.id ? order : 'desc'}
+                                            onClick={createSortHandler(headCell.id)}
+                                        >
+                                            {headCell.label}
+                                            {orderBy === headCell.id ? (
+                                                <span className={classes.visuallyHidden}>
+                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                                </span>
+                                            ) : null}
+                                        </TableSortLabel>
                                     </TableCell>;
                                     break;
                             case 2:
@@ -194,12 +205,12 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
-        filterJabatan: store.master.filter_Jabatan,
+        filterJabatan: store.master.filter_jabatan,
         headerAuthorization: store.credential.header_authorization,
-        listJabatan: store.master.list_Jabatan,
-        paginationJabatan: store.master.pagination_Jabatan,
+        listJabatan: store.master.list_jabatan,
+        paginationJabatan: store.master.pagination_jabatan,
         restfulServer: store.general.restful_domain,
-        urutJabatan: store.master.urut_Jabatan
+        urutJabatan: store.master.urut_jabatan
     };
 };
 
@@ -423,6 +434,15 @@ class TableJabatan extends React.Component {
                     		);
                     	}):
                         <TableRow>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
                             <TableCell>
                                 <Skeleton active />
                             </TableCell>
