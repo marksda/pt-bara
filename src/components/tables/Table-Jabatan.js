@@ -25,7 +25,7 @@ import {
 } from '@ant-design/icons';
   
 
-import { getBentukUsaha, getJabatan, setFilterJabatan, setPaginationJabatan, setUrutJabatan } from "../../actions/master-action";
+import { getJabatan, setFilterJabatan, setPaginationJabatan, setUrutJabatan } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -94,10 +94,7 @@ const EnhancedTableToolbar = (props) => {
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
     {id: 'm.id', numerik: false, label: 'Id'},
-    {id: 'm.nama', numerik: false, label: 'Nama'},  
-    {id: 'm.alamat', numerik: false, label: 'Alamat'},  
-    {id: 'm.telepone', numerik: false, label: 'Telepon'},  
-    {id: 'm.email', numerik: false, label: 'E-mail'},  
+    {id: 'm.nama', numerik: false, label: 'Nama'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -139,7 +136,6 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
-                                    style={{width: 350}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -153,35 +149,6 @@ const EnhancedTableHead = (props) => {
                                             </span>
                                         ) : null}
                                     </TableSortLabel>
-                                </TableCell>;
-                                break;
-                            case 3:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'left'}
-                                >
-                                    {headCell.label}
-                                </TableCell>;
-                                break;
-                            case 4:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'left'}
-                                    style={{width: 100}}
-                                >
-                                    {headCell.label}
-                                </TableCell>;
-                                break;
-                            case 5:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'left'}
-                                    style={{width: 100}}
-                                >
-                                    {headCell.label}
                                 </TableCell>;
                                 break;
                             default:
@@ -227,7 +194,6 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
-        filterBentukUsaha: store.master.filter_bentuk_usaha,
         filterJabatan: store.master.filter_Jabatan,
         headerAuthorization: store.credential.header_authorization,
         listJabatan: store.master.list_Jabatan,
@@ -239,7 +205,6 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
-        getBentukUsaha: (url, headerAuthorization) => dispatch(getBentukUsaha(url, headerAuthorization)),
         getJabatan: (url, headerAuthorization) => dispatch(getJabatan(url, headerAuthorization)),
         setFilterJabatan: (value) => dispatch(setFilterJabatan(value)),
         setPaginationJabatan: (value) => dispatch(setPaginationJabatan(value)),
@@ -261,18 +226,7 @@ class TableJabatan extends React.Component {
     }
 
     componentDidMount() {
-    	const { filterBentukUsaha, filterJabatan, paginationJabatan, urutJabatan } = this.props;
-        let tmpPagination = {
-            current: 1,
-            pageSize: 50,
-        };
-        let tmpUrut = {
-        	field: "m.nama",
-        	order: "asc"
-        };
-
-        this.loadBentukUsaha(filterBentukUsaha, tmpPagination, tmpUrut);
-              
+    	const { filterJabatan, paginationJabatan, urutJabatan } = this.props;
         this.loadJabatan(filterJabatan, paginationJabatan, urutJabatan);
     }
 
@@ -285,7 +239,7 @@ class TableJabatan extends React.Component {
          
         axios({
             method: 'delete',
-            url: `${restfulServer}/master/Jabatan`,
+            url: `${restfulServer}/master/jabatan`,
             headers: {...headerAuthorization},
             params: dataJabatan
         })
@@ -309,7 +263,6 @@ class TableJabatan extends React.Component {
             self.itemJabatan.id = null;
             self.itemJabatan.nama = null;
             self.setState({openProcessingDialog: false});
-            resetCredential();
         });
     }
 
@@ -393,15 +346,9 @@ class TableJabatan extends React.Component {
         this.setState({openProcessingDialog: !this.state.openProcessingDialog});
     }
 
-    loadBentukUsaha = (filter, pagination, urut) => {
-        const { getBentukUsaha, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/bentuk_usaha?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
-        getBentukUsaha(url, headerAuthorization);
-    }
-
     loadJabatan = (filter, pagination, urut) => {
         const { getJabatan, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/Jabatan?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        let url = `${restfulServer}/master/jabatan?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
         getJabatan(url, headerAuthorization);
     }
 
@@ -461,27 +408,9 @@ class TableJabatan extends React.Component {
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{minWidth: 350, verticalAlign: 'top'}}
-	                                >
-	                                    { row.nama }
-	                                </TableCell>
-                                    <TableCell 
-	                                    align={'left'}
                                         style={{verticalAlign: 'top'}}
 	                                >
-	                                    { row.alamat }
-	                                </TableCell>
-                                    <TableCell 
-	                                    align={'left'}
-                                        style={{minWidth: 100, verticalAlign: 'top'}}
-	                                >
-	                                    { row.telepone }
-	                                </TableCell>
-                                    <TableCell 
-	                                    align={'left'}
-                                        style={{minWidth: 100, verticalAlign: 'top'}}
-	                                >
-	                                    { row.email }
+	                                    { row.nama }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}
