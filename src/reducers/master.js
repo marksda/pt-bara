@@ -170,16 +170,68 @@ export default function master(state = initialState, action) {
                 ...state,
                 [URUT_BENTUK_USAHA]: {...tmpUrutBentukUsaha}
             };            
+        case FILTER_JABATAN_LOADED:
+            return {
+                ...state,
+                [FILTER_JABATAN]: action.payload
+            };
+        case FILTER_JABATAN_RESET:
+            let tmpFilterJabatan = {
+                field: null,
+                search: null
+            }
+            return {
+                ...state,
+                [FILTER_JABATAN]: {...tmpFilterJabatan}
+            };
+        case LIST_JABATAN_LOADED:
+            return {
+                ...state,
+                [LIST_JABATAN]: action.payload
+            };  
+        case LIST_JABATAN_RESET:
+            return {
+                ...state,
+                [LIST_JABATAN]: null
+            };      
+        case PAGINATION_JABATAN_LOADED:
+            return {
+                ...state,
+                [PAGINATION_JABATAN]: action.payload
+            };
+        case PAGINATION_JABATAN_RESET:
+            let tmpPaginationJabatan = {
+                current: 1,
+                pageSize: 10,
+            }
+            return {
+                ...state,
+                [PAGINATION_JABATAN]: {...tmpPaginationJabatan}
+            };
+        case URUT_JABATAN_LOADED:
+            return {
+                ...state,
+                [URUT_JABATAN]: action.payload
+            };
+        case URUT_JABATAN_RESET:
+            let tmpUrutJabatan = {
+                field: "m.nama",
+                order: "asc"
+            }
+            return {
+                ...state,
+                [URUT_JABATAN]: {...tmpUrutJabatan}
+            };            
         default:
-            let menuLoaded = loadLocalMenuFromStorage();
-            if(menuLoaded.length > 0){
-                return {
-                    ...state,
-                    [MENUS]: [...menuLoaded]
-                }
+        let menuLoaded = loadLocalMenuFromStorage();
+        if(menuLoaded.length > 0){
+            return {
+                ...state,
+                [MENUS]: [...menuLoaded]
             }
-            else {
-                return state;                    
-            }
+        }
+        else {
+            return state;                    
+        }
     }
 }

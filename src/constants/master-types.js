@@ -11,3 +11,7 @@ export const FILTER_BENTUK_USAHA = "filter_bentuk_usaha";
 export const LIST_BENTUK_USAHA = "list_bentuk_usaha";
 export const PAGINATION_BENTUK_USAHA = "pagination_bentuk_usaha";
 export const URUT_BENTUK_USAHA = "urut_bentuk_usaha";
+export const FILTER_JABATAN = "filter_jabatan";
+export const LIST_JABATAN = "list_jabatan";
+export const PAGINATION_JABATAN = "pagination_jabatan";
+export const URUT_JABATAN = "urut_jabatan";
