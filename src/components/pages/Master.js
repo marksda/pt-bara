@@ -2,25 +2,13 @@ import React from 'react';
 import { Tabs  } from 'antd';
 
 import TableCustomer from '../tables/Table-Customer';
+import TableJabatan from '../tables/Table-Jabatan';
 
 
 const { TabPane } = Tabs;
 
 class Master extends React.Component {
-    // constructor(props) {
-	// 	super(props);
-
-    //     // this.state = {
-    //     //     itemTabSelected: 'Proyek'
-    //     // }
-    // }
-
-    // handleChangeItemTab = (e) => {
-    //     this.setState({ itemTabSelected: e.target.value });
-    // }
-
     render() {
-        // const { itemTabSelected } = this.state;
         let page =
         <Tabs defaultActiveKey="1" centered size="large">            
             <TabPane tab="Customer" key="1">
@@ -30,7 +18,7 @@ class Master extends React.Component {
             </TabPane>            
             <TabPane tab="Jabatan" key="2">
                 <div className="content-flex-center">
-                Content of Tab Pane 2
+                    <TableJabatan title="Data Jabatan"/>
                 </div>
             </TabPane>
             <TabPane tab="Pegawai" key="3">
