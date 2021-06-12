@@ -51,19 +51,32 @@ class FormAddPegawai extends Component {
     handleChangeNilaiText = (e) => {
         const { mode } = this.props;
 		switch(e.currentTarget.dataset.jenis) {
-            case 'id':
+            case 'nip':
                 if(mode === "edit") {
-                    this.itemPegawai.idbaru = e.currentTarget.value;
+                    this.itemPegawai.nipbaru = e.currentTarget.value;
                 }
 				else {
-                    this.itemPegawai.id = e.currentTarget.value;
+                    this.itemPegawai.nip = e.currentTarget.value;
                 }
 				break;
 			case 'nama':
 				this.itemPegawai.nama = e.currentTarget.value;
 				break;
+            case 'alamat':
+                this.itemPegawai.nama = e.currentTarget.value;
+                break;
+            case 'no_handphone':
+                this.itemPegawai.nama = e.currentTarget.value;
+                break;
+            case 'email':
+                this.itemPegawai.nama = e.currentTarget.value;
+                break;
 			default:
 		}
+	}
+
+    handleChangeStatus = (value) => {
+		this.itemCustomer.status = Number(value);			
 	}
 
     handleOnFinish = (value) => {
@@ -164,17 +177,23 @@ class FormAddPegawai extends Component {
                 ref={this.formRef}
                 initialValues={{
                     remember: true,
-                    ["id"]: mode==='edit'?data.id:'',
-                    ["nama"]: mode==='edit'?data.nama:''
+                    ["nip"]: mode==='edit'?data.nip:'',
+                    ["nama"]: mode==='edit'?data.nama:'',
+                    ["alamat"]: mode==='edit'?data.alamat:'',
+                    ["no_handphone"]: mode==='edit'?data.no_handphone:'',
+                    ["email"]: mode==='edit'?data.email:'',
+                    ["url_photo"]: mode==='edit'?data.url_photo:'',
+                    ["status"]: mode==='edit'?data.status:''
                 }}
             >                
                 <Form.Item
-	                label="Id"
-                    name="id"
-                    rules={[{required: true, message: 'Id pegawai harus diisi'}]}
+	                label="Nip"
+                    name="nip"
+                    rules={[{required: true, message: 'Nip pegawai harus diisi'}]}
+                    style={{ width: 120 }}
                 >
                     <Input 
-                        data-jenis="id"
+                        data-jenis="nip"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
                     />
@@ -189,6 +208,52 @@ class FormAddPegawai extends Component {
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
                     />
+                </Form.Item>
+                <Form.Item
+	                label="Alamat"
+                    name="alamat"
+                    rules={[{required: true, message: 'Alamat pegawai harus diisi'}]}
+                >
+                    <Input 
+                        data-jenis="alamat"
+                        disabled={disabledInput}
+                        onChange={this.handleChangeNilaiText}
+                    />
+                </Form.Item>
+                <Form.Item
+	                label="Telepone"
+                    name="no_handphone"
+                    rules={[{required: true, message: 'Alamat pegawai harus diisi'}]}
+                >
+                    <Input 
+                        data-jenis="no_handphone"
+                        disabled={disabledInput}
+                        onChange={this.handleChangeNilaiText}
+                    />
+                </Form.Item>
+                <Form.Item
+	                label="E-mail"
+                    name="email"
+                    rules={[{required: true, message: 'E-mail pegawai harus diisi'}]}
+                >
+                    <Input 
+                        data-jenis="email"
+                        disabled={disabledInput}
+                        onChange={this.handleChangeNilaiText}
+                    />
+                </Form.Item>
+                <Form.Item 
+                    label="Status"
+                    name="status"
+                >
+                    <Select 
+                        onChange={this.handleChangeStatus}
+                        disabled={disabledInput}
+                        style={{ width: 120 }}
+                    >                    
+                        <Select.Option  value={true}>Aktif</Select.Option>
+                        <Select.Option  value={false}>Non Aktif</Select.Option>
+                    </Select>
                 </Form.Item>
                 <Form.Item {...tailLayout}>
                     <Button 

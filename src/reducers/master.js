@@ -40,7 +40,7 @@ const initialState = {
         pageSize: 10,
     },
     urut_jabatan: {
-        field: "m.nama",
+        field: "m.id",
         order: "asc"
     },
     list_pegawai: null,
