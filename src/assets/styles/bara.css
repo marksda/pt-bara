@@ -20,3 +20,13 @@
 .table-container-cel-pengajuan-baru>.item-label {
     margin-bottom: 8px;
 }
+.container-preview-img-pegawai {
+    display: none;
+    margin-bottom: 16px;
+}
+.container-preview-img-pegawai:hover .preview-img-pegawai {
+    opacity: 0.3;
+}
+.container-preview-img-pegawai:hover .preview-img-pegawai-middle {
+    opacity: 1;
+}
