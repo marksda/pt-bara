@@ -93,8 +93,13 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.id', numerik: false, label: 'Id'},
+    {id: 'm.nip', numerik: false, label: 'Nip'},
     {id: 'm.nama', numerik: false, label: 'Nama'},
+    {id: 'm.alamat', numerik: false, label: 'Alamat'},
+    {id: 'm.no_handphone', numerik: false, label: 'Telepone'},
+    {id: 'm.email', numerik: false, label: 'E-mail'},
+    {id: 'm.url_photo', numerik: false, label: 'Foto'},
+    {id: 'm.status', numerik: false, label: 'status'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -122,31 +127,32 @@ const EnhancedTableHead = (props) => {
                                 </TableCell>;
                                 break;
                             case 1:
-                                    page = 
-                                    <TableCell
-                                        key={headCell.id}
-                                        align={'left'}
-                                        style={{width: 80}}
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 100}}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === headCell.id}
+                                        direction={orderBy === headCell.id ? order : 'desc'}
+                                        onClick={createSortHandler(headCell.id)}
                                     >
-                                        <TableSortLabel
-                                            active={orderBy === headCell.id}
-                                            direction={orderBy === headCell.id ? order : 'desc'}
-                                            onClick={createSortHandler(headCell.id)}
-                                        >
-                                            {headCell.label}
-                                            {orderBy === headCell.id ? (
-                                                <span className={classes.visuallyHidden}>
-                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                                </span>
-                                            ) : null}
-                                        </TableSortLabel>
-                                    </TableCell>;
-                                    break;
+                                        {headCell.label}
+                                        {orderBy === headCell.id ? (
+                                            <span className={classes.visuallyHidden}>
+                                            {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </span>
+                                        ) : null}
+                                    </TableSortLabel>
+                                </TableCell>;
+                                break;
                             case 2:
                                 page = 
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
+                                    style={{width: 250}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -160,6 +166,55 @@ const EnhancedTableHead = (props) => {
                                             </span>
                                         ) : null}
                                     </TableSortLabel>
+                                </TableCell>;
+                                break;
+                            case 3:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                >
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 4:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 100}}
+                                >
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 5:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 100}}
+                                >
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 6:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 100}}
+                                >
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 7:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 100}}
+                                >
+                                    {headCell.label}
                                 </TableCell>;
                                 break;
                             default:
@@ -243,22 +298,20 @@ class TablePegawai extends React.Component {
 
     deletePegawai = (dataPegawai) => {
         const { 
-            filterPegawai, headerAuthorization, paginationPegawai, resetCredential, 
-            restfulServer, urutPegawai         
+            filterPegawai, headerAuthorization, paginationPegawai, restfulServer, urutPegawai         
         } = this.props;
         let self = this;    
          
         axios({
             method: 'delete',
-            url: `${restfulServer}/master/Pegawai`,
+            url: `${restfulServer}/master/pegawai`,
             headers: {...headerAuthorization},
             params: dataPegawai
         })
         .then((r) => {  
             self.setState({openProcessingDialog: false});  
             if(r.data.status === 200) {
-                self.itemPegawai.id = null;
-                self.itemPegawai.nama = null;
+                self.itemPegawai = {};
                 self.loadPegawai(
                     filterPegawai,
                     paginationPegawai,
@@ -266,26 +319,24 @@ class TablePegawai extends React.Component {
                 );
             }
             else {
-                self.itemPegawai.id = null;
-                self.itemPegawai.nama = null;
+                self.itemPegawai = {};
             }
         })
         .catch((r) => { 
-            self.itemPegawai.id = null;
-            self.itemPegawai.nama = null;
+            self.itemPegawai = {};
             self.setState({openProcessingDialog: false});
         });
     }
 
     handleBtnDelete = (e) => {
         const { listPegawai } = this.props;
-        this.itemPegawai = {..._.find(listPegawai.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
+        this.itemPegawai = {..._.find(listPegawai.data, function(o) { return o.nip === e.currentTarget.dataset.nip; })};
         this.setState({openConfirmasiHapusPegawai: true});
     }
 
     handleBtnEdit = (e) => {
         const { listPegawai } = this.props;
-        this.itemPegawai = {..._.find(listPegawai.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
+        this.itemPegawai = {..._.find(listPegawai.data, function(o) { return o.nip === e.currentTarget.dataset.nip; })};
         this.itemPegawai.nama = this.itemPegawai.nama.split(',')[0];
         this.setState({openFormAddPegawai: true, mode: 'edit'});
     }
@@ -359,7 +410,7 @@ class TablePegawai extends React.Component {
 
     loadPegawai = (filter, pagination, urut) => {
         const { getPegawai, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/Pegawai?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        let url = `${restfulServer}/master/pegawai?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
         getPegawai(url, headerAuthorization);
     }
 
@@ -407,33 +458,78 @@ class TablePegawai extends React.Component {
 	                            >
 	                            	<TableCell 
 	                                    align={'right'}
-	                                    style={{minWidth: 40, verticalAlign: 'top'}}
+	                                    style={{width: 40, verticalAlign: 'top'}}
 	                                >
 	                                    {(paginationPegawai.current-1)*paginationPegawai.pageSize+index+1}.
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{minWidth: 80, verticalAlign: 'top'}}
+                                        style={{with: 100, verticalAlign: 'top'}}
 	                                >
-	                                    { row.id }
+	                                    { row.nip }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{verticalAlign: 'top'}}
+                                        style={{width: 250, verticalAlign: 'top'}}
 	                                >
 	                                    { row.nama }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{verticalAlign: 'top'}}
+	                                >
+	                                    { row.alamat }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 100, verticalAlign: 'top'}}
+	                                >
+	                                    { row.no_handphone }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 100, verticalAlign: 'top'}}
+	                                >
+	                                    { row.email }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 100, verticalAlign: 'top'}}
+	                                >
+	                                    { row.url_photo }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 100, verticalAlign: 'top'}}
+	                                >
+	                                    { row.status }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.id} onClick={this.handleBtnEdit} />
-                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.nip} onClick={this.handleBtnEdit} />
+                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.nip} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>
                     		);
                     	}):
                         <TableRow>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
+                            <TableCell>
+                                <Skeleton active />
+                            </TableCell>
                             <TableCell>
                                 <Skeleton active />
                             </TableCell>

@@ -243,8 +243,7 @@ class TableJabatan extends React.Component {
 
     deleteJabatan = (dataJabatan) => {
         const { 
-            filterJabatan, headerAuthorization, paginationJabatan, resetCredential, 
-            restfulServer, urutJabatan         
+            filterJabatan, headerAuthorization, paginationJabatan, restfulServer, urutJabatan         
         } = this.props;
         let self = this;    
          
