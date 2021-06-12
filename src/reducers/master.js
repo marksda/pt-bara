@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
-import { FILTER_CUSTOMER_LOADED, FILTER_CUSTOMER_RESET, LIST_CUSTOMER_LOADED, LIST_CUSTOMER_RESET, MENU_LOADED, PAGINATION_CUSTOMER_LOADED, PAGINATION_CUSTOMER_RESET, URUT_CUSTOMER_LOADED, URUT_CUSTOMER_RESET, FILTER_BENTUK_USAHA_LOADED, FILTER_BENTUK_USAHA_RESET, LIST_BENTUK_USAHA_LOADED, LIST_BENTUK_USAHA_RESET, PAGINATION_BENTUK_USAHA_LOADED, PAGINATION_BENTUK_USAHA_RESET, URUT_BENTUK_USAHA_LOADED, URUT_BENTUK_USAHA_RESET, FILTER_JABATAN_LOADED, FILTER_JABATAN_RESET, LIST_JABATAN_LOADED, LIST_JABATAN_RESET, PAGINATION_JABATAN_LOADED, PAGINATION_JABATAN_RESET, URUT_JABATAN_LOADED, URUT_JABATAN_RESET } from "../constants/action-types";
-import { FILTER_CUSTOMER, LIST_CUSTOMER, MENUS, PAGINATION_CUSTOMER, URUT_CUSTOMER, FILTER_BENTUK_USAHA, LIST_BENTUK_USAHA, PAGINATION_BENTUK_USAHA, URUT_BENTUK_USAHA, FILTER_JABATAN, LIST_JABATAN, PAGINATION_JABATAN, URUT_JABATAN } from "../constants/master-types";
+import { FILTER_CUSTOMER_LOADED, FILTER_CUSTOMER_RESET, LIST_CUSTOMER_LOADED, LIST_CUSTOMER_RESET, MENU_LOADED, PAGINATION_CUSTOMER_LOADED, PAGINATION_CUSTOMER_RESET, URUT_CUSTOMER_LOADED, URUT_CUSTOMER_RESET, FILTER_BENTUK_USAHA_LOADED, FILTER_BENTUK_USAHA_RESET, LIST_BENTUK_USAHA_LOADED, LIST_BENTUK_USAHA_RESET, PAGINATION_BENTUK_USAHA_LOADED, PAGINATION_BENTUK_USAHA_RESET, URUT_BENTUK_USAHA_LOADED, URUT_BENTUK_USAHA_RESET, FILTER_JABATAN_LOADED, FILTER_JABATAN_RESET, LIST_JABATAN_LOADED, LIST_JABATAN_RESET, PAGINATION_JABATAN_LOADED, PAGINATION_JABATAN_RESET, URUT_JABATAN_LOADED, URUT_JABATAN_RESET, FILTER_JABATAN_LOADED, FILTER_PEGAWAI_RESET, LIST_PEGAWAI_LOADED, LIST_PEGAWAI_RESET, PAGINATION_PEGAWAI_LOADED, PAGINATION_PEGAWAI_RESET, URUT_PEGAWAI_LOADED, URUT_PEGAWAI_RESET } from "../constants/action-types";
+import { FILTER_CUSTOMER, LIST_CUSTOMER, MENUS, PAGINATION_CUSTOMER, URUT_CUSTOMER, FILTER_BENTUK_USAHA, LIST_BENTUK_USAHA, PAGINATION_BENTUK_USAHA, URUT_BENTUK_USAHA, FILTER_JABATAN, LIST_JABATAN, PAGINATION_JABATAN, URUT_JABATAN, FILTER_PEGAWAI, LIST_PEGAWAI, PAGINATION_PEGAWAI, URUT_PEGAWAI } from "../constants/master-types";
 
 const initialState = {
     menus: [],
@@ -40,6 +40,19 @@ const initialState = {
         pageSize: 10,
     },
     urut_jabatan: {
+        field: "m.nama",
+        order: "asc"
+    },
+    list_pegawai: null,
+    filter_pegawai: {
+        field: null,
+        search: null
+    },
+    pagination_pegawai: {
+        current: 1,
+        pageSize: 10,
+    },
+    urut_pegawai: {
         field: "m.nama",
         order: "asc"
     },
@@ -222,6 +235,58 @@ export default function master(state = initialState, action) {
                 ...state,
                 [URUT_JABATAN]: {...tmpUrutJabatan}
             };            
+        case FILTER_PEGAWAI_LOADED:
+            return {
+                ...state,
+                [FILTER_PEGAWAI]: action.payload
+            };
+        case FILTER_PEGAWAI_RESET:
+            let tmpFilterPegawai = {
+                field: null,
+                search: null
+            }
+            return {
+                ...state,
+                [FILTER_PEGAWAI]: {...tmpFilterPegawai}
+            };
+        case LIST_PEGAWAI_LOADED:
+            return {
+                ...state,
+                [LIST_PEGAWAI]: action.payload
+            };  
+        case LIST_PEGAWAI_RESET:
+            return {
+                ...state,
+                [LIST_PEGAWAI]: null
+            };      
+        case PAGINATION_PEGAWAI_LOADED:
+            return {
+                ...state,
+                [PAGINATION_PEGAWAI]: action.payload
+            };
+        case PAGINATION_PEGAWAI_RESET:
+            let tmpPaginationPEGAWAI = {
+                current: 1,
+                pageSize: 10,
+            }
+            return {
+                ...state,
+                [PAGINATION_PEGAWAI]: {...tmpPaginationPEGAWAI}
+            };
+        case URUT_PEGAWAI_LOADED:
+            return {
+                ...state,
+                [URUT_PEGAWAI]: action.payload
+            };
+        case URUT_PEGAWAI_RESET:
+            let tmpUrutPegawai = {
+                field: "m.nama",
+                order: "asc"
+            }
+            return {
+                ...state,
+                [URUT_PEGAWAI]: {...tmpUrutPegawai}
+            };    
         default:
         let menuLoaded = loadLocalMenuFromStorage();
         if(menuLoaded.length > 0){

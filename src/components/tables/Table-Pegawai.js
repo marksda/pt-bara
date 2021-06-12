@@ -205,12 +205,12 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
-        filterPegawai: store.master.filter_Pegawai,
+        filterPegawai: store.master.filter_pegawai,
         headerAuthorization: store.credential.header_authorization,
-        listPegawai: store.master.list_Pegawai,
-        paginationPegawai: store.master.pagination_Pegawai,
+        listPegawai: store.master.list_pegawai,
+        paginationPegawai: store.master.pagination_pegawai,
         restfulServer: store.general.restful_domain,
-        urutPegawai: store.master.urut_Pegawai
+        urutPegawai: store.master.urut_pegawai
     };
 };
 

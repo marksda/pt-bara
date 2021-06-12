@@ -15,3 +15,7 @@ export const FILTER_JABATAN = "filter_jabatan";
 export const LIST_JABATAN = "list_jabatan";
 export const PAGINATION_JABATAN = "pagination_jabatan";
 export const URUT_JABATAN = "urut_jabatan";
+export const FILTER_PEGAWAI = "filter_pegawai";
+export const LIST_PEGAWAI = "list_pegawai";
+export const PAGINATION_PEGAWAI = "pagination_pegawai";
+export const URUT_PEGAWAI = "urut_pegawai";
