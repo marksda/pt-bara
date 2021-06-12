@@ -67,20 +67,18 @@ class FormAddPegawai extends Component {
 				else {
 					let elt = document.querySelectorAll("[data-id='foto_pegawai']");
 					elt[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].style.display = "none";
-					let imgPegawaiPreview = elt[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1];
-					let lebar = 0;
-					let tinggi = 0;
+					let imgPegawaiPreview = elt[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1]; //className="container-preview-img-pegawai"
 					if(this.width>=100) {
-						lebar = this.width/10;
-						tinggi = this.height/10;
+                        this.width = this.width/10;
+						this.height = this.height/10;
 					}
-					else {
-						lebar = 218;
-						tinggi = 327;
-					}					
-					imgPegawaiPreview.style.width = lebar.toString()+'px';
-					imgPegawaiPreview.style.height = tinggi.toString()+'px';
+
+                    // if(this.height > 100) {
+                    //     this.height = 100;
+                    // }
 					imgPegawaiPreview.style.display = "block";
+                    // imgPegawaiPreview.childNodes[1].style.marginTop = (this.height/2*-1-15).toString()+'px';
+                    imgPegawaiPreview.childNodes[1].style.marginLeft = (this.width/2-8).toString()+'px';
 				}
 			};
 	    };
@@ -345,10 +343,10 @@ class FormAddPegawai extends Component {
                     >
                         {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
                     </Upload>
-                    <div className="container-preview-img-pegawai">
-                        <img id="img-preview-pegawai" alt="foto" className="preview-img-pegawai"/>
+                    <div className="container-preview-img-pegawai" onClick={this.handleBtnDeleteImgPegawai}>
+                        <img id="img-preview-pegawai" alt="foto" className="preview-img-pegawai" />
                         <div className="preview-img-pegawai-middle">
-                            <DeleteOutlined style={{ fontSize: '18px' }} onClick={this.handleBtnDeleteImgPegawai}/>                              
+                            <DeleteOutlined style={{ fontSize: '18px' }} />                              
                         </div>
                     </div>
                 </Form.Item>

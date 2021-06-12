@@ -23,10 +23,14 @@
 .container-preview-img-pegawai {
     display: none;
     margin-bottom: 16px;
+    cursor: pointer;
 }
 .container-preview-img-pegawai:hover .preview-img-pegawai {
     opacity: 0.3;
 }
 .container-preview-img-pegawai:hover .preview-img-pegawai-middle {
     opacity: 1;
+}
+.container-preview-img-pegawai .preview-img-pegawai-middle {
+    opacity: 0;
 }
