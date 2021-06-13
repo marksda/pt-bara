@@ -202,35 +202,35 @@ class FormAddPegawai extends Component {
 	}    
 
     updatePegawai = () => {
-        console.log(this.itemPegawai);
-        // const { filterPegawai, headerAuthorization, paginationPegawai, restfulServer, urutPegawai, handleClose } = this.props;
+        // console.log(this.itemPegawai);
+        const { filterPegawai, headerAuthorization, paginationPegawai, restfulServer, urutPegawai, handleClose } = this.props;
 
-        // let self = this;    
+        let self = this;    
                 
-        // axios({
-        //     method: 'post',
-        //     url: `${restfulServer}/master/pegawai`,
-        //     headers: {...headerAuthorization},
-        //     data: this.formData
-        // })
-        // .then((r) => {         
-        //     if(r.data.status === 200) {
-        //         self.formData = null;
-        //         self.itemPegawai = {};
-        //         self.loadPegawai(
-        //             filterPegawai,
-        //             paginationPegawai,
-        //             urutPegawai
-        //         );
-        //     }
-        //     self.setState({disabledInput: false});
-        //     handleClose();
-        // })
-        // .catch((r) => {         
-        //     self.formData = null;
-        //     self.itemPegawai = {};
-        //     self.setState({disabledInput: false});
-        // });        
+        axios({
+            method: 'post',
+            url: `${restfulServer}/master/pegawai`,
+            headers: {...headerAuthorization},
+            data: this.formData
+        })
+        .then((r) => {         
+            if(r.data.status === 200) {
+                self.formData = null;
+                self.itemPegawai = {};
+                self.loadPegawai(
+                    filterPegawai,
+                    paginationPegawai,
+                    urutPegawai
+                );
+            }
+            self.setState({disabledInput: false});
+            handleClose();
+        })
+        .catch((r) => {         
+            self.formData = null;
+            self.itemPegawai = {};
+            self.setState({disabledInput: false});
+        });        
     }
 
     render() {
