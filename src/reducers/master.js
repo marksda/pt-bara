@@ -53,7 +53,7 @@ const initialState = {
         pageSize: 10,
     },
     urut_pegawai: {
-        field: "m.nama",
+        field: "m.nip",
         order: "asc"
     },
 }

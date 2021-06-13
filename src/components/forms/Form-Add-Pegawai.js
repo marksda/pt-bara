@@ -54,11 +54,11 @@ class FormAddPegawai extends Component {
         }
     }
 
-    beforeUpload = (file) => {
+    beforeUpload = (file) => {       
 		let oFReader = new FileReader();
 		oFReader.readAsDataURL(file);
 		let img = document.getElementById("img-preview-pegawai");
-		oFReader.onload = function(oFREvent) {
+		oFReader.onload = function(oFREvent) {   
 	    	img.src = oFREvent.target.result;
 	    	img.onload = function () {
 				if(this.width >= this.height) {
@@ -72,12 +72,8 @@ class FormAddPegawai extends Component {
                         this.width = this.width/10;
 						this.height = this.height/10;
 					}
-
-                    // if(this.height > 100) {
-                    //     this.height = 100;
-                    // }
+                    imgPegawaiPreview.style.width = this.width.toString() + 'px';
 					imgPegawaiPreview.style.display = "block";
-                    // imgPegawaiPreview.childNodes[1].style.marginTop = (this.height/2*-1-15).toString()+'px';
                     imgPegawaiPreview.childNodes[1].style.marginLeft = (this.width/2-8).toString()+'px';
 				}
 			};
@@ -113,13 +109,13 @@ class FormAddPegawai extends Component {
 				this.itemPegawai.nama = e.currentTarget.value;
 				break;
             case 'alamat':
-                this.itemPegawai.nama = e.currentTarget.value;
+                this.itemPegawai.alamat = e.currentTarget.value;
                 break;
             case 'no_handphone':
-                this.itemPegawai.nama = e.currentTarget.value;
+                this.itemPegawai.no_handphone = e.currentTarget.value;
                 break;
             case 'email':
-                this.itemPegawai.nama = e.currentTarget.value;
+                this.itemPegawai.email = e.currentTarget.value;
                 break;
 			default:
 		}
@@ -137,9 +133,10 @@ class FormAddPegawai extends Component {
 	    }
 
         this.formData.append('nama', this.itemPegawai.nama);
-        this.formData.append('no_handphone', this.itemPegawai.no_handphone);
-        this.formData.append('alamat', this.itemPegawai.alamat);
-        this.formData.append('email', this.itemPegawai.email);
+        this.formData.append('no_handphone', this.itemPegawai.no_handphone !== undefined ? this.itemPegawai.no_handphone:'-');
+        this.formData.append('alamat', this.itemPegawai.alamat !== undefined ? this.itemPegawai.alamat:'-');
+        this.formData.append('email', this.itemPegawai.email !== undefined ? this.itemPegawai.email:'-');
+        this.formData.append('status', this.itemPegawai.status !== undefined ? this.itemPegawai.status:false);
 
 		if(mode === 'edit') {
             this.formData.append('niplama', this.itemPegawai.nip);
@@ -163,35 +160,34 @@ class FormAddPegawai extends Component {
     }
 
     savePegawai = () => {
-        console.log(this.formData);
-		// const { 
-		// 	filterPegawai, headerAuthorization, paginationPegawai, restfulServer, urutPegawai, handleClose, handleToggleOpenProgressDialog
-		// } = this.props;
-	    // let self = this;
+		const { 
+			filterPegawai, headerAuthorization, paginationPegawai, restfulServer, urutPegawai, handleClose, handleToggleOpenProgressDialog
+		} = this.props;
+	    let self = this;
         
-	    // handleToggleOpenProgressDialog();
+	    handleToggleOpenProgressDialog();
 
-	    // axios({
-        //     method: 'put',
-        //     url: `${restfulServer}/master/pegawai`,
-        //     headers: {...headerAuthorization},
-        //     data: this.formData
-        // })
-	    // .then((r) => {  
-	    // 	if(r.data.status === 200) {        
-        //         self.formData = null;
-        //         self.itemPegawai = {};
-		// 		self.loadPegawai(filterPegawai, paginationPegawai, urutPegawai);
-	    // 	} 
-	    // 	self.handleReset();
-        //     self.setState({disabledInput: false});
-        //     handleToggleOpenProgressDialog();
-	    // })
-	    // .catch((r) => {
-        //     self.formData = null;
-        //     self.itemPegawai = {};
-	    // 	self.setState({disabledInput: true});
-	    // });
+	    axios({
+            method: 'put',
+            url: `${restfulServer}/master/pegawai`,
+            headers: {...headerAuthorization},
+            data: this.formData
+        })
+	    .then((r) => {  
+	    	if(r.data.status === 200) {        
+                self.formData = null;
+                self.itemPegawai = {};
+				self.loadPegawai(filterPegawai, paginationPegawai, urutPegawai);
+	    	} 
+	    	self.handleReset();
+            self.setState({disabledInput: false});
+            handleToggleOpenProgressDialog();
+	    })
+	    .catch((r) => {
+            self.formData = null;
+            self.itemPegawai = {};
+	    	self.setState({disabledInput: true});
+	    });
 	}    
 
     updatePegawai = () => {
@@ -243,7 +239,7 @@ class FormAddPegawai extends Component {
             visible={visible}
             onCancel={handleClose}
             footer={null}      
-            style={{top: 125}}      
+            style={{top: 84}}      
             width="30%"
         >
             <Form
@@ -317,7 +313,6 @@ class FormAddPegawai extends Component {
                 </Form.Item>
                 <Form.Item 
                     label="Status"
-                    name="status"
                 >
                     <Select 
                         onChange={this.handleChangeStatus}

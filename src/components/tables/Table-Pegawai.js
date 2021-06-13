@@ -454,7 +454,7 @@ class TablePegawai extends React.Component {
                     			<TableRow 
 	                                hover
 	                                tabIndex={-1}
-	                                key={row.id}      
+	                                key={row.nip}      
 	                            >
 	                            	<TableCell 
 	                                    align={'right'}
@@ -502,7 +502,7 @@ class TablePegawai extends React.Component {
 	                                    align={'left'}
                                         style={{width: 100, verticalAlign: 'top'}}
 	                                >
-	                                    { row.status }
+	                                    { row.status === true?'Aktif':'Non Aktif' }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}
