@@ -337,7 +337,6 @@ class TablePegawai extends React.Component {
     handleBtnEdit = (e) => {
         const { listPegawai } = this.props;
         this.itemPegawai = {..._.find(listPegawai.data, function(o) { return o.nip === e.currentTarget.dataset.nip; })};
-        this.itemPegawai.nama = this.itemPegawai.nama.split(',')[0];
         this.setState({openFormAddPegawai: true, mode: 'edit'});
     }
 
@@ -508,8 +507,8 @@ class TablePegawai extends React.Component {
                                         style={{width: 80, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.nip} onClick={this.handleBtnEdit} />
-                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.nip} onClick={this.handleBtnDelete}/>
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-nip={row.nip} onClick={this.handleBtnEdit} />
+                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-nip={row.nip} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>
                     		);

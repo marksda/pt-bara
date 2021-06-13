@@ -231,6 +231,8 @@ class FormAddPegawai extends Component {
             </div>
         );
 
+        console.log(data);
+
 		let page = null;
 
         page =
@@ -313,6 +315,7 @@ class FormAddPegawai extends Component {
                 </Form.Item>
                 <Form.Item 
                     label="Status"
+                    name="status"
                 >
                     <Select 
                         onChange={this.handleChangeStatus}
