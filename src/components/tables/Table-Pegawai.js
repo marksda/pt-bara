@@ -414,7 +414,7 @@ class TablePegawai extends React.Component {
     }
 
     render() {
-        const { classes, listPegawai, paginationPegawai, title, urutPegawai } = this.props;
+        const { classes, listPegawai, paginationPegawai, restfulServer, title, urutPegawai } = this.props;
 		const { openConfirmasiHapusPegawai, openFormAddPegawai, openProcessingDialog, mode } = this.state;
 
         let pageAdd = null;
@@ -495,7 +495,7 @@ class TablePegawai extends React.Component {
 	                                    align={'left'}
                                         style={{width: 100, verticalAlign: 'top'}}
 	                                >
-	                                    { row.url_photo }
+	                                    { row.url_photo !== null?<img style={{width:85, height:100}} src={`${restfulServer}/master/foto/pegawai/${row.url_photo}`} />: '-'}
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}

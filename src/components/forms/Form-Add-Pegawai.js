@@ -47,10 +47,21 @@ class FormAddPegawai extends Component {
 	}
 
     componentDidMount() {
-        const { data, mode } = this.props;
+        const { data, mode, restfulServer } = this.props;
                
         if(mode === 'edit') {
             this.itemPegawai = {...data};
+            if(this.itemPegawai.url_photo !== null) {
+                let elt = document.querySelectorAll("[data-id='foto_pegawai']");
+			    elt[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].style.display = "none";
+                let imgPegawaiPreview = elt[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1];
+                let img = document.getElementById("img-preview-pegawai");
+                img.src = `${restfulServer}/master/foto/pegawai/${this.itemPegawai.url_photo}`;
+                img.style.width = '85px';
+                imgPegawaiPreview.style.display = "block";
+                imgPegawaiPreview.style.width = '85px';
+                imgPegawaiPreview.childNodes[1].style.marginLeft = '35px';
+            }            
         }
     }
 
@@ -139,8 +150,8 @@ class FormAddPegawai extends Component {
         this.formData.append('status', this.itemPegawai.status !== undefined ? this.itemPegawai.status:false);
 
 		if(mode === 'edit') {
-            this.formData.append('niplama', this.itemPegawai.nip);
-            this.formData.append('nip', this.itemPegawai.nipbaru);
+            this.formData.append('nip', this.itemPegawai.nip);
+            this.formData.append('nipbaru', this.itemPegawai.nipbaru);
             this.updatePegawai();
         }
         else {          
@@ -191,34 +202,35 @@ class FormAddPegawai extends Component {
 	}    
 
     updatePegawai = () => {
-        const { filterPegawai, headerAuthorization, paginationPegawai, restfulServer, urutPegawai, handleClose } = this.props;
+        console.log(this.itemPegawai);
+        // const { filterPegawai, headerAuthorization, paginationPegawai, restfulServer, urutPegawai, handleClose } = this.props;
 
-        let self = this;    
+        // let self = this;    
                 
-        axios({
-            method: 'post',
-            url: `${restfulServer}/master/pegawai`,
-            headers: {...headerAuthorization},
-            data: this.formData
-        })
-        .then((r) => {         
-            if(r.data.status === 200) {
-                self.formData = null;
-                self.itemPegawai = {};
-                self.loadPegawai(
-                    filterPegawai,
-                    paginationPegawai,
-                    urutPegawai
-                );
-            }
-            self.setState({disabledInput: false});
-            handleClose();
-        })
-        .catch((r) => {         
-            self.formData = null;
-            self.itemPegawai = {};
-            self.setState({disabledInput: false});
-        });        
+        // axios({
+        //     method: 'post',
+        //     url: `${restfulServer}/master/pegawai`,
+        //     headers: {...headerAuthorization},
+        //     data: this.formData
+        // })
+        // .then((r) => {         
+        //     if(r.data.status === 200) {
+        //         self.formData = null;
+        //         self.itemPegawai = {};
+        //         self.loadPegawai(
+        //             filterPegawai,
+        //             paginationPegawai,
+        //             urutPegawai
+        //         );
+        //     }
+        //     self.setState({disabledInput: false});
+        //     handleClose();
+        // })
+        // .catch((r) => {         
+        //     self.formData = null;
+        //     self.itemPegawai = {};
+        //     self.setState({disabledInput: false});
+        // });        
     }
 
     render() {
@@ -230,9 +242,7 @@ class FormAddPegawai extends Component {
                 <div style={{ marginTop: 8 }}>Upload</div>
             </div>
         );
-
-        console.log(data);
-
+        
 		let page = null;
 
         page =
