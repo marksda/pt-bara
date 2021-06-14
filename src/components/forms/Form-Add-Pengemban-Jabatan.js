@@ -110,6 +110,11 @@ class FormAddPengembanJabatan extends Component {
 		this.itemPengembanJabatan.id_jabatan = value;			
 	}
 
+    handleChangePriode = (dates, dateStrings) => {
+        this.itemPengembanJabatan.priode_start = Number(dateStrings[0]);
+        this.itemPengembanJabatan.priode_end = Number(dateStrings[1])
+    }
+
     handleChangeStrukturOrganisasi = (value) => {
 		this.itemPengembanJabatan.id_struktur_organisasi = value;			
 	}
@@ -168,31 +173,32 @@ class FormAddPengembanJabatan extends Component {
     }
 
     savePengembanJabatan = () => {
-		const { 
-			filterPengembanJabatan, headerAuthorization, paginationPengembanJabatan, restfulServer, urutPengembanJabatan, handleClose, handleToggleOpenProgressDialog
-		} = this.props;
-	    let self = this;
+        console.log(this.itemPengembanJabatan);
+		// const { 
+		// 	filterPengembanJabatan, headerAuthorization, paginationPengembanJabatan, restfulServer, urutPengembanJabatan, handleClose, handleToggleOpenProgressDialog
+		// } = this.props;
+	    // let self = this;
         
-	    handleToggleOpenProgressDialog();
+	    // handleToggleOpenProgressDialog();
 
-	    axios({
-            method: 'put',
-            url: `${restfulServer}/master/pengembanjabatan`,
-            headers: {...headerAuthorization},
-            data: this.itemPengembanJabatan
-        })
-	    .then((r) => {  
-	    	if(r.data.status === 200) {        
-				self.loadPengembanJabatan(filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan);
-	    	} 
-	    	self.handleReset();
-            self.setState({disabledInput: false});
-            // handleClose();
-            handleToggleOpenProgressDialog();
-	    })
-	    .catch((r) => {
-	    	self.setState({disabledInput: true});
-	    });
+	    // axios({
+        //     method: 'put',
+        //     url: `${restfulServer}/master/pengembanjabatan`,
+        //     headers: {...headerAuthorization},
+        //     data: this.itemPengembanJabatan
+        // })
+	    // .then((r) => {  
+	    // 	if(r.data.status === 200) {        
+		// 		self.loadPengembanJabatan(filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan);
+	    // 	} 
+	    // 	self.handleReset();
+        //     self.setState({disabledInput: false});
+        //     // handleClose();
+        //     handleToggleOpenProgressDialog();
+	    // })
+	    // .catch((r) => {
+	    // 	self.setState({disabledInput: true});
+	    // });
 	}    
 
     updatePengembanJabatan = () => {
@@ -258,6 +264,7 @@ class FormAddPengembanJabatan extends Component {
                     <RangePicker 
                         picker="year" 
                         style={{width: 150}}
+                        onChange={this.handleChangePriode}
                     />
                 </Form.Item>   
                 <Form.Item 
