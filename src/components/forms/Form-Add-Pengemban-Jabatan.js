@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from 'axios';
 import { AutoComplete, Button, DatePicker, Form, Input, Modal, Select } from 'antd';
 import { connect } from "react-redux";
-import { getPegawai, getPengembanJabatan, getStrukturOrganisasi } from "../../actions/master-action";
+import { getJabatan, getPegawai, getPengembanJabatan, getStrukturOrganisasi } from "../../actions/master-action";
 
 const { RangePicker } = DatePicker;
 const { Option } = AutoComplete;
@@ -18,13 +18,14 @@ const mapStateToProps = store => {
         filterPegawai: store.master.filter_pegawai,
         paginationPegawai: store.master.pagination_pegawai,
         urutPegawai: store.master.urut_pegawai,
-        listStrukturOrganisasi: store.master.list_struktur_organisasi,        
-        filterStrukturOrganisasi: store.master.filter_struktur_organisasi
+        listStrukturOrganisasi: store.master.list_struktur_organisasi,
+        listJabatan: store.master.list_jabatan,
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
+        getJabatan: (url, headerAuthorization) => dispatch(getJabatan(url, headerAuthorization)),
         getPegawai: (url, headerAuthorization) => dispatch(getPegawai(url, headerAuthorization)),
         getPengembanJabatan: (url, headerAuthorization) => dispatch(getPengembanJabatan(url, headerAuthorization)),
         getStrukturOrganisasi: (url, headerAuthorization) => dispatch(getStrukturOrganisasi(url, headerAuthorization)),        
@@ -52,7 +53,11 @@ class FormAddPengembanJabatan extends Component {
 	}
 
     componentDidMount() {
-        const { data, filterStrukturOrganisasi, mode } = this.props;
+        const { data, mode } = this.props;
+        let filterSO = {
+            field: null,
+            search: null
+        };
         let tmpPaginationSO = {
             current: 1,
             pageSize: 100,
@@ -62,7 +67,21 @@ class FormAddPengembanJabatan extends Component {
             order: "asc"
         };
 
-        this.loadStrukturOrganisasi(filterStrukturOrganisasi, tmpPaginationSO, urutSO);
+        let filterJBT = {
+            field: null,
+            search: null
+        };
+        let tmpPaginationJBT = {
+            current: 1,
+            pageSize: 100,
+        };
+        let urutJBT = {
+            field: "m.nama",
+            order: "asc"
+        };
+
+        this.loadStrukturOrganisasi(filterSO, tmpPaginationSO, urutSO);
+        this.loadJabatan(filterJBT, tmpPaginationJBT, urutJBT);
                
         if(mode === 'edit') {
             this.itemPengembanJabatan = {...data};
@@ -85,6 +104,10 @@ class FormAddPengembanJabatan extends Component {
 				break;
 			default:
 		}
+	}
+
+    handleChangeJabatan = (value) => {
+		this.itemPengembanJabatan.id_jabatan = value;			
 	}
 
     handleChangeStrukturOrganisasi = (value) => {
@@ -119,6 +142,12 @@ class FormAddPengembanJabatan extends Component {
 		this.itemPengembanJabatan.nip_pegawai = option.key;
 		this.itemPengembanJabatan.nama = value;
 	}
+
+    loadJabatan = (filter, pagination, urut) => {
+        const { getJabatan, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/jabatan?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getJabatan(url, headerAuthorization);
+    }
 
     loadPegawai = (filter, pagination, urut) => {
         const { getPegawai, headerAuthorization, restfulServer } = this.props; 
@@ -194,7 +223,7 @@ class FormAddPengembanJabatan extends Component {
     }
 
     render() {
-        const { data, handleClose, listPegawai, listStrukturOrganisasi, mode, visible } = this.props;
+        const { data, handleClose, listJabatan, listPegawai, listStrukturOrganisasi, mode, visible } = this.props;
 		const { disabledInput } = this.state;
 
 		let page = null;
@@ -218,7 +247,7 @@ class FormAddPengembanJabatan extends Component {
                     ["priode"]: mode==='edit'?[data.priode_start,data.priode_start]:null,
                     ["nip_pegawai"]: mode==='edit'?data.nip_pegawai:null,
                     ["id_struktur_organisasi"]: mode==='edit'?data.id_struktur_organisasi:null,
-                    ["nama"]: mode==='edit'?data.nama:'',
+                    ["id_jabatan"]: mode==='edit'?data.id_jabatan:null,
                 }}
             >      
                 <Form.Item
@@ -261,7 +290,24 @@ class FormAddPengembanJabatan extends Component {
                         style={{width: 200}}
                     >
                     {
-                        listStrukturOrganisasi !== null ? listStrukturOrganisasi.data.map((row, index) => 
+                        listStrukturOrganisasi !== null ? listStrukturOrganisasi.data.map((row) => 
+                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
+                        ):null
+                    }	
+                    </Select>
+                </Form.Item>
+                <Form.Item 
+                    label="Jabatan"
+                    name="id_jabatan"
+                    rules={[{required: true, message: 'Jabatan harus harus diisi'}]}
+                >
+                    <Select 
+                        onChange={this.handleChangeJabatan}
+                        disabled={disabledInput}
+                        style={{width: 200}}
+                    >
+                    {
+                        listJabatan !== null ? listJabatan.data.map((row) => 
                             <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
                         ):null
                     }	
