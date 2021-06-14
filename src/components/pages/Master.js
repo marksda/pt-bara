@@ -4,6 +4,7 @@ import { Tabs  } from 'antd';
 import TableCustomer from '../tables/Table-Customer';
 import TableJabatan from '../tables/Table-Jabatan';
 import TablePegawai from '../tables/Table-Pegawai';
+import TableStrukturOrganisasi from '../tables/Table-Struktur-Organisasi';
 
 
 const { TabPane } = Tabs;
@@ -34,7 +35,7 @@ class Master extends React.Component {
             </TabPane>
             <TabPane tab="Struktur organisasi" key="5">
                 <div className="content-flex-center">
-                Content of Tab Pane 1
+                    <TableStrukturOrganisasi title="Data Pegawai"/>
                 </div>
             </TabPane>
         </Tabs>;  
