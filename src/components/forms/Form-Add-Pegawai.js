@@ -41,7 +41,7 @@ class FormAddPegawai extends Component {
             loading: false
 		};
 
-        this.formData = null;
+        this.formData = new FormData();
 		this.formRef = React.createRef();
 		this.itemPegawai = {};
 	}
@@ -51,6 +51,7 @@ class FormAddPegawai extends Component {
                
         if(mode === 'edit') {
             this.itemPegawai = {...data};
+            this.itemPegawai.update_foto = false;
             if(this.itemPegawai.url_photo !== null) {
                 let elt = document.querySelectorAll("[data-id='foto_pegawai']");
 			    elt[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].style.display = "none";
@@ -65,7 +66,8 @@ class FormAddPegawai extends Component {
         }
     }
 
-    beforeUpload = (file) => {       
+    beforeUpload = (file) => {     
+        const { mode } = this.props;  
 		let oFReader = new FileReader();
 		oFReader.readAsDataURL(file);
 		let img = document.getElementById("img-preview-pegawai");
@@ -90,19 +92,29 @@ class FormAddPegawai extends Component {
 			};
 	    };
 
-		if(this.formData === null) {
-	    	this.formData = new FormData();
-	    }
 	    this.formData.append('file', file);
+
+        if(mode === 'edit') {
+            this.itemPegawai.update_foto = true;
+        }
 
 	    return false;	
 	}
 
     handleBtnDeleteImgPegawai = (e) => {
+        const{ mode } = this.props;
+
 		let elt = document.querySelectorAll("[data-id='foto_pegawai']");
 		elt[0].childNodes[1].childNodes[0].childNodes[0].childNodes[0].style.display = "block";
 		elt[0].childNodes[1].childNodes[0].childNodes[0].childNodes[1].style.display = "none";
-		this.formData.delete('file');
+
+        if(this.formData.has('file')) {
+            this.formData.delete('file');
+        }		
+
+        if(mode === 'edit') {
+            this.itemPegawai.update_foto = true;
+        }
 	}
 
     handleChangeNilaiText = (e) => {
@@ -152,6 +164,7 @@ class FormAddPegawai extends Component {
 		if(mode === 'edit') {
             this.formData.append('nip', this.itemPegawai.nip);
             this.formData.append('nipbaru', this.itemPegawai.nipbaru);
+            this.formData.append('update_foto', this.itemPegawai.update_foto);
             this.updatePegawai();
         }
         else {          
@@ -202,7 +215,6 @@ class FormAddPegawai extends Component {
 	}    
 
     updatePegawai = () => {
-        // console.log(this.itemPegawai);
         const { filterPegawai, headerAuthorization, paginationPegawai, restfulServer, urutPegawai, handleClose } = this.props;
 
         let self = this;    
