@@ -23,4 +23,7 @@ export const FILTER_STRUKTUR_ORGANISASI = "filter_struktur_organisasi";
 export const LIST_STRUKTUR_ORGANISASI = "list_struktur_organisasi";
 export const PAGINATION_STRUKTUR_ORGANISASI = "pagination_struktur_organisasi";
 export const URUT_STRUKTUR_ORGANISASI = "urut_struktur_organisasi";
-
+export const FILTER_PENGEMBAN_JABATAN = "filter_pengemban_jabatan";
+export const LIST_PENGEMBAN_JABATAN = "list_pengemban_jabatan";
+export const PAGINATION_PENGEMBAN_JABATAN = "pagination_pengemban_jabatan";
+export const URUT_PENGEMBAN_JABATAN = "urut_pengemban_jabatan";
