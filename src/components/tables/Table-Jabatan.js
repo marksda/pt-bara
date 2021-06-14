@@ -431,21 +431,7 @@ class TableJabatan extends React.Component {
                                     </TableCell>
 	                            </TableRow>
                     		);
-                    	}):
-                        <TableRow>
-                            <TableCell>
-                                <Skeleton active />
-                            </TableCell>
-                            <TableCell>
-                                <Skeleton active />
-                            </TableCell>
-                            <TableCell>
-                                <Skeleton active />
-                            </TableCell>
-                            <TableCell>
-                                <Skeleton active />
-                            </TableCell>
-                        </TableRow>
+                    	}):null
                     }
                     </TableBody>
             	</Table>

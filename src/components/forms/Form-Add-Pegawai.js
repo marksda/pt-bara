@@ -7,6 +7,8 @@ import { getPegawai } from "../../actions/master-action";
 import { DeleteOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
 
+const { TextArea } = Input;
+
 const mapStateToProps = store => {
     return {      
         filterPegawai: store.master.filter_pegawai,
@@ -263,7 +265,7 @@ class FormAddPegawai extends Component {
             visible={visible}
             onCancel={handleClose}
             footer={null}      
-            style={{top: 84}}      
+            style={{top: 72}}      
             width="30%"
         >
             <Form
@@ -309,7 +311,7 @@ class FormAddPegawai extends Component {
 	                label="Alamat"
                     name="alamat"
                 >
-                    <Input 
+                    <TextArea 
                         data-jenis="alamat"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
@@ -323,6 +325,7 @@ class FormAddPegawai extends Component {
                         data-jenis="no_handphone"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
+                        style={{width: 250}}
                     />
                 </Form.Item>
                 <Form.Item
@@ -333,6 +336,7 @@ class FormAddPegawai extends Component {
                         data-jenis="email"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
+                        style={{width: 250}}
                     />
                 </Form.Item>
                 <Form.Item 

@@ -22,7 +22,7 @@
 }
 .container-preview-img-pegawai {
     display: none;
-    margin-bottom: 16px;
+    /* margin-bottom: 16px; */
     cursor: pointer;
 }
 .container-preview-img-pegawai:hover .preview-img-pegawai {

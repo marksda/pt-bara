@@ -177,6 +177,7 @@ class FormAddStrukturOrganisasi extends Component {
                         data-jenis="id"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
+                        style={{width: 150}}
                     />
                 </Form.Item>
                 <Form.Item

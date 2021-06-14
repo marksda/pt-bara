@@ -4,6 +4,9 @@ import { Button, Form, Input, Modal, Select } from 'antd';
 import { connect } from "react-redux";
 import { getCustomer, getBentukUsaha } from "../../actions/master-action";
 
+
+const { TextArea } = Input;
+
 const mapStateToProps = store => {
     return {      
         filterCustomer: store.master.filter_customer,
@@ -208,7 +211,7 @@ class FormAddCustomer extends Component {
 	                label="Alamat"
                     name="alamat"
                 >
-                    <Input 
+                    <TextArea 
                         data-jenis="alamat"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
@@ -222,6 +225,7 @@ class FormAddCustomer extends Component {
                         data-jenis="telepone"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
+                        style={{width: 250}}
                     />
                 </Form.Item>
                 <Form.Item
@@ -232,6 +236,7 @@ class FormAddCustomer extends Component {
                         data-jenis="email"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
+                        style={{width: 250}}
                     />
                 </Form.Item>
                 <Form.Item {...tailLayout}>
