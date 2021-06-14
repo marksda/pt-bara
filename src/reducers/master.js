@@ -56,6 +56,7 @@ const initialState = {
         field: "m.nip",
         order: "asc"
     },
+    list_struktur_organisasi: null,
     filter_struktur_organisasi: {
         field: null,
         search: null
