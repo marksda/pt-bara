@@ -205,12 +205,12 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
-        filterStrukturOrganisasi: store.master.filter_strukturorganisasi,
+        filterStrukturOrganisasi: store.master.filter_struktur_organisasi,
         headerAuthorization: store.credential.header_authorization,
-        listStrukturOrganisasi: store.master.list_strukturorganisasi,
-        paginationStrukturOrganisasi: store.master.pagination_strukturorganisasi,
+        listStrukturOrganisasi: store.master.list_struktur_organisasi,
+        paginationStrukturOrganisasi: store.master.pagination_struktur_organisasi,
         restfulServer: store.general.restful_domain,
-        urutStrukturOrganisasi: store.master.urut_strukturorganisasi
+        urutStrukturOrganisasi: store.master.urut_struktur_organisasi
     };
 };
 
