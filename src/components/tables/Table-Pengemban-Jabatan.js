@@ -93,8 +93,11 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.id', numerik: false, label: 'Id'},
-    {id: 'm.nama', numerik: false, label: 'Nama'},
+    {id: 'm.nip_pegawai', numerik: false, label: 'Nip'},
+    {id: 'p.nama', numerik: false, label: 'Nama'},
+    {id: 'j.nama', numerik: false, label: 'Jabatan'},
+    {id: 's.nama', numerik: false, label: 'Struktur organisasi'},
+    {id: 'm.priode_start', numerik: false, label: 'Priode'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -157,6 +160,69 @@ const EnhancedTableHead = (props) => {
                                         {orderBy === headCell.id ? (
                                             <span className={classes.visuallyHidden}>
                                               {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </span>
+                                        ) : null}
+                                    </TableSortLabel>
+                                </TableCell>;
+                                break;
+                            case 3:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 200}}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === headCell.id}
+                                        direction={orderBy === headCell.id ? order : 'desc'}
+                                        onClick={createSortHandler(headCell.id)}
+                                    >
+                                        {headCell.label}
+                                        {orderBy === headCell.id ? (
+                                            <span className={classes.visuallyHidden}>
+                                            {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </span>
+                                        ) : null}
+                                    </TableSortLabel>
+                                </TableCell>;
+                                break;
+                            case 4:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 200}}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === headCell.id}
+                                        direction={orderBy === headCell.id ? order : 'desc'}
+                                        onClick={createSortHandler(headCell.id)}
+                                    >
+                                        {headCell.label}
+                                        {orderBy === headCell.id ? (
+                                            <span className={classes.visuallyHidden}>
+                                            {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </span>
+                                        ) : null}
+                                    </TableSortLabel>
+                                </TableCell>;
+                                break;
+                            case 5:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 200}}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === headCell.id}
+                                        direction={orderBy === headCell.id ? order : 'desc'}
+                                        onClick={createSortHandler(headCell.id)}
+                                    >
+                                        {headCell.label}
+                                        {orderBy === headCell.id ? (
+                                            <span className={classes.visuallyHidden}>
+                                            {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                             </span>
                                         ) : null}
                                     </TableSortLabel>
@@ -414,7 +480,7 @@ class TablePengembanJabatan extends React.Component {
 	                                    align={'left'}
                                         style={{minWidth: 80, verticalAlign: 'top'}}
 	                                >
-	                                    { row.id }
+	                                    { row.nip_pegawai }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
@@ -423,6 +489,24 @@ class TablePengembanJabatan extends React.Component {
 	                                    { row.nama }
 	                                </TableCell>
 	                                <TableCell 
+	                                    align={'left'}
+                                        style={{minWidth: 200, verticalAlign: 'top'}}
+	                                >
+	                                    { row.nama_jabatan }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{minWidth: 200, verticalAlign: 'top'}}
+	                                >
+	                                    { row.nama_so }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{minWidth: 200, verticalAlign: 'top'}}
+	                                >
+	                                    { `${row.priode_start.toString()} - ${row.priode_end.toString()}` }
+	                                </TableCell>
+                                    <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
