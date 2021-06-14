@@ -303,8 +303,8 @@ class TablePengembanJabatan extends React.Component {
     }
 
     componentDidMount() {
-    	const { filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan } = this.props;
-        this.loadPengembanJabatan(filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan);
+    	const { filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan, filterStrukturOrganisasi } = this.props;
+        this.loadPengembanJabatan(filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan);        
     }
 
     deletePengembanJabatan = (dataPengembanJabatan) => {

@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import { Button, Form, Input, Modal, Select } from 'antd';
+import { AutoComplete, Button, DatePicker, Form, Input, Modal, Select } from 'antd';
 import { connect } from "react-redux";
-import { getPengembanJabatan } from "../../actions/master-action";
+import { getPegawai, getPengembanJabatan, getStrukturOrganisasi } from "../../actions/master-action";
+
+const { RangePicker } = DatePicker;
+const { Option } = AutoComplete;
 
 const mapStateToProps = store => {
     return {      
@@ -10,23 +13,31 @@ const mapStateToProps = store => {
         headerAuthorization: store.credential.header_authorization,
         paginationPengembanJabatan: store.master.pagination_pengemban_jabatan,
         restfulServer: store.general.restful_domain,
-        urutPengembanJabatan: store.master.urut_pengemban_jabatan
+        urutPengembanJabatan: store.master.urut_pengemban_jabatan,
+        listPegawai: store.master.list_pegawai,
+        filterPegawai: store.master.filter_pegawai,
+        paginationPegawai: store.master.pagination_pegawai,
+        urutPegawai: store.master.urut_pegawai,
+        listStrukturOrganisasi: store.master.list_struktur_organisasi,        
+        filterStrukturOrganisasi: store.master.filter_struktur_organisasi
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
-        getPengembanJabatan: (url, headerAuthorization) => dispatch(getPengembanJabatan(url, headerAuthorization))
+        getPegawai: (url, headerAuthorization) => dispatch(getPegawai(url, headerAuthorization)),
+        getPengembanJabatan: (url, headerAuthorization) => dispatch(getPengembanJabatan(url, headerAuthorization)),
+        getStrukturOrganisasi: (url, headerAuthorization) => dispatch(getStrukturOrganisasi(url, headerAuthorization)),        
     };
 };
 
 const layout = {
-    labelCol: { span: 5 },
+    labelCol: { span: 6 },
     wrapperCol: { span: 18 },
 };
 
 const tailLayout = {
-    wrapperCol: { offset: 5, span: 16 },
+    wrapperCol: { offset: 6, span: 18 },
 };
 
 class FormAddPengembanJabatan extends Component {
@@ -41,7 +52,17 @@ class FormAddPengembanJabatan extends Component {
 	}
 
     componentDidMount() {
-        const { data, mode } = this.props;
+        const { data, filterStrukturOrganisasi, mode } = this.props;
+        let tmpPaginationSO = {
+            current: 1,
+            pageSize: 100,
+        };
+        let urutSO = {
+            field: "m.nama",
+            order: "asc"
+        };
+
+        this.loadStrukturOrganisasi(filterStrukturOrganisasi, tmpPaginationSO, urutSO);
                
         if(mode === 'edit') {
             this.itemPengembanJabatan = {...data};
@@ -66,6 +87,10 @@ class FormAddPengembanJabatan extends Component {
 		}
 	}
 
+    handleChangeStrukturOrganisasi = (value) => {
+		this.itemPengembanJabatan.id_struktur_organisasi = value;			
+	}
+
     handleOnFinish = (value) => {
 		const { mode } = this.props;
 		this.setState({disabledInput: true});
@@ -81,10 +106,36 @@ class FormAddPengembanJabatan extends Component {
 		this.formRef.current.resetFields();
 	}
 
+    handleSearchPegawai = (value) => {
+        const { paginationPegawai, urutPegawai} = this.props;
+		let tmpFilter = {
+        	field: "m.nama",
+        	search: value
+        };
+        this.loadPegawai(tmpFilter, paginationPegawai, urutPegawai);
+	}
+
+    handleSelectPegawai = (value, option) => {
+		this.itemPengembanJabatan.nip_pegawai = option.key;
+		this.itemPengembanJabatan.nama = value;
+	}
+
+    loadPegawai = (filter, pagination, urut) => {
+        const { getPegawai, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/pegawai?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getPegawai(url, headerAuthorization);
+    }
+
     loadPengembanJabatan = (filter, pagination, urut) => {
         const { getPengembanJabatan, headerAuthorization, restfulServer } = this.props; 
         let url = `${restfulServer}/master/pengembanjabatan?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
         getPengembanJabatan(url, headerAuthorization);
+    }
+
+    loadStrukturOrganisasi = (filter, pagination, urut) => {
+        const { getStrukturOrganisasi, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/strukturorganisasi?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getStrukturOrganisasi(url, headerAuthorization);
     }
 
     savePengembanJabatan = () => {
@@ -143,19 +194,19 @@ class FormAddPengembanJabatan extends Component {
     }
 
     render() {
-        const { data, handleClose, mode, visible } = this.props;
+        const { data, handleClose, listPegawai, listStrukturOrganisasi, mode, visible } = this.props;
 		const { disabledInput } = this.state;
 
 		let page = null;
 
         page =
         <Modal
-            title={mode==='edit'?'Formulir Edit PengembanJabatan':'Formulir Add PengembanJabatan'}
+            title={mode==='edit'?'Formulir Edit Pengemban Jabatan':'Formulir Add Pengemban Jabatan'}
             visible={visible}
             onCancel={handleClose}
             footer={null}      
             style={{top: 125}}      
-            width="30%"
+            width="40%"
         >
             <Form
                 {...layout}
@@ -164,31 +215,57 @@ class FormAddPengembanJabatan extends Component {
                 ref={this.formRef}
                 initialValues={{
                     remember: true,
-                    ["id"]: mode==='edit'?data.id:'',
-                    ["nama"]: mode==='edit'?data.nama:''
+                    ["priode"]: mode==='edit'?[data.priode_start,data.priode_start]:null,
+                    ["nip_pegawai"]: mode==='edit'?data.nip_pegawai:null,
+                    ["id_struktur_organisasi"]: mode==='edit'?data.id_struktur_organisasi:null,
+                    ["nama"]: mode==='edit'?data.nama:'',
                 }}
-            >                
+            >      
                 <Form.Item
-	                label="Id"
-                    name="id"
-                    rules={[{required: true, message: 'Id pengembanjabatan harus diisi'}]}
+	                label="Priode Jabatan"
+                    name="priode"
+                    rules={[{required: true, message: 'Priode jabatan harus harus diisi'}]}
                 >
-                    <Input 
-                        data-jenis="id"
-                        disabled={disabledInput}
-                        onChange={this.handleChangeNilaiText}
+                    <RangePicker 
+                        picker="year" 
+                        style={{width: 150}}
                     />
-                </Form.Item>
-                <Form.Item
-	                label="Nama"
-                    name="nama"
-                    rules={[{required: true, message: 'Nama pengembanjabatan harus diisi'}]}
+                </Form.Item>   
+                <Form.Item 
+                    label="Pegawai"
+                    name="nip_pegawai"
+                    rules={[{required: true, message: 'Pegawai harus harus diisi'}]}
                 >
-                    <Input 
-                        data-jenis="nama"
+                    <AutoComplete 
+                        onSearch={this.handleSearchPegawai}
+                        onSelect={this.handleSelectPegawai}
                         disabled={disabledInput}
-                        onChange={this.handleChangeNilaiText}
-                    />
+                    >
+                    {
+                        listPegawai !== null ? listPegawai.data.map((row) => 
+                            <Option key={row.nip_pegawai} value={row.nama}>
+                                {row.nama}
+                            </Option>
+                        ):null
+                    }
+                    </AutoComplete>
+                </Form.Item> 
+                <Form.Item 
+                    label="Struktur Organisasi"
+                    name="id_struktur_organisasi"
+                    rules={[{required: true, message: 'Struktur organisasi harus harus diisi'}]}
+                >
+                    <Select 
+                        onChange={this.handleChangeStrukturOrganisasi}
+                        disabled={disabledInput}
+                        style={{width: 200}}
+                    >
+                    {
+                        listStrukturOrganisasi !== null ? listStrukturOrganisasi.data.map((row, index) => 
+                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
+                        ):null
+                    }	
+                    </Select>
                 </Form.Item>
                 <Form.Item {...tailLayout}>
                     <Button 
