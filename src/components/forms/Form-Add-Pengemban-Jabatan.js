@@ -88,24 +88,6 @@ class FormAddPengembanJabatan extends Component {
         }
     }
 
-    handleChangeNilaiText = (e) => {
-        const { mode } = this.props;
-		switch(e.currentTarget.dataset.jenis) {
-            case 'id':
-                if(mode === "edit") {
-                    this.itemPengembanJabatan.idbaru = e.currentTarget.value;
-                }
-				else {
-                    this.itemPengembanJabatan.id = e.currentTarget.value;
-                }
-				break;
-			case 'nama':
-				this.itemPengembanJabatan.nama = e.currentTarget.value;
-				break;
-			default:
-		}
-	}
-
     handleChangeJabatan = (value) => {
 		this.itemPengembanJabatan.id_jabatan = value;			
 	}
@@ -145,7 +127,6 @@ class FormAddPengembanJabatan extends Component {
 
     handleSelectPegawai = (value, option) => {
 		this.itemPengembanJabatan.nip_pegawai = option.key;
-		this.itemPengembanJabatan.nama = value;
 	}
 
     loadJabatan = (filter, pagination, urut) => {
@@ -173,32 +154,30 @@ class FormAddPengembanJabatan extends Component {
     }
 
     savePengembanJabatan = () => {
-        console.log(this.itemPengembanJabatan);
-		// const { 
-		// 	filterPengembanJabatan, headerAuthorization, paginationPengembanJabatan, restfulServer, urutPengembanJabatan, handleClose, handleToggleOpenProgressDialog
-		// } = this.props;
-	    // let self = this;
+		const { 
+			filterPengembanJabatan, headerAuthorization, paginationPengembanJabatan, restfulServer, urutPengembanJabatan, handleClose, handleToggleOpenProgressDialog
+		} = this.props;
+	    let self = this;
         
-	    // handleToggleOpenProgressDialog();
+	    handleToggleOpenProgressDialog();
 
-	    // axios({
-        //     method: 'put',
-        //     url: `${restfulServer}/master/pengembanjabatan`,
-        //     headers: {...headerAuthorization},
-        //     data: this.itemPengembanJabatan
-        // })
-	    // .then((r) => {  
-	    // 	if(r.data.status === 200) {        
-		// 		self.loadPengembanJabatan(filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan);
-	    // 	} 
-	    // 	self.handleReset();
-        //     self.setState({disabledInput: false});
-        //     // handleClose();
-        //     handleToggleOpenProgressDialog();
-	    // })
-	    // .catch((r) => {
-	    // 	self.setState({disabledInput: true});
-	    // });
+	    axios({
+            method: 'put',
+            url: `${restfulServer}/master/pengembanjabatan`,
+            headers: {...headerAuthorization},
+            data: this.itemPengembanJabatan
+        })
+	    .then((r) => {  
+	    	if(r.data.status === 200) {        
+				self.loadPengembanJabatan(filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan);
+	    	} 
+	    	self.handleReset();
+            self.setState({disabledInput: false});
+            handleToggleOpenProgressDialog();
+	    })
+	    .catch((r) => {
+	    	self.setState({disabledInput: true});
+	    });
 	}    
 
     updatePengembanJabatan = () => {
@@ -263,6 +242,7 @@ class FormAddPengembanJabatan extends Component {
                 >
                     <RangePicker 
                         picker="year" 
+                        disabled={disabledInput}
                         style={{width: 150}}
                         onChange={this.handleChangePriode}
                     />
@@ -279,7 +259,7 @@ class FormAddPengembanJabatan extends Component {
                     >
                     {
                         listPegawai !== null ? listPegawai.data.map((row) => 
-                            <Option key={row.nip_pegawai} value={row.nama}>
+                            <Option key={row.nip} value={row.nama}>
                                 {row.nama}
                             </Option>
                         ):null
