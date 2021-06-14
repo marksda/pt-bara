@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import { Button, Form, Input, Modal, Select } from 'antd';
+import { Button, Form, Input, Modal } from 'antd';
 import { connect } from "react-redux";
 import { getStrukturOrganisasi } from "../../actions/master-action";
 
 const mapStateToProps = store => {
     return {      
-        filterStrukturOrganisasi: store.master.filter_strukturorganisasi,
+        filterStrukturOrganisasi: store.master.filter_struktur_organisasi,
         headerAuthorization: store.credential.header_authorization,
-        paginationStrukturOrganisasi: store.master.pagination_strukturorganisasi,
+        paginationStrukturOrganisasi: store.master.pagination_struktur_organisasi,
         restfulServer: store.general.restful_domain,
-        urutStrukturOrganisasi: store.master.urut_strukturorganisasi
+        urutStrukturOrganisasi: store.master.urut_struktur_organisasi
     };
 };
 

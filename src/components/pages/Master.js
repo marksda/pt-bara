@@ -4,6 +4,7 @@ import { Tabs  } from 'antd';
 import TableCustomer from '../tables/Table-Customer';
 import TableJabatan from '../tables/Table-Jabatan';
 import TablePegawai from '../tables/Table-Pegawai';
+import TablePengembanJabatan from '../tables/Table-Pengemban-Jabatan';
 import TableStrukturOrganisasi from '../tables/Table-Struktur-Organisasi';
 
 
@@ -30,12 +31,12 @@ class Master extends React.Component {
             </TabPane>
             <TabPane tab="Pengemban jabatan" key="4">
                 <div className="content-flex-center">
-                Content of Tab Pane 3
+                    <TablePengembanJabatan title="Data Pengemban Jabatan"/>
                 </div>
             </TabPane>
             <TabPane tab="Struktur organisasi" key="5">
                 <div className="content-flex-center">
-                    <TableStrukturOrganisasi title="Data Pegawai"/>
+                    <TableStrukturOrganisasi title="Data Struktur Organisasi"/>
                 </div>
             </TabPane>
         </Tabs>;  
