@@ -19,3 +19,8 @@ export const FILTER_PEGAWAI = "filter_pegawai";
 export const LIST_PEGAWAI = "list_pegawai";
 export const PAGINATION_PEGAWAI = "pagination_pegawai";
 export const URUT_PEGAWAI = "urut_pegawai";
+export const FILTER_STRUKTUR_ORGANISASI = "filter_struktur_organisasi";
+export const LIST_STRUKTUR_ORGANISASI = "list_struktur_organisasi";
+export const PAGINATION_STRUKTUR_ORGANISASI = "pagination_struktur_organisasi";
+export const URUT_STRUKTUR_ORGANISASI = "urut_struktur_organisasi";
+
