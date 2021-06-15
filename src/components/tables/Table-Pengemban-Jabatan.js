@@ -97,7 +97,7 @@ const headRows = [
     {id: 'p.nama', numerik: false, label: 'Nama'},
     {id: 'j.nama', numerik: false, label: 'Jabatan'},
     {id: 's.nama', numerik: false, label: 'Struktur organisasi'},
-    {id: 'm.priode_start', numerik: false, label: 'Priode'},
+    {id: 'm.priode_start', numerik: false, label: 'Priode jabatan'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 

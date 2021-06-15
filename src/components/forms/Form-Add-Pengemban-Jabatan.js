@@ -229,7 +229,7 @@ class FormAddPengembanJabatan extends Component {
                 ref={this.formRef}
                 initialValues={{
                     remember: true,
-                    ["priode"]: mode==='edit'?[data.priode_start,data.priode_start]:null,
+                    ["priode"]: mode==='edit'?[moment.year(data.priode_start),moment.year(data.priode_start)]:null,
                     ["nip_pegawai"]: mode==='edit'?data.nip_pegawai:null,
                     ["id_struktur_organisasi"]: mode==='edit'?data.id_struktur_organisasi:null,
                     ["id_jabatan"]: mode==='edit'?data.id_jabatan:null,
