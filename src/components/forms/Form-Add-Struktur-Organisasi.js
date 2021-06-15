@@ -89,7 +89,7 @@ class FormAddStrukturOrganisasi extends Component {
 
     saveStrukturOrganisasi = () => {
 		const { 
-			filterStrukturOrganisasi, headerAuthorization, paginationStrukturOrganisasi, restfulServer, urutStrukturOrganisasi, handleClose, handleToggleOpenProgressDialog
+			filterStrukturOrganisasi, headerAuthorization, paginationStrukturOrganisasi, restfulServer, urutStrukturOrganisasi, handleToggleOpenProgressDialog
 		} = this.props;
 	    let self = this;
         

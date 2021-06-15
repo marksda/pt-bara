@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import axios from 'axios';
+import moment from "moment";
 import { AutoComplete, Button, DatePicker, Form, Input, Modal, Select } from 'antd';
 import { connect } from "react-redux";
 import { getJabatan, getPegawai, getPengembanJabatan, getStrukturOrganisasi } from "../../actions/master-action";
@@ -85,20 +86,44 @@ class FormAddPengembanJabatan extends Component {
                
         if(mode === 'edit') {
             this.itemPengembanJabatan = {...data};
+            this.itemPengembanJabatan.nip_baru_pegawai = this.itemPengembanJabatan.nip_pegawai;
+            this.itemPengembanJabatan.id_baru_jabatan = this.itemPengembanJabatan.id_jabatan;
+            this.itemPengembanJabatan.id_baru_struktur_organisasi = this.itemPengembanJabatan.id_struktur_organisasi;
+            this.itemPengembanJabatan.priode_baru_start = this.itemPengembanJabatan.priode_start;
+            this.itemPengembanJabatan.priode_baru_end = this.itemPengembanJabatan.priode_end;
         }
     }
 
     handleChangeJabatan = (value) => {
-		this.itemPengembanJabatan.id_jabatan = value;			
+        const { mode } = this.props;
+        if(mode === 'edit') {
+            this.itemPengembanJabatan.id_baru_jabatan = value;
+        }
+        else {
+            this.itemPengembanJabatan.id_jabatan = value;
+        }	
 	}
 
     handleChangePriode = (dates, dateStrings) => {
-        this.itemPengembanJabatan.priode_start = Number(dateStrings[0]);
-        this.itemPengembanJabatan.priode_end = Number(dateStrings[1])
+        const { mode } = this.props;
+        if(mode === 'edit') {
+            this.itemPengembanJabatan.priode_baru_start = Number(dateStrings[0]);
+            this.itemPengembanJabatan.priode_baru_end = Number(dateStrings[1]);
+        }
+        else {
+            this.itemPengembanJabatan.priode_start = Number(dateStrings[0]);
+            this.itemPengembanJabatan.priode_end = Number(dateStrings[1]);
+        }        
     }
 
     handleChangeStrukturOrganisasi = (value) => {
-		this.itemPengembanJabatan.id_struktur_organisasi = value;			
+        const { mode } = this.props;
+        if(mode === 'edit') {
+            this.itemPengembanJabatan.id_struktur_organisasi = value;
+        }
+		else {
+            this.itemPengembanJabatan.id_struktur_organisasi = value;	
+        }		
 	}
 
     handleOnFinish = (value) => {
@@ -126,7 +151,13 @@ class FormAddPengembanJabatan extends Component {
 	}
 
     handleSelectPegawai = (value, option) => {
-		this.itemPengembanJabatan.nip_pegawai = option.key;
+        const { mode } = this.props;
+        if(mode === 'edit') {
+            this.itemPengembanJabatan.nip_baru_pegawai = option.key;
+        }
+        else {
+            this.itemPengembanJabatan.nip_pegawai = option.key;
+        }		
 	}
 
     loadJabatan = (filter, pagination, urut) => {
@@ -229,7 +260,7 @@ class FormAddPengembanJabatan extends Component {
                 ref={this.formRef}
                 initialValues={{
                     remember: true,
-                    ["priode"]: mode==='edit'?[moment.year(data.priode_start),moment.year(data.priode_start)]:null,
+                    ["priode"]: mode==='edit'?[moment(`${data.priode_start}-01-01`), moment(`${data.priode_end}-01-01`)]:null,
                     ["nip_pegawai"]: mode==='edit'?data.nip_pegawai:null,
                     ["id_struktur_organisasi"]: mode==='edit'?data.id_struktur_organisasi:null,
                     ["id_jabatan"]: mode==='edit'?data.id_jabatan:null,

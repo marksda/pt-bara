@@ -17,7 +17,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
 import _ from 'lodash';
 
-import { Input, Skeleton, Typography } from 'antd';
+import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
@@ -506,7 +506,7 @@ class TablePegawai extends React.Component {
 	                                    align={'left'}
                                         style={{width: 100, verticalAlign: 'top'}}
 	                                >
-	                                    { row.url_photo !== null?<img style={{width:85, height:100}} src={`${restfulServer}/master/foto/pegawai/${row.url_photo}`} />: '-'}
+	                                    { row.url_photo !== null?<img alt='foto' style={{width:85, height:100}} src={`${restfulServer}/master/foto/pegawai/${row.url_photo}`} />: '-'}
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}

@@ -17,7 +17,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
 import _ from 'lodash';
 
-import { Input, Skeleton, Typography } from 'antd';
+import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
@@ -303,7 +303,7 @@ class TablePengembanJabatan extends React.Component {
     }
 
     componentDidMount() {
-    	const { filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan, filterStrukturOrganisasi } = this.props;
+    	const { filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan } = this.props;
         this.loadPengembanJabatan(filterPengembanJabatan, paginationPengembanJabatan, urutPengembanJabatan);        
     }
 
@@ -350,9 +350,9 @@ class TablePengembanJabatan extends React.Component {
 
     handleBtnEdit = (e) => {
         const { listPengembanJabatan } = this.props;
-        this.itemPengembanJabatan = {..._.find(listPengembanJabatan.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
-        this.itemPengembanJabatan.nama = this.itemPengembanJabatan.nama.split(',')[0];
         this.setState({openFormAddPengembanJabatan: true, mode: 'edit'});
+        this.itemPengembanJabatan = {...listPengembanJabatan.data[Number(e.currentTarget.dataset.id)]};
+        console.log(this.itemPengembanJabatan);
     }
 
     handleChangeFilter = (v) => {
@@ -468,7 +468,7 @@ class TablePengembanJabatan extends React.Component {
                     			<TableRow 
 	                                hover
 	                                tabIndex={-1}
-	                                key={row.id}      
+	                                key={index}      
 	                            >
 	                            	<TableCell 
 	                                    align={'right'}
@@ -510,8 +510,8 @@ class TablePengembanJabatan extends React.Component {
                                         style={{width: 80, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.id} onClick={this.handleBtnEdit} />
-                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={index} onClick={this.handleBtnEdit} />
+                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={index} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>
                     		);
