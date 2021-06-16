@@ -15,7 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
-import _ from 'lodash';
+import Tree from '../nav/Tree';
 
 import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -93,8 +93,8 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.id', numerik: false, label: 'Id'},
-    {id: 'm.nama', numerik: false, label: 'Nama'},
+    {id: 'm.keterangan', numerik: false, label: 'Nama group'},
+    {id: 'm.akses', numerik: false, label: 'Akses menu'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -126,7 +126,6 @@ const EnhancedTableHead = (props) => {
                                     <TableCell
                                         key={headCell.id}
                                         align={'left'}
-                                        style={{width: 80}}
                                     >
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
@@ -147,6 +146,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
+                                    style={{width: 500}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -414,13 +414,14 @@ class TableGroupHakAkses extends React.Component {
 	                                    align={'left'}
                                         style={{minWidth: 80, verticalAlign: 'top'}}
 	                                >
-	                                    { row.id }
+	                                    { row.keterangan }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
                                         style={{verticalAlign: 'top'}}
+                                        style={{width: 500}}
 	                                >
-	                                    { row.nama }
+	                                    <Tree data={row.akses} enableIconCheckable={false}></Tree>
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}
