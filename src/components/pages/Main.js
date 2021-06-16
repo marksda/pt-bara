@@ -149,6 +149,9 @@ class Main extends React.Component {
             case 'Master':
                 subPage = <Master />;
                 break;
+            case 'Security':
+                subPage = <Security />;
+            break;
             default:
                 subPage = null;
                 break;
