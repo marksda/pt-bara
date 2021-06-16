@@ -15,7 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
-import Tree from '../nav/Tree';
+// import Tree from '../nav/Tree';
 
 import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -421,7 +421,7 @@ class TableGroupHakAkses extends React.Component {
                                         style={{verticalAlign: 'top'}}
                                         style={{width: 500}}
 	                                >
-	                                    <Tree data={row.akses} enableIconCheckable={false}></Tree>
+	                                    
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}

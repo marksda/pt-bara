@@ -2,7 +2,7 @@ import React from 'react';
 import { Tabs  } from 'antd';
 
 import TableGroup from '../tables/Table-Group';
-import TableUser from '../tables/Table-user';
+// import TableUser from '../tables/Table-user';
 
 
 const { TabPane } = Tabs;
@@ -14,11 +14,6 @@ class Security extends React.Component {
             <TabPane tab="Group" key="1">
                 <div className="content-flex-center">
                     <TableGroup title="Data Group"/>
-                </div>
-            </TabPane>            
-            <TabPane tab="User" key="2">
-                <div className="content-flex-center">
-                    <TableUser title="Data User"/>
                 </div>
             </TabPane>
         </Tabs>;  
