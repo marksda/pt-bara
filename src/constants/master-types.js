@@ -31,3 +31,4 @@ export const FILTER_GROUP_HAK_AKSES = "filter_group_hak_akses";
 export const LIST_GROUP_HAK_AKSES = "list_group_hak_akses";
 export const PAGINATION_GROUP_HAK_AKSES = "pagination_group_hak_akses";
 export const URUT_GROUP_HAK_AKSES = "urut_group_hak_akses";
+export const MENU_TREE_SELECTED = "menu_tree_selected";

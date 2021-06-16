@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
   
 
-import { getGroupHakAkses, setFilterGroupHakAkses, setPaginationGroupHakAkses, setUrutGroupHakAkses } from "../../actions/master-action";
+import { getGroupHakAkses, setFilterGroupHakAkses, setMenuTreeSelected, setPaginationGroupHakAkses, setUrutGroupHakAkses } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -285,9 +285,9 @@ class TableGroupHakAkses extends React.Component {
     }
 
     handleBtnEdit = (e) => {
-        const { listGroupHakAkses } = this.props;
+        const { listGroupHakAkses, setMenuTreeSelected } = this.props;
         this.itemGroupHakAkses = {..._.find(listGroupHakAkses.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
-        this.itemGroupHakAkses.nama = this.itemGroupHakAkses.nama.split(',')[0];
+        setMenuTreeSelected(this.itemGroupHakAkses.akses);
         this.setState({openFormAddGroupHakAkses: true, mode: 'edit'});
     }
 
