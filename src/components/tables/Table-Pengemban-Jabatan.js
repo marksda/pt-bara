@@ -25,7 +25,7 @@ import {
 } from '@ant-design/icons';
   
 
-import { getPengembanJabatan, setFilterPengembanJabatan, setPaginationPengembanJabatan, setUrutPengembanJabatan } from "../../actions/master-action";
+import { getPegawai, getPengembanJabatan, setFilterPengembanJabatan, setPaginationPengembanJabatan, setUrutPengembanJabatan } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -276,12 +276,15 @@ const mapStateToProps = store => {
         listPengembanJabatan: store.master.list_pengemban_jabatan,
         paginationPengembanJabatan: store.master.pagination_pengemban_jabatan,
         restfulServer: store.general.restful_domain,
-        urutPengembanJabatan: store.master.urut_pengemban_jabatan
+        urutPengembanJabatan: store.master.urut_pengemban_jabatan,
+        paginationPegawai: store.master.pagination_pegawai,
+        urutPegawai: store.master.urut_pegawai,
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
+        getPegawai: (url, headerAuthorization) => dispatch(getPegawai(url, headerAuthorization)),
         getPengembanJabatan: (url, headerAuthorization) => dispatch(getPengembanJabatan(url, headerAuthorization)),
         setFilterPengembanJabatan: (value) => dispatch(setFilterPengembanJabatan(value)),
         setPaginationPengembanJabatan: (value) => dispatch(setPaginationPengembanJabatan(value)),
@@ -344,7 +347,7 @@ class TablePengembanJabatan extends React.Component {
 
     handleBtnDelete = (e) => {
         const { listPengembanJabatan } = this.props;
-        this.itemPengembanJabatan = {..._.find(listPengembanJabatan.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
+        this.itemPengembanJabatan = {...listPengembanJabatan.data[Number(e.currentTarget.dataset.id)]};
         this.setState({openConfirmasiHapusPengembanJabatan: true});
     }
 
@@ -352,7 +355,13 @@ class TablePengembanJabatan extends React.Component {
         const { listPengembanJabatan } = this.props;
         this.setState({openFormAddPengembanJabatan: true, mode: 'edit'});
         this.itemPengembanJabatan = {...listPengembanJabatan.data[Number(e.currentTarget.dataset.id)]};
-        console.log(this.itemPengembanJabatan);
+
+        const { paginationPegawai, urutPegawai} = this.props;
+		let tmpFilter = {
+        	field: "m.nama",
+        	search: this.itemPengembanJabatan.nama
+        };
+        this.loadPegawai(tmpFilter, paginationPegawai, urutPegawai);
     }
 
     handleChangeFilter = (v) => {
@@ -420,6 +429,12 @@ class TablePengembanJabatan extends React.Component {
 
     handleToggleOpenProgressDialog = () => {
         this.setState({openProcessingDialog: !this.state.openProcessingDialog});
+    }
+
+    loadPegawai = (filter, pagination, urut) => {
+        const { getPegawai, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/pegawai?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getPegawai(url, headerAuthorization);
     }
 
     loadPengembanJabatan = (filter, pagination, urut) => {

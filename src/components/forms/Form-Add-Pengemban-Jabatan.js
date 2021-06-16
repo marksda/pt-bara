@@ -119,7 +119,7 @@ class FormAddPengembanJabatan extends Component {
     handleChangeStrukturOrganisasi = (value) => {
         const { mode } = this.props;
         if(mode === 'edit') {
-            this.itemPengembanJabatan.id_struktur_organisasi = value;
+            this.itemPengembanJabatan.id_baru_struktur_organisasi = value;
         }
 		else {
             this.itemPengembanJabatan.id_struktur_organisasi = value;	
@@ -213,7 +213,6 @@ class FormAddPengembanJabatan extends Component {
 
     updatePengembanJabatan = () => {
         const { filterPengembanJabatan, headerAuthorization, paginationPengembanJabatan, restfulServer, urutPengembanJabatan, handleClose } = this.props;
-
         let self = this;    
                 
         axios({
@@ -261,7 +260,7 @@ class FormAddPengembanJabatan extends Component {
                 initialValues={{
                     remember: true,
                     ["priode"]: mode==='edit'?[moment(`${data.priode_start}-01-01`), moment(`${data.priode_end}-01-01`)]:null,
-                    ["nip_pegawai"]: mode==='edit'?data.nip_pegawai:null,
+                    ["nama"]: mode==='edit'?data.nama:null,
                     ["id_struktur_organisasi"]: mode==='edit'?data.id_struktur_organisasi:null,
                     ["id_jabatan"]: mode==='edit'?data.id_jabatan:null,
                 }}
@@ -280,12 +279,13 @@ class FormAddPengembanJabatan extends Component {
                 </Form.Item>   
                 <Form.Item 
                     label="Pegawai"
-                    name="nip_pegawai"
+                    name="nama"
                     rules={[{required: true, message: 'Pegawai harus harus diisi'}]}
                 >
                     <AutoComplete 
                         onSearch={this.handleSearchPegawai}
                         onSelect={this.handleSelectPegawai}
+                        defaultValue={mode==='edit'?this.itemPengembanJabatan.nama:null}
                         disabled={disabledInput}
                     >
                     {
