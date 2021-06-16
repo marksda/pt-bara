@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import axios from 'axios';
 import { Button, Form, Input, Modal, Select } from 'antd';
 import { connect } from "react-redux";
-import { getGroupHakAkses } from "../../actions/master-action";
+import { getGroupHakAkses, getMenuTree } from "../../actions/master-action";
+import Tree from '../nav/Tree';
 import _ from 'lodash';
 
 const mapStateToProps = store => {
@@ -180,7 +181,7 @@ class FormAddGroupHakAkses extends Component {
                 }}
             >                
                 <Form.Item
-	                label="Nama Group"
+	                label="Nama"
                     name="nama"
                     rules={[{required: true, message: 'Nama group hak akses harus diisi'}]}
                 >
@@ -188,7 +189,6 @@ class FormAddGroupHakAkses extends Component {
                         data-jenis="nama"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
-                        style={{width: 150}}
                     />
                 </Form.Item>
                 <Form.Item
