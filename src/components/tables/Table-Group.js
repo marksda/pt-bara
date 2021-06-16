@@ -16,6 +16,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
 // import Tree from '../nav/Tree';
+import _ from 'lodash';
 
 import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -219,6 +220,7 @@ const mapDispatchToProps = dispatch => {
         getGroupHakAkses: (url, headerAuthorization) => dispatch(getGroupHakAkses(url, headerAuthorization)),
         setFilterGroupHakAkses: (value) => dispatch(setFilterGroupHakAkses(value)),
         setPaginationGroupHakAkses: (value) => dispatch(setPaginationGroupHakAkses(value)),
+        setMenuTreeSelected: (value) => dispatch(setMenuTreeSelected(value)),
         setUrutGroupHakAkses: (value) => dispatch(setUrutGroupHakAkses(value))
     };
 };

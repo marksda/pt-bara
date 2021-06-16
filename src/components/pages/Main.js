@@ -24,6 +24,7 @@ import { setUnauthorization } from "../../actions/notification-action";
 
 import Master from "./Master";
 import PengajuanBaru from "./Pengajuan-Baru";
+import Security from "./Security";
 
 const drawerWidth = 240;
 const styles = theme => ({
