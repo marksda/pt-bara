@@ -60,16 +60,8 @@ class FormAddGroupHakAkses extends Component {
     handleChangeNilaiText = (e) => {
         const { mode } = this.props;
 		switch(e.currentTarget.dataset.jenis) {
-            case 'id':
-                if(mode === "edit") {
-                    this.itemGroupHakAkses.idbaru = e.currentTarget.value;
-                }
-				else {
-                    this.itemGroupHakAkses.id = e.currentTarget.value;
-                }
-				break;
 			case 'nama':
-				this.itemGroupHakAkses.nama = e.currentTarget.value;
+				this.itemGroupHakAkses.keterangan = e.currentTarget.value;
 				break;
 			default:
 		}
@@ -88,6 +80,10 @@ class FormAddGroupHakAkses extends Component {
 
     handleReset = () => {
 		this.formRef.current.resetFields();
+	}
+
+    handleUpdateMenuSelected = (menu) => {
+		this.menuSelected = [...menu];
 	}
 
     loadGroupHakAkses = (filter, pagination, urut) => {
@@ -158,14 +154,14 @@ class FormAddGroupHakAkses extends Component {
     }
 
     render() {
-        const { data, handleClose, mode, visible } = this.props;
+        const { data, handleClose, menuTree, mode, visible } = this.props;
 		const { disabledInput } = this.state;
 
 		let page = null;
 
         page =
         <Modal
-            title={mode==='edit'?'Formulir Edit GroupHakAkses':'Formulir Add GroupHakAkses'}
+            title={mode==='edit'?'Formulir Edit Group Hak Akses':'Formulir Add Group Hak Akses'}
             visible={visible}
             onCancel={handleClose}
             footer={null}      
@@ -180,31 +176,35 @@ class FormAddGroupHakAkses extends Component {
                 initialValues={{
                     remember: true,
                     ["id"]: mode==='edit'?data.id:'',
-                    ["nama"]: mode==='edit'?data.nama:''
+                    ["nama"]: mode==='edit'?data.keterangan:''
                 }}
             >                
                 <Form.Item
-	                label="Id"
-                    name="id"
-                    rules={[{required: true, message: 'Id grouphakakses harus diisi'}]}
+	                label="Nama Group"
+                    name="nama"
+                    rules={[{required: true, message: 'Nama group hak akses harus diisi'}]}
                 >
                     <Input 
-                        data-jenis="id"
+                        data-jenis="nama"
                         disabled={disabledInput}
                         onChange={this.handleChangeNilaiText}
                         style={{width: 150}}
                     />
                 </Form.Item>
                 <Form.Item
-	                label="Nama"
-                    name="nama"
-                    rules={[{required: true, message: 'Nama grouphakakses harus diisi'}]}
+                    label="Menu"
                 >
-                    <Input 
-                        data-jenis="nama"
-                        disabled={disabledInput}
-                        onChange={this.handleChangeNilaiText}
-                    />
+                    <div style={{border: '1px solid #dfdddc', padding: '12px 16px', marginBottom: 8, width: '100%'}}>
+                    {
+                        menuTree.length > 0? 
+                        <Tree 
+                            data={menuTree} 
+                            enableIconCheckable={true} 
+                            updateMenu={this.handleUpdateMenuSelected}
+                            mode={mode}
+                        ></Tree>:null
+                    }
+                    </div>
                 </Form.Item>
                 <Form.Item {...tailLayout}>
                     <Button 
