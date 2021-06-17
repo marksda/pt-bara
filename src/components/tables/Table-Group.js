@@ -280,7 +280,7 @@ class TableGroupHakAkses extends React.Component {
 
     handleBtnDelete = (e) => {
         const { listGroupHakAkses } = this.props;
-        this.itemGroupHakAkses = {..._.find(listGroupHakAkses.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
+        this.itemGroupHakAkses = {..._.find(listGroupHakAkses.data, function(o) { return o.id === Number(e.currentTarget.dataset.id); })};
         this.setState({openConfirmasiHapusGroupHakAkses: true});
     }
 
@@ -454,7 +454,7 @@ class TableGroupHakAkses extends React.Component {
             <KonfirmasiDialog 
                 open={openConfirmasiHapusGroupHakAkses} 
                 aksi={this.handleDeleteGroupHakAkses} 
-                message={`Hapus item ${this.itemGroupHakAkses.nama}`}
+                message={`Hapus item ${this.itemGroupHakAkses.keterangan}`}
             />
             {pageAdd}
 		</div>;
