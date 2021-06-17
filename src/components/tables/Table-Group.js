@@ -15,7 +15,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
-// import Tree from '../nav/Tree';
+import Tree from '../nav/Tree';
 import _ from 'lodash';
 
 import { Input, Typography } from 'antd';
@@ -95,7 +95,7 @@ const EnhancedTableToolbar = (props) => {
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
     {id: 'm.keterangan', numerik: false, label: 'Nama group'},
-    {id: 'm.akses', numerik: false, label: 'Akses menu'},
+    {id: 'm.akses', numerik: false, label: 'Menu hak akses'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -420,10 +420,12 @@ class TableGroupHakAkses extends React.Component {
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{verticalAlign: 'top'}}
-                                        style={{width: 500}}
+                                        style={{verticalAlign: 'top', width: 500}}
 	                                >
-	                                    
+	                                    <Tree 
+                                            data={row.akses} 
+                                            enableIconCheckable={false} 
+                                        />
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}

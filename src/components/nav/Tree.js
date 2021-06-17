@@ -23,13 +23,15 @@ class Tree extends React.Component {
         this.state= {
             caretStatus: [],
             statusSelectedItem:[],
+            reRenderDetail: false
         };
 
-        this.menuTemporar = [];
+        this.menuTemporar = null;
     }
 
     componentDidMount() {
-        const {data, menuTreeSelected, mode} = this.props;
+        const {data, mode} = this.props;
+        this.menuTemporar = new Array(data.length);
         let tmpCaretStatus = [];
         let tmpStatusSelectedItem = [];
 
@@ -57,23 +59,69 @@ class Tree extends React.Component {
 
     handleTogleItemMenu = (e) => {
         e.stopPropagation();
-        const {statusSelectedItem} = this.state;        
+        const { reRenderDetail, statusSelectedItem } = this.state;    
+        const { data, updateMenu } = this.props;  
         let tmpStatusSelectedItem = [...statusSelectedItem];
         let i = Number(e.currentTarget.dataset.id);
         switch(tmpStatusSelectedItem[i]) {
             case 'none':
                 tmpStatusSelectedItem[i] = 'full';
+                this.menuTemporar[i] = _.cloneDeep(data[i]);
                 break;
             case 'half':
                 tmpStatusSelectedItem[i] = 'full';
+                this.menuTemporar[i] = _.cloneDeep(data[i]);
                 break;
             default:
                 tmpStatusSelectedItem[i] = 'none';
+                this.menuTemporar[i] = undefined;
                 break;
 
         }
+
+        updateMenu(this.menuTemporar); 
+        this.setState({statusSelectedItem: tmpStatusSelectedItem, reRenderDetail: !reRenderDetail});
+    }
+
+    handleToggleSelectBoxSubItem = (idxparent, idxsubitem, sub_menu_item, is_checked) => {
+        const { statusSelectedItem, reRenderDetail } = this.state;
+        const { data, updateMenu } = this.props;
+        let tmpStatusSelectedItem = [...statusSelectedItem];
         
-        this.setState({statusSelectedItem: tmpStatusSelectedItem});
+        if(is_checked === true) {
+            if(this.menuTemporar[idxparent] === undefined) {
+                this.menuTemporar[idxparent] = {
+                    sub_header: data[idxparent].sub_header,
+                    menu_item: new Array(data[idxparent].menu_item.length)
+                };
+                this.menuTemporar[idxparent].menu_item[idxsubitem] = sub_menu_item;                
+            }
+            else {
+                this.menuTemporar[idxparent].menu_item[idxsubitem] = sub_menu_item;
+            }
+        }
+        else {
+            this.menuTemporar[idxparent].menu_item[idxsubitem] = undefined;
+        }
+
+        let filtered;
+        filtered = this.menuTemporar[idxparent].menu_item.filter(el => {
+            return el !== undefined;
+        });
+
+        if(filtered.length === this.menuTemporar[idxparent].menu_item.length) {
+            tmpStatusSelectedItem[idxparent] = 'full';
+        }
+        else if(filtered.length === 0) {
+            tmpStatusSelectedItem[idxparent] = 'none';
+            this.menuTemporar[idxparent] = undefined;
+        }
+        else {
+            tmpStatusSelectedItem[idxparent] = 'half';
+        }
+        
+        updateMenu(this.menuTemporar);
+        this.setState({statusSelectedItem: tmpStatusSelectedItem, reRenderDetail: !reRenderDetail});
     }
 
     handleRenderIcnSquareItemMenu = (idx) => {
@@ -97,47 +145,21 @@ class Tree extends React.Component {
     }
 
     handleRenderSubMenu = (data, idxParent) => {
+        const { reRenderDetail } = this.state;
         let page = 
     	<TreeDetail 
+            key={reRenderDetail}
     		data_detail={data} 
     		handle_nested={this.handleNested} 
     		handle_recursive={this.handleRecursiveElement}
             enableIconCheckable={this.props.enableIconCheckable}
-            handle_toggle_selectBox={this.handleToggleSelectBox}
+            handle_toggle_selectBox={this.handleToggleSelectBoxSubItem}
             index_parent={idxParent}
+            data_menu_tmp={this.menuTemporar[idxParent]}
     	/>;
 
     	return(page);
     }
-
-    initTreeModeEdit = (menuTerpilih, menuLengkap, startItag, liNode) => {
-        let i = 0;
-        let indexFinded = -1;
-        let boxElement = null;
-        for(i=0;i<menuLengkap.length;i++) {
-            indexFinded = _.findIndex(menuTerpilih, function(o){
-                return o.title === menuLengkap[i].title;
-            });
-
-            if(indexFinded !== -1) {
-                boxElement = liNode[startItag];
-                boxElement.dataset.checked = "true"
-                boxElement.classList.remove("fa-square");
-                boxElement.classList.add("fa-check-square");
-            }
-
-            startItag++;
-
-            if(indexFinded !== -1 && menuLengkap[i].has_child === true) {
-                startItag = this.initTreeModeEdit(menuTerpilih[indexFinded].childs, menuLengkap[i].childs, startItag, liNode);
-            } 
-            else if(menuLengkap[i].has_child === true) {
-                startItag = this.counterStartItag( menuLengkap[i].childs, startItag);
-            }           
-        }
-        return startItag;
-    }
-
 
 	render() {
 		const { data, enableIconCheckable } = this.props;
@@ -186,11 +208,22 @@ class TreeDetail extends React.Component {
     }
 
     componentDidMount() {
-        const { data_detail } = this.props;
+        const { data_detail, data_menu_tmp } = this.props;
         let tmpStatusSelectedItem = [];
-
-        for(let i=0;i<data_detail.length;i++) {
-            tmpStatusSelectedItem[i] = 'none';
+        if(data_menu_tmp !== undefined) {
+            for(let i=0;i<data_detail.length;i++) {
+                if(data_menu_tmp.menu_item[i] !== undefined){
+                    tmpStatusSelectedItem[i] = 'full';
+                }
+                else {
+                    tmpStatusSelectedItem[i] = 'none';
+                }
+            }
+        }
+        else {
+            for(let i=0;i<data_detail.length;i++) {
+                tmpStatusSelectedItem[i] = 'none';
+            }
         }
 
         this.setState({statusSelectedItem: tmpStatusSelectedItem});
@@ -205,9 +238,6 @@ class TreeDetail extends React.Component {
             case 'none':
                 icnsqritemmenu = <BorderOutlined data-id={idx} onClick={this.handleTogleItemMenu} />;
                 break;
-            case 'half':
-                icnsqritemmenu = <MinusSquareOutlined data-id={idx} onClick={this.handleTogleItemMenu} />;
-                break;
             case 'full':
                 icnsqritemmenu = <CheckSquareOutlined data-id={idx} onClick={this.handleTogleItemMenu} />;
                 break;
@@ -215,27 +245,27 @@ class TreeDetail extends React.Component {
                 break;
         }
         return icnsqritemmenu;
+
     }
 
     handleTogleItemMenu = (e) => {
         e.stopPropagation();
-        const {statusSelectedItem} = this.state;        
+        const {statusSelectedItem} = this.state;              
+        const { data_detail, handle_toggle_selectBox, index_parent } = this.props;
+
         let tmpStatusSelectedItem = [...statusSelectedItem];
         let i = Number(e.currentTarget.dataset.id);
         switch(tmpStatusSelectedItem[i]) {
             case 'none':
                 tmpStatusSelectedItem[i] = 'full';
-                break;
-            case 'half':
-                tmpStatusSelectedItem[i] = 'full';
+                handle_toggle_selectBox(index_parent, i, data_detail[i], true);
                 break;
             default:
                 tmpStatusSelectedItem[i] = 'none';
+                handle_toggle_selectBox(index_parent, i, data_detail[i], false);
                 break;
 
         }
-        
-        this.setState({statusSelectedItem: tmpStatusSelectedItem});
     }
 
 	render() {
@@ -245,7 +275,7 @@ class TreeDetail extends React.Component {
         {
         	data_detail.map((item, index) =>
         		<li key={item.id}>
-            		<span data-id={item.id} >
+            		<span data-id={index} >
                         {
                             enableIconCheckable===true?this.handleRenderIcnSquareItemMenu(index):null
                         } 
