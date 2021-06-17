@@ -147,7 +147,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
-                                    style={{width: 500}}
+                                    style={{width: 300}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -420,7 +420,7 @@ class TableGroupHakAkses extends React.Component {
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{verticalAlign: 'top', width: 500}}
+                                        style={{verticalAlign: 'top', width: 300}}
 	                                >
 	                                    <Tree 
                                             data={row.akses} 

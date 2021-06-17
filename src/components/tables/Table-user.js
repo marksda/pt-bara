@@ -93,9 +93,10 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.pengguna', numerik: false, label: 'User hak akses'},
-    {id: 'a.keterangan', numerik: false, label: 'Group hak akses'},
-    {id: 'p.nama', numerik: false, label: 'Pegawai'},
+    {id: 'm.pengguna', numerik: false, label: 'User login'},
+    {id: 'm.password', numerik: false, label: 'Password'},
+    {id: 'a.keterangan', numerik: false, label: 'Group'},
+    {id: 'p.nama', numerik: false, label: 'Nama pengguna'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -150,21 +151,31 @@ const EnhancedTableHead = (props) => {
                                     align={'left'}
                                     style={{width: 250}}
                                 >
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 3:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 250}}
+                                >
                                     <TableSortLabel
-                                      active={orderBy === headCell.id}
-                                      direction={orderBy === headCell.id ? order : 'desc'}
-                                      onClick={createSortHandler(headCell.id)}
+                                        active={orderBy === headCell.id}
+                                        direction={orderBy === headCell.id ? order : 'desc'}
+                                        onClick={createSortHandler(headCell.id)}
                                     >
                                         {headCell.label}
                                         {orderBy === headCell.id ? (
                                             <span className={classes.visuallyHidden}>
-                                              {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                             </span>
                                         ) : null}
                                     </TableSortLabel>
                                 </TableCell>;
                                 break;
-                            case 3:
+                            case 4:
                                 page = 
                                 <TableCell
                                     key={headCell.id}
@@ -437,6 +448,12 @@ class TableUser extends React.Component {
                                         style={{width: 250, verticalAlign: 'top'}}
 	                                >
 	                                    { row.userlogin }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 250, verticalAlign: 'top'}}
+	                                >
+                                        **********************
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
