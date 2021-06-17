@@ -93,9 +93,9 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.user', numerik: false, label: 'User name'},
-    {id: 'm.group', numerik: false, label: 'Hak akses group'},
-    {id: 'm.nama', numerik: false, label: 'Nama pegawai'},
+    {id: 'm.pengguna', numerik: false, label: 'User hak akses'},
+    {id: 'a.keterangan', numerik: false, label: 'Group hak akses'},
+    {id: 'p.nama', numerik: false, label: 'Pegawai'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -380,7 +380,7 @@ class TableUser extends React.Component {
 
     loadUser = (filter, pagination, urut) => {
         const { getUser, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/user?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        let url = `${restfulServer}/master/userhakakses?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
         getUser(url, headerAuthorization);
     }
 
@@ -434,15 +434,21 @@ class TableUser extends React.Component {
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{minWidth: 80, verticalAlign: 'top'}}
+                                        style={{width: 250, verticalAlign: 'top'}}
 	                                >
-	                                    { row.id }
+	                                    { row.userlogin }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
+                                        style={{width: 250, verticalAlign: 'top'}}
+	                                >
+	                                    { row.groupakses }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
                                         style={{verticalAlign: 'top'}}
 	                                >
-	                                    { row.nama }
+	                                    { row.namapegawai }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}

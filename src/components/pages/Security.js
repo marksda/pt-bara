@@ -11,14 +11,14 @@ class Security extends React.Component {
     render() {
         let page =
         <Tabs defaultActiveKey="1" centered size="large">            
-            <TabPane tab="Hak akses group" key="1">
+            <TabPane tab="Group hak akses" key="1">
                 <div className="content-flex-center">
-                    <TableGroup title="Data Hak Akses Group"/>
+                    <TableGroup title="Data Group Hak Akses"/>
                 </div>
             </TabPane>
-            <TabPane tab="Hak akses user" key="2">
+            <TabPane tab="User hak akses" key="2">
                 <div className="content-flex-center">
-                    <TableUser title="Data Hak Akses User"/>
+                    <TableUser title="Data User Hak Akses"/>
                 </div>
             </TabPane>
         </Tabs>;  
