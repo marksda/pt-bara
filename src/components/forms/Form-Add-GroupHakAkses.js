@@ -117,7 +117,7 @@ class FormAddGroupHakAkses extends Component {
             });
         }
 
-        this.itemGroupHakAkses.menu = this.menuSelected	
+        this.itemGroupHakAkses.menu = this.menuSelected;
         
 	    handleToggleOpenProgressDialog();
 
@@ -142,30 +142,45 @@ class FormAddGroupHakAkses extends Component {
 	}    
 
     updateGroupHakAkses = () => {
-        const { filterGroupHakAkses, headerAuthorization, paginationGroupHakAkses, restfulServer, urutGroupHakAkses, handleClose } = this.props;
+        this.menuSelected = this.menuSelected.filter(el => {
+            return el !== undefined;
+        });
 
-        let self = this;    
+        let p = this.menuSelected.length;
+        for(let i=0;i<p;i++) {
+            this.menuSelected[i].menu_item = this.menuSelected[i].menu_item.filter(el => {
+                return el !== undefined;
+            });
+        }
+
+        this.itemGroupHakAkses.menu = this.menuSelected;
+        
+        console.log(this.itemGroupHakAkses);
+
+        // const { filterGroupHakAkses, headerAuthorization, paginationGroupHakAkses, restfulServer, urutGroupHakAkses, handleClose } = this.props;
+
+        // let self = this;    
                 
-        axios({
-            method: 'post',
-            url: `${restfulServer}/master/grouphakakses`,
-            headers: {...headerAuthorization},
-            data: this.itemGroupHakAkses
-        })
-        .then((r) => {         
-            if(r.data.status === 200) {
-                self.loadGroupHakAkses(
-                    filterGroupHakAkses,
-                    paginationGroupHakAkses,
-                    urutGroupHakAkses
-                );
-            }
-            self.setState({disabledInput: false});
-            handleClose();
-        })
-        .catch((r) => {         
-            self.setState({disabledInput: false});
-        });        
+        // axios({
+        //     method: 'post',
+        //     url: `${restfulServer}/master/grouphakakses`,
+        //     headers: {...headerAuthorization},
+        //     data: this.itemGroupHakAkses
+        // })
+        // .then((r) => {         
+        //     if(r.data.status === 200) {
+        //         self.loadGroupHakAkses(
+        //             filterGroupHakAkses,
+        //             paginationGroupHakAkses,
+        //             urutGroupHakAkses
+        //         );
+        //     }
+        //     self.setState({disabledInput: false});
+        //     handleClose();
+        // })
+        // .catch((r) => {         
+        //     self.setState({disabledInput: false});
+        // });        
     }
 
     render() {
