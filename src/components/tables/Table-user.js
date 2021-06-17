@@ -25,7 +25,7 @@ import {
 } from '@ant-design/icons';
   
 
-import { getUser, setFilterUser, setPaginationUser, setUrutUser } from "../../actions/master-action";
+import { getPegawai, getUser, setFilterUser, setPaginationUser, setUrutUser } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -96,7 +96,7 @@ const headRows = [
     {id: 'm.pengguna', numerik: false, label: 'User login'},
     {id: 'm.password', numerik: false, label: 'Password'},
     {id: 'a.keterangan', numerik: false, label: 'Group'},
-    {id: 'p.nama', numerik: false, label: 'Nama pengguna'},
+    {id: 'p.nama', numerik: false, label: 'Pengguna'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -243,12 +243,17 @@ const mapStateToProps = store => {
         listUser: store.master.list_user,
         paginationUser: store.master.pagination_user,
         restfulServer: store.general.restful_domain,
-        urutUser: store.master.urut_user
+        urutUser: store.master.urut_user,
+        listPegawai: store.master.list_pegawai,
+        filterPegawai: store.master.filter_pegawai,
+        paginationPegawai: store.master.pagination_pegawai,
+        urutPegawai: store.master.urut_pegawai
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
+        getPegawai: (url, headerAuthorization) => dispatch(getPegawai(url, headerAuthorization)),
         getUser: (url, headerAuthorization) => dispatch(getUser(url, headerAuthorization)),
         setFilterUser: (value) => dispatch(setFilterUser(value)),
         setPaginationUser: (value) => dispatch(setPaginationUser(value)),
@@ -318,7 +323,7 @@ class TableUser extends React.Component {
     handleBtnEdit = (e) => {
         const { listUser } = this.props;
         this.itemUser = {..._.find(listUser.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
-        this.itemUser.nama = this.itemUser.nama.split(',')[0];
+        // this.itemUser.nama = this.itemUser.nama.split(',')[0];
         this.setState({openFormAddUser: true, mode: 'edit'});
     }
 
@@ -371,6 +376,10 @@ class TableUser extends React.Component {
     }
 
     handleOpenFormAddUser = () => {
+        const { listPegawai, filterPegawai, paginationPegawai, urutPegawai } = this.props;
+        if(listPegawai === null) {
+            this.loadPegawai(filterPegawai, paginationPegawai, urutPegawai);
+        }
         this.setState({openFormAddUser: true, mode: 'add'});
     }
 
@@ -387,6 +396,12 @@ class TableUser extends React.Component {
 
     handleToggleOpenProgressDialog = () => {
         this.setState({openProcessingDialog: !this.state.openProcessingDialog});
+    }
+
+    loadPegawai = (filter, pagination, urut) => {
+        const { getPegawai, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/pegawai?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getPegawai(url, headerAuthorization);
     }
 
     loadUser = (filter, pagination, urut) => {

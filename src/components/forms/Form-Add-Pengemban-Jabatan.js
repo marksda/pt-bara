@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from 'axios';
 import moment from "moment";
-import { AutoComplete, Button, DatePicker, Form, Input, Modal, Select } from 'antd';
+import { AutoComplete, Button, DatePicker, Form, Modal, Select } from 'antd';
 import { connect } from "react-redux";
 import { getJabatan, getPegawai, getPengembanJabatan, getStrukturOrganisasi } from "../../actions/master-action";
 
