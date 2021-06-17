@@ -93,8 +93,9 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.id', numerik: false, label: 'Id'},
-    {id: 'm.nama', numerik: false, label: 'Nama'},
+    {id: 'm.user', numerik: false, label: 'User name'},
+    {id: 'm.group', numerik: false, label: 'Hak akses group'},
+    {id: 'm.nama', numerik: false, label: 'Nama pegawai'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -126,7 +127,7 @@ const EnhancedTableHead = (props) => {
                                     <TableCell
                                         key={headCell.id}
                                         align={'left'}
-                                        style={{width: 80}}
+                                        style={{width: 250}}
                                     >
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
@@ -147,6 +148,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
+                                    style={{width: 250}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -157,6 +159,26 @@ const EnhancedTableHead = (props) => {
                                         {orderBy === headCell.id ? (
                                             <span className={classes.visuallyHidden}>
                                               {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </span>
+                                        ) : null}
+                                    </TableSortLabel>
+                                </TableCell>;
+                                break;
+                            case 3:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === headCell.id}
+                                        direction={orderBy === headCell.id ? order : 'desc'}
+                                        onClick={createSortHandler(headCell.id)}
+                                    >
+                                        {headCell.label}
+                                        {orderBy === headCell.id ? (
+                                            <span className={classes.visuallyHidden}>
+                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                             </span>
                                         ) : null}
                                     </TableSortLabel>
