@@ -30,7 +30,8 @@ class Tree extends React.Component {
     }
 
     componentDidMount() {
-        const {data, mode} = this.props;
+        const {data, menuTreeSelected, mode} = this.props;
+        let self = this;
         this.menuTemporar = new Array(data.length);
         let tmpCaretStatus = [];
         let tmpStatusSelectedItem = [];
@@ -39,14 +40,34 @@ class Tree extends React.Component {
             tmpCaretStatus[i] = false;
             tmpStatusSelectedItem[i] = 'none';
         }
+        
+        let idx;
+        if(mode === 'edit') {
+            let p = menuTreeSelected.length;
+            for(let i=0; i<p; i++) {
+                idx = _.findIndex(data, function(o) {return o.sub_header === menuTreeSelected[i].sub_header});
+                self.menuTemporar[idx] = _.cloneDeep(data[idx]);
+
+                if(self.menuTemporar[idx].menu_item.length === menuTreeSelected[i].menu_item.length) {
+                    tmpStatusSelectedItem[idx] = 'full';
+                }
+                else {
+                    tmpStatusSelectedItem[idx] = 'half';
+                }
+
+                tmpCaretStatus[idx] = true;
+
+                let subIdx = 0;
+                for(let j=0; j<this.menuTemporar[idx].menu_item.length;j++) {
+                    subIdx = _.findIndex(menuTreeSelected[i].menu_item, function(o) {return o.id === self.menuTemporar[idx].menu_item[j].id});
+                    if(subIdx < 0) {
+                        self.menuTemporar[idx].menu_item[j] = undefined;
+                    }
+                }
+            }
+        }
 
         this.setState({caretStatus: tmpCaretStatus, statusSelectedItem: tmpStatusSelectedItem});
-
-        if(mode === 'edit') {
-            // this.menuTemporar = _.cloneDeep(menuTreeSelected);
-            // let liNode = document.getElementsByTagName("I");
-            // this.initTreeModeEdit(menuTreeSelected, data, 8, liNode);
-        }
     }
 
     handleTogleCaret = (e) => {
@@ -150,8 +171,6 @@ class Tree extends React.Component {
     	<TreeDetail 
             key={reRenderDetail}
     		data_detail={data} 
-    		handle_nested={this.handleNested} 
-    		handle_recursive={this.handleRecursiveElement}
             enableIconCheckable={this.props.enableIconCheckable}
             handle_toggle_selectBox={this.handleToggleSelectBoxSubItem}
             index_parent={idxParent}

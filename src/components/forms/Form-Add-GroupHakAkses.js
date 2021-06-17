@@ -49,7 +49,7 @@ class FormAddGroupHakAkses extends Component {
         const { data, menuTree, mode } = this.props;
                
         if(mode === 'edit') {
-            this.itemGroupHakAkses = {...data};
+            this.itemGroupHakAkses = _.cloneDeep(data);
             this.menuSelected = _.cloneDeep(this.itemGroupHakAkses.akses);
         }
 
@@ -100,9 +100,12 @@ class FormAddGroupHakAkses extends Component {
     }
 
     saveGroupHakAkses = () => {
-        
-        
-        
+        const { 
+			filterGroupHakAkses, headerAuthorization, paginationGroupHakAkses, restfulServer, urutGroupHakAkses, handleClose, handleToggleOpenProgressDialog
+		} = this.props;
+
+	    let self = this;
+
         this.menuSelected = this.menuSelected.filter(el => {
             return el !== undefined;
         });
@@ -114,34 +117,28 @@ class FormAddGroupHakAkses extends Component {
             });
         }
 
-        this.itemGroupHakAkses.menu = this.menuSelected
-
-        console.log(this.itemGroupHakAkses);
-		// const { 
-		// 	filterGroupHakAkses, headerAuthorization, paginationGroupHakAkses, restfulServer, urutGroupHakAkses, handleClose, handleToggleOpenProgressDialog
-		// } = this.props;
-	    // let self = this;
+        this.itemGroupHakAkses.menu = this.menuSelected	
         
-	    // handleToggleOpenProgressDialog();
+	    handleToggleOpenProgressDialog();
 
-	    // axios({
-        //     method: 'put',
-        //     url: `${restfulServer}/master/grouphakakses`,
-        //     headers: {...headerAuthorization},
-        //     data: this.itemGroupHakAkses
-        // })
-	    // .then((r) => {  
-	    // 	if(r.data.status === 200) {        
-		// 		self.loadGroupHakAkses(filterGroupHakAkses, paginationGroupHakAkses, urutGroupHakAkses);
-	    // 	} 
-	    // 	self.handleReset();
-        //     self.setState({disabledInput: false});
-        //     // handleClose();
-        //     handleToggleOpenProgressDialog();
-	    // })
-	    // .catch((r) => {
-	    // 	self.setState({disabledInput: true});
-	    // });
+	    axios({
+            method: 'put',
+            url: `${restfulServer}/master/grouphakakses`,
+            headers: {...headerAuthorization},
+            data: this.itemGroupHakAkses
+        })
+	    .then((r) => {  
+	    	if(r.data.status === 200) {        
+				self.loadGroupHakAkses(filterGroupHakAkses, paginationGroupHakAkses, urutGroupHakAkses);
+	    	} 
+	    	self.handleReset();
+            self.setState({disabledInput: false});
+            // handleClose();
+            handleToggleOpenProgressDialog();
+	    })
+	    .catch((r) => {
+	    	self.setState({disabledInput: true});
+	    });
 	}    
 
     updateGroupHakAkses = () => {

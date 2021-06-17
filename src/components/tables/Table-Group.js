@@ -286,7 +286,7 @@ class TableGroupHakAkses extends React.Component {
 
     handleBtnEdit = (e) => {
         const { listGroupHakAkses, setMenuTreeSelected } = this.props;
-        this.itemGroupHakAkses = {..._.find(listGroupHakAkses.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
+        this.itemGroupHakAkses = {..._.find(listGroupHakAkses.data, function(o) { return o.id === Number(e.currentTarget.dataset.id); })};
         setMenuTreeSelected(this.itemGroupHakAkses.akses);
         this.setState({openFormAddGroupHakAkses: true, mode: 'edit'});
     }
