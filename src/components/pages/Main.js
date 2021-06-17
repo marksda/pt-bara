@@ -140,8 +140,6 @@ class Main extends React.Component {
         const { authorizationNotify, classes, listMenu } = this.props;
         const { itemMenuSelected, open } = this.state;
 
-        console.log(listMenu);
-
         let page = null;
         let subPage = null;
 
