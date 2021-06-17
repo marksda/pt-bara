@@ -55,7 +55,7 @@ class Tree extends React.Component {
                     tmpStatusSelectedItem[idx] = 'half';
                 }
 
-                tmpCaretStatus[idx] = true;
+                // tmpCaretStatus[idx] = true;
 
                 let subIdx = 0;
                 for(let j=0; j<this.menuTemporar[idx].menu_item.length;j++) {

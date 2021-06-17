@@ -142,6 +142,8 @@ class FormAddGroupHakAkses extends Component {
 	}    
 
     updateGroupHakAkses = () => {
+        const { filterGroupHakAkses, headerAuthorization, paginationGroupHakAkses, restfulServer, urutGroupHakAkses, handleClose } = this.props;
+
         this.menuSelected = this.menuSelected.filter(el => {
             return el !== undefined;
         });
@@ -153,34 +155,31 @@ class FormAddGroupHakAkses extends Component {
             });
         }
 
-        this.itemGroupHakAkses.menu = this.menuSelected;
-        
-        console.log(this.itemGroupHakAkses);
+        this.itemGroupHakAkses.akses = this.menuSelected;
 
-        // const { filterGroupHakAkses, headerAuthorization, paginationGroupHakAkses, restfulServer, urutGroupHakAkses, handleClose } = this.props;
 
-        // let self = this;    
+        let self = this;    
                 
-        // axios({
-        //     method: 'post',
-        //     url: `${restfulServer}/master/grouphakakses`,
-        //     headers: {...headerAuthorization},
-        //     data: this.itemGroupHakAkses
-        // })
-        // .then((r) => {         
-        //     if(r.data.status === 200) {
-        //         self.loadGroupHakAkses(
-        //             filterGroupHakAkses,
-        //             paginationGroupHakAkses,
-        //             urutGroupHakAkses
-        //         );
-        //     }
-        //     self.setState({disabledInput: false});
-        //     handleClose();
-        // })
-        // .catch((r) => {         
-        //     self.setState({disabledInput: false});
-        // });        
+        axios({
+            method: 'post',
+            url: `${restfulServer}/master/grouphakakses`,
+            headers: {...headerAuthorization},
+            data: this.itemGroupHakAkses
+        })
+        .then((r) => {         
+            if(r.data.status === 200) {
+                self.loadGroupHakAkses(
+                    filterGroupHakAkses,
+                    paginationGroupHakAkses,
+                    urutGroupHakAkses
+                );
+            }
+            self.setState({disabledInput: false});
+            handleClose();
+        })
+        .catch((r) => {         
+            self.setState({disabledInput: false});
+        });        
     }
 
     render() {
