@@ -97,6 +97,7 @@ const headRows = [
     {id: 'm.nama', numerik: false, label: 'Nama'},  
     {id: 'm.dk', numerik: false, label: 'D/K'},
     {id: 'm.saldo', numerik: false, label: 'Saldo'},  
+    {id: 'm.hd', numerik: false, label: 'Header/Detail'}, 
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -179,6 +180,16 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'right'}
+                                    style={{width: 200}}
+                                >
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 5:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
                                     style={{width: 200}}
                                 >
                                     {headCell.label}
@@ -459,6 +470,12 @@ class TableAkun extends React.Component {
                                         style={{width: 200, verticalAlign: 'top'}}
 	                                >
 	                                    { row.saldo }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 200, verticalAlign: 'top'}}
+	                                >
+	                                    { row.hd }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}
