@@ -439,19 +439,19 @@ class TableAkun extends React.Component {
 	                                    align={'left'}
                                         style={{minWidth: 50, verticalAlign: 'top'}}
 	                                >
-	                                    { row.id }
+                                        { row.status_header === true? <b>{row.id}</b>:row.id }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
                                         style={{verticalAlign: 'top', width: 350}}
 	                                >
-	                                    { row.nama }
+	                                    { row.status_header === true? <b>{row.nama}</b>:row.nama }
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
                                         style={{width: 150, verticalAlign: 'top'}}
 	                                >
-	                                    { row.status_header === true ? 'Header' : 'Detail' }
+	                                    { row.status_header === true ? <b>Header</b>:'Detail' }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{verticalAlign: 'top'}}
