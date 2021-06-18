@@ -95,9 +95,7 @@ const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
     {id: 'm.id', numerik: false, label: 'Kode'},
     {id: 'm.nama', numerik: false, label: 'Nama'},  
-    {id: 'm.dk', numerik: false, label: 'D/K'},
-    {id: 'm.saldo', numerik: false, label: 'Saldo'},  
-    {id: 'm.hd', numerik: false, label: 'Header/Detail'}, 
+    {id: 'm.status_header', numerik: false, label: 'Header/Detail'}, 
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -129,7 +127,7 @@ const EnhancedTableHead = (props) => {
                                     <TableCell
                                         key={headCell.id}
                                         align={'left'}
-                                        style={{width: 80}}
+                                        style={{width: 50}}
                                     >
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
@@ -150,6 +148,28 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
+                                    style={{width: 350}}
+                                >
+                                    <TableSortLabel
+                                      active={orderBy === headCell.id}
+                                      direction={orderBy === headCell.id ? order : 'desc'}
+                                      onClick={createSortHandler(headCell.id)}
+                                    >
+                                        {headCell.label}
+                                        {orderBy === headCell.id ? (
+                                            <span className={classes.visuallyHidden}>
+                                              {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </span>
+                                        ) : null}
+                                    </TableSortLabel>
+                                </TableCell>;
+                                break;                            
+                            case 3:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 150}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -165,42 +185,11 @@ const EnhancedTableHead = (props) => {
                                     </TableSortLabel>
                                 </TableCell>;
                                 break;
-                            case 3:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'center'}
-                                    style={{width: 80}}
-                                >
-                                    {headCell.label}
-                                </TableCell>;
-                                break;
-                            case 4:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'right'}
-                                    style={{width: 200}}
-                                >
-                                    {headCell.label}
-                                </TableCell>;
-                                break;
-                            case 5:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'left'}
-                                    style={{width: 200}}
-                                >
-                                    {headCell.label}
-                                </TableCell>;
-                                break;
                             default:
                                 page =
                                 <TableCell
                                     key={headCell.id}
-                                    align={'center'}
-                                    style={{width: 80}}
+                                    align={'right'}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -249,7 +238,6 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
-        getBentukUsaha: (url, headerAuthorization) => dispatch(getBentukUsaha(url, headerAuthorization)),
         getAkun: (url, headerAuthorization) => dispatch(getAkun(url, headerAuthorization)),
         setFilterAkun: (value) => dispatch(setFilterAkun(value)),
         setPaginationAkun: (value) => dispatch(setPaginationAkun(value)),
@@ -449,37 +437,25 @@ class TableAkun extends React.Component {
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{minWidth: 80, verticalAlign: 'top'}}
+                                        style={{minWidth: 50, verticalAlign: 'top'}}
 	                                >
 	                                    { row.id }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{verticalAlign: 'top'}}
+                                        style={{verticalAlign: 'top', width: 350}}
 	                                >
 	                                    { row.nama }
 	                                </TableCell>
                                     <TableCell 
-	                                    align={'center'}
-                                        style={{width: 80,verticalAlign: 'top'}}
-	                                >
-	                                    { row.dk }
-	                                </TableCell>
-                                    <TableCell 
-	                                    align={'right'}
-                                        style={{width: 200, verticalAlign: 'top'}}
-	                                >
-	                                    { row.saldo }
-	                                </TableCell>
-                                    <TableCell 
 	                                    align={'left'}
-                                        style={{width: 200, verticalAlign: 'top'}}
+                                        style={{width: 150, verticalAlign: 'top'}}
 	                                >
-	                                    { row.hd }
+	                                    { row.status_header === true ? 'Header' : 'Detail' }
 	                                </TableCell>
 	                                <TableCell 
-                                        style={{width: 80, verticalAlign: 'top'}}
-                                        align={'center'}
+                                        style={{verticalAlign: 'top'}}
+                                        align={'right'}
                                     >
                                         <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.id} onClick={this.handleBtnEdit} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>

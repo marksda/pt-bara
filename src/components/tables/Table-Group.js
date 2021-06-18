@@ -127,6 +127,7 @@ const EnhancedTableHead = (props) => {
                                     <TableCell
                                         key={headCell.id}
                                         align={'left'}
+                                        style={{width: 350}}
                                     >
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
@@ -147,7 +148,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
-                                    style={{width: 300}}
+                                    style={{width: 200}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -167,8 +168,7 @@ const EnhancedTableHead = (props) => {
                                 page =
                                 <TableCell
                                     key={headCell.id}
-                                    align={'center'}
-                                    style={{width: 80}}
+                                    align={'right'}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -408,19 +408,19 @@ class TableGroupHakAkses extends React.Component {
 	                            >
 	                            	<TableCell 
 	                                    align={'right'}
-	                                    style={{minWidth: 40, verticalAlign: 'top'}}
+	                                    style={{width: 40, verticalAlign: 'top'}}
 	                                >
 	                                    {(paginationGroupHakAkses.current-1)*paginationGroupHakAkses.pageSize+index+1}.
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{minWidth: 80, verticalAlign: 'top'}}
+                                        style={{verticalAlign: 'top', width: 350}}
 	                                >
 	                                    { row.keterangan }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{verticalAlign: 'top', width: 300}}
+                                        style={{verticalAlign: 'top', width: 200}}
 	                                >
 	                                    <Tree 
                                             data={row.akses} 
@@ -428,8 +428,8 @@ class TableGroupHakAkses extends React.Component {
                                         />
 	                                </TableCell>
 	                                <TableCell 
-                                        style={{width: 80, verticalAlign: 'top'}}
-                                        align={'center'}
+                                        style={{verticalAlign: 'top'}}
+                                        align={'right'}
                                     >
                                         <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.id} onClick={this.handleBtnEdit} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
