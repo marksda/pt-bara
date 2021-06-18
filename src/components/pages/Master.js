@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs  } from 'antd';
 
+import TableAkun from '../tables/Table-Akun';
 import TableCustomer from '../tables/Table-Customer';
 import TableJabatan from '../tables/Table-Jabatan';
 import TablePegawai from '../tables/Table-Pegawai';
@@ -13,7 +14,12 @@ const { TabPane } = Tabs;
 class Master extends React.Component {
     render() {
         let page =
-        <Tabs defaultActiveKey="1" centered size="large">            
+        <Tabs defaultActiveKey="6" centered size="large">  
+            <TabPane tab="Akun" key="6">
+                <div className="content-flex-center">
+                    <TableAkun title="Data Akun"/>
+                </div>
+            </TabPane>           
             <TabPane tab="Customer" key="1">
                 <div className="content-flex-center">
                     <TableCustomer title="Data Customer"/>

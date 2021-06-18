@@ -8,11 +8,11 @@ const { Option } = AutoComplete;
 
 const mapStateToProps = store => {
     return {      
-        filterUser: store.master.filter_pengemban_jabatan,
+        filterUser: store.master.filter_user,
         headerAuthorization: store.credential.header_authorization,
-        paginationUser: store.master.pagination_pengemban_jabatan,
+        paginationUser: store.master.pagination_user,
         restfulServer: store.general.restful_domain,
-        urutUser: store.master.urut_pengemban_jabatan,
+        urutUser: store.master.urut_user,
         listPegawai: store.master.list_pegawai,
         filterPegawai: store.master.filter_pegawai,
         paginationPegawai: store.master.pagination_pegawai,
@@ -172,7 +172,7 @@ class FormAddUser extends Component {
                 
         axios({
             method: 'post',
-            url: `${restfulServer}/master/user`,
+            url: `${restfulServer}/master/userhakakses`,
             headers: {...headerAuthorization},
             data: this.itemUser
         })

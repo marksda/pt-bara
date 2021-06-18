@@ -1,7 +1,7 @@
 import React from "react";
 import AddBoxOutlineIcon from '@material-ui/icons/AddOutlined';
 import axios from 'axios';
-import FormAddUser from "../forms/Form-Add-User";
+import FormAddAkun from "../forms/Form-Add-Akun";
 import IconButton from '@material-ui/core/IconButton';
 import KonfirmasiDialog from "../dialogs/Konfirmasi-Dialog";
 import ProcessingDialog from '../dialogs/Processing-Dialog';
@@ -25,7 +25,7 @@ import {
 } from '@ant-design/icons';
   
 
-import { getPegawai, getUser, setFilterUser, setPaginationUser, setUrutUser } from "../../actions/master-action";
+import { getAkun, setFilterAkun, setPaginationAkun, setUrutAkun } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -93,10 +93,11 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.pengguna', numerik: false, label: 'User login'},
-    {id: 'm.password', numerik: false, label: 'Password'},
-    {id: 'a.keterangan', numerik: false, label: 'Group'},
-    {id: 'p.nama', numerik: false, label: 'Pengguna'},
+    {id: 'm.id', numerik: false, label: 'Id'},
+    {id: 'm.nama', numerik: false, label: 'Nama'},  
+    {id: 'm.alamat', numerik: false, label: 'Alamat'},  
+    {id: 'm.telepone', numerik: false, label: 'Telepon'},  
+    {id: 'm.email', numerik: false, label: 'E-mail'},  
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -128,7 +129,7 @@ const EnhancedTableHead = (props) => {
                                     <TableCell
                                         key={headCell.id}
                                         align={'left'}
-                                        style={{width: 250}}
+                                        style={{width: 80}}
                                     >
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
@@ -149,9 +150,20 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
-                                    style={{width: 250}}
+                                    style={{width: 350}}
                                 >
-                                    {headCell.label}
+                                    <TableSortLabel
+                                      active={orderBy === headCell.id}
+                                      direction={orderBy === headCell.id ? order : 'desc'}
+                                      onClick={createSortHandler(headCell.id)}
+                                    >
+                                        {headCell.label}
+                                        {orderBy === headCell.id ? (
+                                            <span className={classes.visuallyHidden}>
+                                              {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </span>
+                                        ) : null}
+                                    </TableSortLabel>
                                 </TableCell>;
                                 break;
                             case 3:
@@ -159,20 +171,8 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
-                                    style={{width: 250}}
                                 >
-                                    <TableSortLabel
-                                        active={orderBy === headCell.id}
-                                        direction={orderBy === headCell.id ? order : 'desc'}
-                                        onClick={createSortHandler(headCell.id)}
-                                    >
-                                        {headCell.label}
-                                        {orderBy === headCell.id ? (
-                                            <span className={classes.visuallyHidden}>
-                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                            </span>
-                                        ) : null}
-                                    </TableSortLabel>
+                                    {headCell.label}
                                 </TableCell>;
                                 break;
                             case 4:
@@ -180,19 +180,19 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
+                                    style={{width: 100}}
                                 >
-                                    <TableSortLabel
-                                        active={orderBy === headCell.id}
-                                        direction={orderBy === headCell.id ? order : 'desc'}
-                                        onClick={createSortHandler(headCell.id)}
-                                    >
-                                        {headCell.label}
-                                        {orderBy === headCell.id ? (
-                                            <span className={classes.visuallyHidden}>
-                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                            </span>
-                                        ) : null}
-                                    </TableSortLabel>
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 5:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                    style={{width: 100}}
+                                >
+                                    {headCell.label}
                                 </TableCell>;
                                 break;
                             default:
@@ -238,191 +238,197 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
-        filterUser: store.master.filter_user,
+        filterBentukUsaha: store.master.filter_bentuk_usaha,
+        filterAkun: store.master.filter_akun,
         headerAuthorization: store.credential.header_authorization,
-        listUser: store.master.list_user,
-        paginationUser: store.master.pagination_user,
+        listAkun: store.master.list_akun,
+        paginationAkun: store.master.pagination_akun,
         restfulServer: store.general.restful_domain,
-        urutUser: store.master.urut_user,
-        listPegawai: store.master.list_pegawai,
-        filterPegawai: store.master.filter_pegawai,
-        paginationPegawai: store.master.pagination_pegawai,
-        urutPegawai: store.master.urut_pegawai
+        urutAkun: store.master.urut_akun
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
-        getPegawai: (url, headerAuthorization) => dispatch(getPegawai(url, headerAuthorization)),
-        getUser: (url, headerAuthorization) => dispatch(getUser(url, headerAuthorization)),
-        setFilterUser: (value) => dispatch(setFilterUser(value)),
-        setPaginationUser: (value) => dispatch(setPaginationUser(value)),
-        setUrutUser: (value) => dispatch(setUrutUser(value))
+        getBentukUsaha: (url, headerAuthorization) => dispatch(getBentukUsaha(url, headerAuthorization)),
+        getAkun: (url, headerAuthorization) => dispatch(getAkun(url, headerAuthorization)),
+        setFilterAkun: (value) => dispatch(setFilterAkun(value)),
+        setPaginationAkun: (value) => dispatch(setPaginationAkun(value)),
+        setUrutAkun: (value) => dispatch(setUrutAkun(value))
     };
 };
 
-class TableUser extends React.Component {
+class TableAkun extends React.Component {
     constructor(props) {
         super(props); 
         this.state = {
-        	openConfirmasiHapusUser: false,
-        	openFormAddUser: false,
+        	openConfirmasiHapusAkun: false,
+        	openFormAddAkun: false,
         	openProcessingDialog: false, 
         	mode: ''
         };
 
-        this.itemUser = {};
+        this.itemAkun = {};
     }
 
     componentDidMount() {
-    	const { filterUser, paginationUser, urutUser } = this.props;
-        this.loadUser(filterUser, paginationUser, urutUser);
+    	const { filterBentukUsaha, filterAkun, paginationAkun, urutAkun } = this.props;
+        let tmpPagination = {
+            current: 1,
+            pageSize: 50,
+        };
+        let tmpUrut = {
+        	field: "m.nama",
+        	order: "asc"
+        };
+              
+        this.loadAkun(filterAkun, paginationAkun, urutAkun);
+
+        this.loadBentukUsaha(filterBentukUsaha, tmpPagination, tmpUrut);
     }
 
-    deleteUser = (dataUser) => {
+    deleteAkun = (dataAkun) => {
         const { 
-            filterUser, headerAuthorization, paginationUser, restfulServer, urutUser         
+            filterAkun, headerAuthorization, paginationAkun, resetCredential, 
+            restfulServer, urutAkun         
         } = this.props;
         let self = this;    
          
         axios({
             method: 'delete',
-            url: `${restfulServer}/master/userhakakses`,
+            url: `${restfulServer}/master/akun`,
             headers: {...headerAuthorization},
-            params: dataUser
+            params: dataAkun
         })
         .then((r) => {  
             self.setState({openProcessingDialog: false});  
             if(r.data.status === 200) {
-                self.itemUser.id = null;
-                self.itemUser.nama = null;
-                self.loadUser(
-                    filterUser,
-                    paginationUser,
-                    urutUser
+                self.itemAkun.id = null;
+                self.itemAkun.nama = null;
+                self.loadAkun(
+                    filterAkun,
+                    paginationAkun,
+                    urutAkun
                 );
             }
             else {
-                self.itemUser.id = null;
-                self.itemUser.nama = null;
+                self.itemAkun.id = null;
+                self.itemAkun.nama = null;
             }
         })
         .catch((r) => { 
-            self.itemUser.id = null;
-            self.itemUser.nama = null;
+            self.itemAkun.id = null;
+            self.itemAkun.nama = null;
             self.setState({openProcessingDialog: false});
+            resetCredential();
         });
     }
 
     handleBtnDelete = (e) => {
-        const { listUser } = this.props;
-        this.itemUser = {..._.find(listUser.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
-        this.setState({openConfirmasiHapusUser: true});
+        const { listAkun } = this.props;
+        this.itemAkun = {..._.find(listAkun.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
+        this.setState({openConfirmasiHapusAkun: true});
     }
 
     handleBtnEdit = (e) => {
-        const { listUser } = this.props;
-        this.itemUser = {..._.find(listUser.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
-
-        this.setState({openFormAddUser: true, mode: 'edit'});
+        const { listAkun } = this.props;
+        this.itemAkun = {..._.find(listAkun.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
+        this.itemAkun.nama = this.itemAkun.nama.split(',')[0];
+        this.setState({openFormAddAkun: true, mode: 'edit'});
     }
 
     handleChangeFilter = (v) => {
-        const { paginationUser, setFilterUser, urutUser, setPaginationUser } = this.props;
-        let tmpPagination = {...paginationUser};
+        const { paginationAkun, setFilterAkun, urutAkun, setPaginationAkun } = this.props;
+        let tmpPagination = {...paginationAkun};
         tmpPagination.current = 1;        
-        setPaginationUser(tmpPagination);
+        setPaginationAkun(tmpPagination);
         let tmpFilter = {
             field: "m.nama",
             search: v
         };        
-        setFilterUser(tmpFilter);
-        this.loadUser(tmpFilter, tmpPagination, urutUser);
+        setFilterAkun(tmpFilter);
+        this.loadAkun(tmpFilter, tmpPagination, urutAkun);
     }
 
     handleChangeRowsPerPage = (event) => {
-        const { filterUser, setPaginationUser, urutUser } = this.props;
+        const { filterAkun, setPaginationAkun, urutAkun } = this.props;
         let tmpPagination = {
             current: 1,
             pageSize: parseInt(event.target.value, 10),
         };
         
-        setPaginationUser(tmpPagination);
-        this.loadUser(filterUser, tmpPagination, urutUser);
+        setPaginationAkun(tmpPagination);
+        this.loadAkun(filterAkun, tmpPagination, urutAkun);
     }
 
     handleChangePage = (event, newPage) => {
-        const { filterUser, paginationUser, setPaginationUser, urutUser } = this.props;
+        const { filterAkun, paginationAkun, setPaginationAkun, urutAkun } = this.props;
         let tmpPagination = {
             current: newPage+1,
-            pageSize: paginationUser.pageSize,
+            pageSize: paginationAkun.pageSize,
         };
-        setPaginationUser(tmpPagination);
-        this.loadUser(filterUser, tmpPagination, urutUser);
+        setPaginationAkun(tmpPagination);
+        this.loadAkun(filterAkun, tmpPagination, urutAkun);
     }
 
-    handleCloseFormAddUser = () => {
-        this.setState({openFormAddUser: false});
+    handleCloseFormAddAkun = () => {
+        this.setState({openFormAddAkun: false});
     }
 
-    handleDeleteUser = (status) => {        
+    handleDeleteAkun = (status) => {        
         if(status === true) {
-            this.setState({openConfirmasiHapusUser: false, openProcessingDialog: true});
-            this.deleteUser(this.itemUser);
+            this.setState({openConfirmasiHapusAkun: false, openProcessingDialog: true});
+            this.deleteAkun(this.itemAkun);
         }
         else {
-            this.setState({openConfirmasiHapusUser: false});
+            this.setState({openConfirmasiHapusAkun: false});
         }
     }
 
-    handleOpenFormAddUser = () => {
-        const { listPegawai, filterPegawai, paginationPegawai, urutPegawai } = this.props;
-        if(listPegawai === null) {
-            this.loadPegawai(filterPegawai, paginationPegawai, urutPegawai);
-        }
-        this.setState({openFormAddUser: true, mode: 'add'});
+    handleOpenFormAddAkun = () => {
+        this.setState({openFormAddAkun: true, mode: 'add'});
     }
 
     handleRequestSort = (event, property) => {   
-        const { filterUser, paginationUser, setUrutUser, urutUser } = this.props;
-        let isAsc = urutUser.field === property && urutUser.order === 'asc';
+        const { filterAkun, paginationAkun, setUrutAkun, urutAkun } = this.props;
+        let isAsc = urutAkun.field === property && urutAkun.order === 'asc';
         let tmpUrut = {
             field: property,
             order: isAsc ? 'desc' : 'asc'
         };
-        setUrutUser(tmpUrut);
-        this.loadUser(filterUser, paginationUser, tmpUrut);
+        setUrutAkun(tmpUrut);
+        this.loadAkun(filterAkun, paginationAkun, tmpUrut);
     }
 
     handleToggleOpenProgressDialog = () => {
         this.setState({openProcessingDialog: !this.state.openProcessingDialog});
     }
 
-    loadPegawai = (filter, pagination, urut) => {
-        const { getPegawai, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/pegawai?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
-        getPegawai(url, headerAuthorization);
+    loadBentukUsaha = (filter, pagination, urut) => {
+        const { getBentukUsaha, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/bentuk_usaha?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getBentukUsaha(url, headerAuthorization);
     }
 
-    loadUser = (filter, pagination, urut) => {
-        const { getUser, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/userhakakses?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
-        getUser(url, headerAuthorization);
+    loadAkun = (filter, pagination, urut) => {
+        const { getAkun, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/akun?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getAkun(url, headerAuthorization);
     }
 
     render() {
-        const { classes, listUser, paginationUser, title, urutUser } = this.props;
-		const { openConfirmasiHapusUser, openFormAddUser, openProcessingDialog, mode } = this.state;
+        const { classes, listAkun, paginationAkun, title, urutAkun } = this.props;
+		const { openConfirmasiHapusAkun, openFormAddAkun, openProcessingDialog, mode } = this.state;
 
         let pageAdd = null;
         let pageRender = null;
 
-		if(openFormAddUser === true) {
+		if(openFormAddAkun === true) {
             pageAdd = 
-             <FormAddUser 
-                data={this.itemUser}
-                visible={openFormAddUser} 
-                handleClose={this.handleCloseFormAddUser}
+             <FormAddAkun 
+                data={this.itemAkun}
+                visible={openFormAddAkun} 
+                handleClose={this.handleCloseFormAddAkun}
                 mode={mode}
                 handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
             />;
@@ -431,21 +437,21 @@ class TableUser extends React.Component {
         pageRender =
 		<div className={classes.root}>
 			<EnhancedTableToolbar 
-                handleOpen={this.handleOpenFormAddUser}  
+                handleOpen={this.handleOpenFormAddAkun}  
                 title={title}
                 handleCari={this.handleChangeFilter}
             />
             <TableContainer className={classes.tableWrapper}>
-            	<Table aria-labelledby="tableUser">
+            	<Table aria-labelledby="tableakun">
             		<EnhancedTableHead 
                         classes={classes}
-                        order={urutUser.order}
-                        orderBy={urutUser.field}
+                        order={urutAkun.order}
+                        orderBy={urutAkun.field}
                         onRequestSort={this.handleRequestSort}
                     />
                     <TableBody>
                     {
-                    	listUser !== null ? listUser.data.map((row, index) => {
+                    	listAkun !== null ? listAkun.data.map((row, index) => {
                     		return(
                     			<TableRow 
 	                                hover
@@ -456,31 +462,37 @@ class TableUser extends React.Component {
 	                                    align={'right'}
 	                                    style={{minWidth: 40, verticalAlign: 'top'}}
 	                                >
-	                                    {(paginationUser.current-1)*paginationUser.pageSize+index+1}.
+	                                    {(paginationAkun.current-1)*paginationAkun.pageSize+index+1}.
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{width: 250, verticalAlign: 'top'}}
+                                        style={{minWidth: 80, verticalAlign: 'top'}}
 	                                >
-	                                    { row.userlogin }
-	                                </TableCell>
-                                    <TableCell 
-	                                    align={'left'}
-                                        style={{width: 250, verticalAlign: 'top'}}
-	                                >
-                                        **********************
+	                                    { row.id }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{width: 250, verticalAlign: 'top'}}
+                                        style={{minWidth: 350, verticalAlign: 'top'}}
 	                                >
-	                                    { row.groupakses }
+	                                    { row.nama }
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
                                         style={{verticalAlign: 'top'}}
 	                                >
-	                                    { row.namapegawai }
+	                                    { row.alamat }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{minWidth: 100, verticalAlign: 'top'}}
+	                                >
+	                                    { row.telepone }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{minWidth: 100, verticalAlign: 'top'}}
+	                                >
+	                                    { row.email }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}
@@ -499,17 +511,17 @@ class TableUser extends React.Component {
             <TablePagination
                 rowsPerPageOptions={[10,15,25,50,100,250,500,1000,10000]}
                 component="div"
-                count={listUser !== null ? listUser.total:0}
-                rowsPerPage={paginationUser.pageSize}
-                page={paginationUser.current-1}
+                count={listAkun !== null ? listAkun.total:0}
+                rowsPerPage={paginationAkun.pageSize}
+                page={paginationAkun.current-1}
                 onChangePage={this.handleChangePage}
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
             />
             <ProcessingDialog open={openProcessingDialog} />
             <KonfirmasiDialog 
-                open={openConfirmasiHapusUser} 
-                aksi={this.handleDeleteUser} 
-                message={`Hapus user hak akses ${this.itemUser.userlogin}`}
+                open={openConfirmasiHapusAkun} 
+                aksi={this.handleDeleteAkun} 
+                message={`Hapus item ${this.itemAkun.nama}`}
             />
             {pageAdd}
 		</div>;
@@ -518,5 +530,5 @@ class TableUser extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(TableUser));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(TableAkun));
 
