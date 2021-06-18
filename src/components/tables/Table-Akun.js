@@ -93,11 +93,10 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.id', numerik: false, label: 'Id'},
+    {id: 'm.id', numerik: false, label: 'Kode'},
     {id: 'm.nama', numerik: false, label: 'Nama'},  
-    {id: 'm.alamat', numerik: false, label: 'Alamat'},  
-    {id: 'm.telepone', numerik: false, label: 'Telepon'},  
-    {id: 'm.email', numerik: false, label: 'E-mail'},  
+    {id: 'm.dk', numerik: false, label: 'D/K'},
+    {id: 'm.saldo', numerik: false, label: 'Saldo'},  
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -150,7 +149,6 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
-                                    style={{width: 350}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -170,7 +168,8 @@ const EnhancedTableHead = (props) => {
                                 page = 
                                 <TableCell
                                     key={headCell.id}
-                                    align={'left'}
+                                    align={'center'}
+                                    style={{width: 80}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -179,18 +178,8 @@ const EnhancedTableHead = (props) => {
                                 page = 
                                 <TableCell
                                     key={headCell.id}
-                                    align={'left'}
-                                    style={{width: 100}}
-                                >
-                                    {headCell.label}
-                                </TableCell>;
-                                break;
-                            case 5:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'left'}
-                                    style={{width: 100}}
+                                    align={'right'}
+                                    style={{width: 200}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -238,7 +227,6 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
-        filterBentukUsaha: store.master.filter_bentuk_usaha,
         filterAkun: store.master.filter_akun,
         headerAuthorization: store.credential.header_authorization,
         listAkun: store.master.list_akun,
@@ -272,19 +260,9 @@ class TableAkun extends React.Component {
     }
 
     componentDidMount() {
-    	const { filterBentukUsaha, filterAkun, paginationAkun, urutAkun } = this.props;
-        let tmpPagination = {
-            current: 1,
-            pageSize: 50,
-        };
-        let tmpUrut = {
-        	field: "m.nama",
-        	order: "asc"
-        };
+    	const { filterAkun, paginationAkun, urutAkun } = this.props;
               
         this.loadAkun(filterAkun, paginationAkun, urutAkun);
-
-        this.loadBentukUsaha(filterBentukUsaha, tmpPagination, tmpUrut);
     }
 
     deleteAkun = (dataAkun) => {
@@ -404,12 +382,6 @@ class TableAkun extends React.Component {
         this.setState({openProcessingDialog: !this.state.openProcessingDialog});
     }
 
-    loadBentukUsaha = (filter, pagination, urut) => {
-        const { getBentukUsaha, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/bentuk_usaha?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
-        getBentukUsaha(url, headerAuthorization);
-    }
-
     loadAkun = (filter, pagination, urut) => {
         const { getAkun, headerAuthorization, restfulServer } = this.props; 
         let url = `${restfulServer}/master/akun?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
@@ -472,27 +444,21 @@ class TableAkun extends React.Component {
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{minWidth: 350, verticalAlign: 'top'}}
+                                        style={{verticalAlign: 'top'}}
 	                                >
 	                                    { row.nama }
 	                                </TableCell>
                                     <TableCell 
-	                                    align={'left'}
-                                        style={{verticalAlign: 'top'}}
+	                                    align={'center'}
+                                        style={{width: 80,verticalAlign: 'top'}}
 	                                >
-	                                    { row.alamat }
+	                                    { row.dk }
 	                                </TableCell>
                                     <TableCell 
-	                                    align={'left'}
-                                        style={{minWidth: 100, verticalAlign: 'top'}}
+	                                    align={'right'}
+                                        style={{width: 200, verticalAlign: 'top'}}
 	                                >
-	                                    { row.telepone }
-	                                </TableCell>
-                                    <TableCell 
-	                                    align={'left'}
-                                        style={{minWidth: 100, verticalAlign: 'top'}}
-	                                >
-	                                    { row.email }
+	                                    { row.saldo }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 80, verticalAlign: 'top'}}
