@@ -281,10 +281,10 @@ class TableCustomer extends React.Component {
         	field: "m.nama",
         	order: "asc"
         };
-
-        this.loadBentukUsaha(filterBentukUsaha, tmpPagination, tmpUrut);
               
         this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
+
+        this.loadBentukUsaha(filterBentukUsaha, tmpPagination, tmpUrut);
     }
 
     deleteCustomer = (dataCustomer) => {

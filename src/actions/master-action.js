@@ -1,4 +1,5 @@
 import { CREDENTIAL_RESET, FILTER_CUSTOMER_LOADED, LIST_CUSTOMER_LOADED, LIST_CUSTOMER_RESET, MENU_LOADED, PAGINATION_CUSTOMER_LOADED, UNAUTHORIZATION_RISE, URUT_CUSTOMER_LOADED, FILTER_JABATAN_LOADED, LIST_JABATAN_LOADED, LIST_JABATAN_RESET, PAGINATION_JABATAN_LOADED, URUT_JABATAN_LOADED, FILTER_BENTUK_USAHA_LOADED, LIST_BENTUK_USAHA_LOADED, LIST_BENTUK_USAHA_RESET, PAGINATION_BENTUK_USAHA_LOADED, URUT_BENTUK_USAHA_LOADED, FILTER_PEGAWAI_LOADED, LIST_PEGAWAI_LOADED, LIST_PEGAWAI_RESET, PAGINATION_PEGAWAI_LOADED, URUT_PEGAWAI_LOADED, FILTER_STRUKTUR_ORGANISASI_LOADED, LIST_STRUKTUR_ORGANISASI_LOADED, LIST_STRUKTUR_ORGANISASI_RESET, PAGINATION_STRUKTUR_ORGANISASI_LOADED, URUT_STRUKTUR_ORGANISASI_LOADED, FILTER_PENGEMBAN_JABATAN_LOADED, LIST_PENGEMBAN_JABATAN_LOADED, LIST_PENGEMBAN_JABATAN_RESET, PAGINATION_PENGEMBAN_JABATAN_LOADED, URUT_PENGEMBAN_JABATAN_LOADED, FILTER_GROUP_HAK_AKSES_LOADED, LIST_GROUP_HAK_AKSES_LOADED, LIST_GROUP_HAK_AKSES_RESET, PAGINATION_GROUP_HAK_AKSES_LOADED, URUT_GROUP_HAK_AKSES_LOADED, MENU_TREE_SELECTED_LOADED, MENU_TREE_SELECTED_RESET, MENU_TREE_LOADED, MENU_TREE_RESET, FILTER_USER_LOADED, LIST_USER_LOADED, LIST_USER_RESET, PAGINATION_USER_LOADED, URUT_USER_LOADED } from "../constants/action-types";
+import axios from 'axios';
 
 
 export const getMenuTree = (url='', authorization) => {
@@ -288,7 +289,7 @@ export const setUrutJabatan = (value) => {
     return({type: URUT_JABATAN_LOADED, payload: value});
 }
 
-export const getBentukUsaha = (url='', authorization) => {
+export const getBentukUsaha = (url='', authorization) => {   
     return (dispatch) => {
         return fetch(url, {
             method: 'GET', 
@@ -311,8 +312,8 @@ export const getBentukUsaha = (url='', authorization) => {
         )
         .catch((e) => {
             dispatch({type: LIST_BENTUK_USAHA_RESET}); 
-            dispatch({type: CREDENTIAL_RESET});
-            dispatch({type: UNAUTHORIZATION_RISE});
+            // dispatch({type: CREDENTIAL_RESET});
+            // dispatch({type: UNAUTHORIZATION_RISE});
         });
     };
 }
@@ -341,7 +342,8 @@ export const getCustomer = (url='', authorization) => {
             }
         )
         .then(
-            json => {          
+            json => {         
+                console.log(json);
                 if(json.status === 200 ) {
                     dispatch({ type: LIST_CUSTOMER_LOADED, payload: json.keterangan });
                 }

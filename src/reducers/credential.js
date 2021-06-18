@@ -59,7 +59,7 @@ export default function credential(state = initialState, action) {
             return {
                 ...state,
                 [CREDENTIAL]: action.payload,
-                [HEADER_AUTHORIZATION]: 'Bearer ' + action.payload.token
+                [HEADER_AUTHORIZATION]: {Authorization: 'Bearer ' + action.payload.token}
             };
         case CREDENTIAL_RESET:
             window.localStorage.clear();

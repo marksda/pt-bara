@@ -133,7 +133,7 @@ class FormAddGroupHakAkses extends Component {
 	    	} 
 	    	self.handleReset();
             self.setState({disabledInput: false});
-            // handleClose();
+            handleClose();
             handleToggleOpenProgressDialog();
 	    })
 	    .catch((r) => {
