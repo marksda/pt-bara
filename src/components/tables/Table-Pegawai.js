@@ -21,7 +21,8 @@ import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
-    EditOutlined
+    EditOutlined,
+    PlusOutlined
 } from '@ant-design/icons';
   
 
@@ -233,7 +234,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'center'}
-                                    style={{width: 80}}
+                                    style={{width: 100}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -515,9 +516,10 @@ class TablePegawai extends React.Component {
 	                                    { row.status === true?'Aktif':'Non Aktif' }
 	                                </TableCell>
 	                                <TableCell 
-                                        style={{width: 80, verticalAlign: 'top'}}
+                                        style={{width: 100, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
+                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleOpenFormAddPegawai}/>
                                         <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-nip={row.nip} onClick={this.handleBtnEdit} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-nip={row.nip} onClick={this.handleBtnDelete}/>
                                     </TableCell>

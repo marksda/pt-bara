@@ -21,7 +21,8 @@ import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
-    EditOutlined
+    EditOutlined,
+    PlusOutlined
 } from '@ant-design/icons';
   
 
@@ -200,7 +201,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'center'}
-                                    style={{width: 80}}
+                                    style={{width: 100}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -483,9 +484,10 @@ class TableUser extends React.Component {
 	                                    { row.namapegawai }
 	                                </TableCell>
 	                                <TableCell 
-                                        style={{width: 80, verticalAlign: 'top'}}
+                                        style={{width:100, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
+                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleOpenFormAddUser}/>
                                         <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.id} onClick={this.handleBtnEdit} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
                                     </TableCell>

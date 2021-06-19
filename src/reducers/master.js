@@ -587,7 +587,6 @@ export default function master(state = initialState, action) {
                 [LIST_AKUN]: null
             };      
         case PAGINATION_AKUN_LOADED:
-            console.log(action.payload);
             return {
                 ...state,
                 [PAGINATION_AKUN]: {...action.payload}

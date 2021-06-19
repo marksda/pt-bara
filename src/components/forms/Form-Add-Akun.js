@@ -6,11 +6,11 @@ import { getAkun } from "../../actions/master-action";
 
 const mapStateToProps = store => {
     return {      
-        filterAkun: store.master.filter_struktur_organisasi,
+        filterAkun: store.master.filter_akun,
         headerAuthorization: store.credential.header_authorization,
-        paginationAkun: store.master.pagination_struktur_organisasi,
+        paginationAkun: store.master.pagination_akun,
         restfulServer: store.general.restful_domain,
-        urutAkun: store.master.urut_struktur_organisasi
+        urutAkun: store.master.urut_akun
     };
 };
 
@@ -21,12 +21,12 @@ const mapDispatchToProps = dispatch => {
 };
 
 const layout = {
-    labelCol: { span: 5 },
+    labelCol: { span: 6 },
     wrapperCol: { span: 18 },
 };
 
 const tailLayout = {
-    wrapperCol: { offset: 5, span: 16 },
+    wrapperCol: { offset: 6, span: 18 },
 };
 
 class FormAddAkun extends Component {
@@ -45,6 +45,9 @@ class FormAddAkun extends Component {
                
         if(mode === 'edit') {
             this.itemAkun = {...data};
+        }
+        else {
+            this.itemAkun.status_header = false;
         }
     }
 
@@ -132,6 +135,7 @@ class FormAddAkun extends Component {
         })
         .then((r) => {         
             if(r.data.status === 200) {
+                console.log(paginationAkun);
                 self.loadAkun(
                     filterAkun,
                     paginationAkun,
@@ -154,7 +158,7 @@ class FormAddAkun extends Component {
 
         page =
         <Modal
-            title={mode==='edit'?'Formulir Edit Akun':'Formulir Add Struktur Organisasi'}
+            title={mode==='edit'?'Formulir Edit Akun':'Formulir Add Akun'}
             visible={visible}
             onCancel={handleClose}
             footer={null}      

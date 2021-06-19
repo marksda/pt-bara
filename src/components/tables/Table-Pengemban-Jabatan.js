@@ -20,7 +20,8 @@ import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
-    EditOutlined
+    EditOutlined,
+    PlusOutlined
 } from '@ant-design/icons';
   
 
@@ -232,7 +233,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'center'}
-                                    style={{width: 80}}
+                                    style={{width: 100}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -521,9 +522,10 @@ class TablePengembanJabatan extends React.Component {
 	                                    { `${row.priode_start.toString()} - ${row.priode_end.toString()}` }
 	                                </TableCell>
                                     <TableCell 
-                                        style={{width: 80, verticalAlign: 'top'}}
+                                        style={{width: 100, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
+                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleOpenFormAddPengembanJabatan}/>
                                         <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={index} onClick={this.handleBtnEdit} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={index} onClick={this.handleBtnDelete}/>
                                     </TableCell>
