@@ -21,7 +21,8 @@ import { Input, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
-    EditOutlined
+    EditOutlined,
+    PlusOutlined
 } from '@ant-design/icons';
   
 
@@ -457,6 +458,7 @@ class TableAkun extends React.Component {
                                         style={{verticalAlign: 'top'}}
                                         align={'right'}
                                     >
+                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleOpenFormAddAkun}/>
                                         <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.id} onClick={this.handleBtnEdit} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
                                     </TableCell>
