@@ -115,7 +115,7 @@ const initialState = {
     },
     pagination_akun: {
         current: 1,
-        pageSize: 10,
+        pageSize: 100,
     },
     urut_akun: {
         field: "m.id",

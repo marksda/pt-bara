@@ -24,6 +24,7 @@ import { setUnauthorization } from "../../actions/notification-action";
 
 import Master from "./Master";
 import PengajuanBaru from "./Pengajuan-Baru";
+import Proyek from "./Proyek";
 import Security from "./Security";
 
 const drawerWidth = 240;
@@ -144,6 +145,9 @@ class Main extends React.Component {
         let subPage = null;
 
         switch (itemMenuSelected) {
+            case 'Daftar Proyek':
+                subPage = <Proyek />;
+                break;
             case 'Pengajuan Baru':
                 subPage = <PengajuanBaru />;
                 break;
@@ -152,7 +156,7 @@ class Main extends React.Component {
                 break;
             case 'Security':
                 subPage = <Security />;
-            break;
+                break;
             default:
                 subPage = null;
                 break;
