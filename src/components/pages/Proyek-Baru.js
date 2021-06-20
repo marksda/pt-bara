@@ -3,8 +3,7 @@ import { connect } from "react-redux";
 import { Divider, Radio } from 'antd';
 
 import { resetStatusProyek, setStatusProyek } from "../../actions/master-action";
-
-// import FormPengajuaProyek from '../forms/Form-Pengajuan-Proyek';
+import FormPersiapanProyek from '../forms/Form-Persiapan-Proyek';
 
 const mapStateToProps = store => {
     return {      
@@ -50,7 +49,8 @@ class ProyekBaru extends React.Component {
                     disabledRadioPersiapan: false,
                     disabledRadioProfile: false,
                     disabledRadioBudget: false,
-                    disabledRadioMonitoring: false
+                    disabledRadioMonitoring: false,
+                    itemTabSelected: 'Profile'
                 });
                 break;
             case '03':
@@ -86,6 +86,18 @@ class ProyekBaru extends React.Component {
 
     render() {
         const { itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, disabledRadioMonitoring  } = this.state;
+        let subPage = null;
+
+        switch (itemTabSelected) {
+            case 'Persiapan':
+                subPage =
+                <FormPersiapanProyek />;
+                break;
+        
+            default:
+                break;
+        }
+
         let page =
         <>
             <div className="content-flex-center">
@@ -97,7 +109,9 @@ class ProyekBaru extends React.Component {
                 </Radio.Group>  
             </div>                  
             <Divider style={{borderTop: '1px solid rgba(17, 123, 236, 0.54)'}}/>
+            {subPage}
         </>;
+
         return(page);
     }
 }

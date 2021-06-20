@@ -133,7 +133,7 @@ const initialState = {
     },
     menu_tree:[],
     menu_tree_selected:[],
-    status_proyek: '01'
+    status_proyek: '01',
 }
 
 const loadLocalMenuFromStorage = () => {
