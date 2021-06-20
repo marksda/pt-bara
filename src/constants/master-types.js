@@ -45,3 +45,4 @@ export const PAGINATION_PROYEK = "pagination_proyek";
 export const URUT_PROYEK = "urut_proyek";
 export const MENU_TREE_SELECTED = "menu_tree_selected";
 export const MENU_TREE = "menu_tree";
+export const STATUS_PROYEK = "status_proyek";

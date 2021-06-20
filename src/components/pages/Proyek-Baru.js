@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from "react-redux";
 import { Divider, Radio } from 'antd';
 
-import { setStatusProyek } from "../../actions/master-action";
+import { resetStatusProyek, setStatusProyek } from "../../actions/master-action";
 
 // import FormPengajuaProyek from '../forms/Form-Pengajuan-Proyek';
 
@@ -15,7 +15,8 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
-        setStatusProyek: (nilai) => dispatch(setStatusProyek(nilai))
+        setStatusProyek: (nilai) => dispatch(setStatusProyek(nilai)),
+        resetStatusProyek: (nilai) => dispatch(resetStatusProyek()),
     };
 };
 
