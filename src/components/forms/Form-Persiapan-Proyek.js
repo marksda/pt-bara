@@ -1,105 +1,119 @@
 import React from 'react';
 import moment from 'moment';
-import { DatePicker, Input,  Radio, Typography } from 'antd';
+import { DatePicker, Form, Input } from 'antd';
 
 
-const { Text } = Typography;
+const mapStateToProps = store => {
+    return {      
+        listStatusProyek: store.master.list_status_proyek,
+        headerAuthorization: store.credential.header_authorization,
+        restfulServer: store.general.restful_domain,
+    };
+};
+
+const mapDispatchToProps = dispatch => {    
+    return {
+        getStatusProyek: (url, headerAuthorization) => dispatch(getStatusProyek(url, headerAuthorization))
+    };
+};
 
 class FormPersiapanProyek extends React.Component {
     constructor(props) {
 		super(props);
         this.state ={
-            jenisNominal: 'Baru'
+            disabledInput: false
         }
 
-        this.dataPersiapanProyek = {};
-    }
-
-    onChangeJenisNominalDiajukan = (e) => {
-        this.setState({jenisNominal: e.target.value});
+        this.itemProyek = {};
     }
 
     handleChangeNilaiText = (e) => {
 		switch(e.currentTarget.dataset.jenis) {
-			case 'nopersiapan':
-				this.dataPersiapanProyek.nopersiapan = e.currentTarget.value;
-				break;
             case 'nojob':
-                this.dataPersiapanProyek.nojob = e.currentTarget.value;
-                break;
-            case 'nominaldiajukan':
-                this.dataPersiapanProyek.nominaldiajukan = e.currentTarget.value;
+                this.itemProyek.nojob = e.currentTarget.value;
                 break;
 			default:
 		}
 	}
 
+    handleChangeStatus = (value) => {
+        const { mode } = this.props;
+        if(mode === 'edit') {
+            this.itemProyek.status_baru = value;
+        }
+        else {
+            this.itemProyek.status = value;
+        }	
+	}
+
     handleChangeTanggal = (date, dateString, jenis) => {
 		if(date !== null) {
 			let tmp = dateString.split('-');
-            this.dataPersiapanProyek.tglpersiapan = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
+            this.itemProyek.tanggal_persiapan = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
 		}
 	}
 
     render() {
-        const { jenisNominal } = this.state;
+        const { data, mode } = this.props;
+        const { disabledInput } = this.state;
         let page =
-        <table className="table-container-persiapan-baru">
-            <tbody>
-                <tr>
-                    <td style={{paddingBottom: 16}}>
-						<div className="table-container-cel-persiapan-baru">
-							<Text strong className="item-label">Tanggal</Text>
-							<DatePicker 
-								format="DD-MM-YYYY"
-								defaultValue={ moment('2015/01/01') }
-								onChange={ this.handleChangeTanggal }
-							/>
-						</div>
-					</td>
-                    <td>
-						<div className="table-container-cel-persiapan-baru">
-							<Text strong className="item-label">No. Persiapan</Text>
-							<Input 
-								data-jenis="nopersiapan"
-								onChange={this.handleChangeNilaiText}
-							/>
-						</div>
-					</td>
-                </tr>
-                <tr>
-                    <td style={{paddingBottom: 16}}>
-						<div className="table-container-cel-persiapan-baru">
-							<Text strong className="item-label">No. Job</Text>
-							<Input 
-								data-jenis="nojob"
-								onChange={this.handleChangeNilaiText}
-							/>
-						</div>
-					</td>
-                </tr>
-                <tr>
-                    <td style={{paddingBottom: 16}}>
-						<div className="table-container-cel-persiapan-baru">
-							<Text strong className="item-label">Nominal Persiapan</Text>
-							<Input 
-								data-jenis="nominaldiajukan"
-								onChange={this.handleChangeNilaiText}
-							/>
-						</div>
-					</td>
-                    <td style={{paddingBottom: 16}}>
-						<div className="table-container-cel-persiapan-baru">
-							<Text strong className="item-label">Jenis Persiapan</Text>
-							<Radio.Group onChange={this.onChangeJenisNominalDiajukan} value={jenisNominal} style={{marginTop: 4}}>
-                                <Radio value={'Baru'}>Baru</Radio>
-                                <Radio value={'Reimburse'}>Reimburse</Radio>
-                            </Radio.Group>
-						</div>
-					</td>
-                </tr>
-            </tbody>
-        </table>;
+        <div>
+            <Form
+                name="form-persiapan-proyek"
+                onFinish={this.handleOnFinish}
+                ref={this.formRef}
+                layout='vertical'
+                initialValues={{
+                    layout: 'vertical',
+                    remember: true,
+                    ["tanggal"]: mode==='edit'?data.tanggal_persiapan:moment(),
+                    ["no_job"]: mode==='edit'?data.no_job:null,
+                    ["id_status"]: mode==='edit'?data.id_status:null,
+                }}
+            >
+                <Form.Item
+	                label="Tanggal Persiapan"
+                    name="tanggal"
+                    rules={[{required: true, message: 'Tanggal persiapan proyek harus harus diisi'}]}
+                >
+                    <DatePicker 
+                        format="DD-MM-YYYY" 
+                        disabled={disabledInput}
+                        style={{width: 150}}
+                        onChange={this.handleChangeTanggal}
+                    />
+                </Form.Item>
+                <Form.Item 
+                    label="Status"
+                    name="id_status"
+                    rules={[{required: true, message: 'Status proyek harus harus diisi'}]}
+                >
+                    <Select 
+                        onChange={this.handleChangeStatus}
+                        disabled={disabledInput}
+                        style={{width: 200}}
+                    >
+                    {
+                        listStatusProyek !== null ? listStatusProyek.data.map((row) => 
+                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
+                        ):null
+                    }	
+                    </Select>
+                </Form.Item>
+                <Form.Item
+	                label="No. Job"
+                    name="no_job"
+                    rules={[{required: true, message: 'No. job proyek harus diisi'}]}
+                >
+                    <Input 
+                        data-jenis="nojob"
+                        disabled={disabledInput}
+                        onChange={this.handleChangeNilaiText}
+                        style={{ width: 120 }}
+                    />
+                </Form.Item>
+            </Form>
+        </div>;
 
         return(page);
     }

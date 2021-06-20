@@ -2,20 +2,19 @@ import React from 'react';
 import { connect } from "react-redux";
 import { Divider, Radio } from 'antd';
 
-import { resetStatusProyek, setStatusProyek } from "../../actions/master-action";
+import { resetStatusProyekSelected, setStatusProyekSelected } from "../../actions/master-action";
 import FormPersiapanProyek from '../forms/Form-Persiapan-Proyek';
 
 const mapStateToProps = store => {
     return {      
-        statusProyek: store.master.status_proyek,
-        headerAuthorization: store.credential.header_authorization
+        statusProyekSelected: store.master.status_proyek,
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
-        setStatusProyek: (nilai) => dispatch(setStatusProyek(nilai)),
-        resetStatusProyek: (nilai) => dispatch(resetStatusProyek()),
+        setStatusProyekSelected: (nilai) => dispatch(setStatusProyekSelected(nilai)),
+        resetStatusProyekSelected: () => dispatch(resetStatusProyekSelected()),
     };
 };
 
@@ -33,9 +32,9 @@ class ProyekBaru extends React.Component {
     }
 
     componentDidMount() {
-        const { statusProyek } = this.props;
+        const { statusProyekSelected } = this.props;
 
-        switch (statusProyek) {
+        switch (statusProyekSelected) {
             case '01':
                 this.setState({
                     disabledRadioPersiapan: false,
@@ -91,7 +90,7 @@ class ProyekBaru extends React.Component {
         switch (itemTabSelected) {
             case 'Persiapan':
                 subPage =
-                <FormPersiapanProyek />;
+                <FormPersiapanProyek mode="add" data={null} />;
                 break;
         
             default:
