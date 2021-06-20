@@ -1,13 +1,18 @@
 import React from 'react';
 import moment from 'moment';
-import { DatePicker, Form, Input } from 'antd';
+import { DatePicker, Form, Input, Select } from 'antd';
+import { connect } from "react-redux";
+import { getStatusProyek } from "../../actions/master-action";
 
 
 const mapStateToProps = store => {
     return {      
+        filterStatusProyek: store.master.filter_status_proyek,
         listStatusProyek: store.master.list_status_proyek,
         headerAuthorization: store.credential.header_authorization,
         restfulServer: store.general.restful_domain,
+        paginationStatusProyek: store.master.pagination_status_proyek,
+        urutStatusProyek: store.master.urut_status_proyek
     };
 };
 
@@ -25,6 +30,14 @@ class FormPersiapanProyek extends React.Component {
         }
 
         this.itemProyek = {};
+    }
+
+    componentDidMount() {
+        const { listStatusProyek, filterStatusProyek, paginationStatusProyek, urutStatusProyek } = this.props;
+
+        if(listStatusProyek === null) {
+            this.loadStatusProyek(filterStatusProyek, paginationStatusProyek, urutStatusProyek);
+        }
     }
 
     handleChangeNilaiText = (e) => {
@@ -46,15 +59,21 @@ class FormPersiapanProyek extends React.Component {
         }	
 	}
 
-    handleChangeTanggal = (date, dateString, jenis) => {
+    handleChangeTanggal = (date, dateString) => {
 		if(date !== null) {
 			let tmp = dateString.split('-');
             this.itemProyek.tanggal_persiapan = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
 		}
 	}
 
+    loadStatusProyek = (filter, pagination, urut) => {
+        const { getStatusProyek, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/statusproyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getStatusProyek(url, headerAuthorization);
+    }
+
     render() {
-        const { data, mode } = this.props;
+        const { data, listStatusProyek, mode } = this.props;
         const { disabledInput } = this.state;
         let page =
         <div>
@@ -79,7 +98,7 @@ class FormPersiapanProyek extends React.Component {
                     <DatePicker 
                         format="DD-MM-YYYY" 
                         disabled={disabledInput}
-                        style={{width: 150}}
+                        style={{width: 130}}
                         onChange={this.handleChangeTanggal}
                     />
                 </Form.Item>
@@ -91,7 +110,7 @@ class FormPersiapanProyek extends React.Component {
                     <Select 
                         onChange={this.handleChangeStatus}
                         disabled={disabledInput}
-                        style={{width: 200}}
+                        style={{width: 110}}
                     >
                     {
                         listStatusProyek !== null ? listStatusProyek.data.map((row) => 
@@ -119,4 +138,4 @@ class FormPersiapanProyek extends React.Component {
     }
 }
 
-export default FormPersiapanProyek;
+export default connect(mapStateToProps, mapDispatchToProps)(FormPersiapanProyek);
