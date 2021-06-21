@@ -1,9 +1,11 @@
 import React from 'react';
 import moment from 'moment';
-import { DatePicker, Form, Input, Select } from 'antd';
+import { AutoComplete, DatePicker, Form, Input, Select } from 'antd';
 import { connect } from "react-redux";
-import { getStatusProyek } from "../../actions/master-action";
+import { getCustomer, getStatusProyek } from "../../actions/master-action";
 
+
+const { Option } = AutoComplete;
 
 const mapStateToProps = store => {
     return {      
@@ -12,12 +14,14 @@ const mapStateToProps = store => {
         headerAuthorization: store.credential.header_authorization,
         restfulServer: store.general.restful_domain,
         paginationStatusProyek: store.master.pagination_status_proyek,
-        urutStatusProyek: store.master.urut_status_proyek
+        urutStatusProyek: store.master.urut_status_proyek,
+        listCustomer: store.master.list_customer,
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
+        getCustomer: (url, headerAuthorization) => dispatch(getCustomer(url, headerAuthorization)),
         getStatusProyek: (url, headerAuthorization) => dispatch(getStatusProyek(url, headerAuthorization))
     };
 };
@@ -45,6 +49,9 @@ class FormPersiapanProyek extends React.Component {
             case 'nojob':
                 this.itemProyek.nojob = e.currentTarget.value;
                 break;
+            case 'namaproyek':
+                this.itemProyek.nojob = e.currentTarget.value;
+                break;
 			default:
 		}
 	}
@@ -66,6 +73,21 @@ class FormPersiapanProyek extends React.Component {
 		}
 	}
 
+    handleSearchCustomer = (value) => {
+        const { paginationCustomer, urutCustomer} = this.props;
+        this.loadCustomer({	field: "m.nama", search: value }, { current: 1, pageSize: 10 }, { field: "m.nama", order: "asc" });
+	}
+
+    handleSelectCustomer = (value, option) => {
+        this.itemProyek.id_customer = option.key;
+	}
+
+    loadCustomer = (filter, pagination, urut) => {
+        const { getCustomer, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/customer?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getCustomer(url, headerAuthorization);
+    }
+
     loadStatusProyek = (filter, pagination, urut) => {
         const { getStatusProyek, headerAuthorization, restfulServer } = this.props; 
         let url = `${restfulServer}/master/statusproyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
@@ -73,7 +95,7 @@ class FormPersiapanProyek extends React.Component {
     }
 
     render() {
-        const { data, listStatusProyek, mode } = this.props;
+        const { data, listCustomer, listStatusProyek, mode } = this.props;
         const { disabledInput } = this.state;
         let page =
         <div>
@@ -88,6 +110,7 @@ class FormPersiapanProyek extends React.Component {
                     ["tanggal"]: mode==='edit'?data.tanggal_persiapan:moment(),
                     ["no_job"]: mode==='edit'?data.no_job:null,
                     ["id_status"]: mode==='edit'?data.id_status:null,
+                    ["nama_customer"]: mode==='edit'?data.nama_customer:null,
                 }}
             >
                 <table className="table-container-proyek-baru">
@@ -145,7 +168,40 @@ class FormPersiapanProyek extends React.Component {
                                 </Form.Item>
                             </td>
                             <td>
-                                
+                                <Form.Item 
+                                    label="Customer"
+                                    name="nama_customer"
+                                    rules={[{required: true, message: 'Customer harus harus diisi'}]}
+                                >
+                                    <AutoComplete 
+                                        onSearch={this.handleSearchCustomer}
+                                        onSelect={this.handleSelectCustomer}
+                                        disabled={disabledInput}
+                                        style={{width: 350}}
+                                    >
+                                    {
+                                        listCustomer !== null ? listCustomer.data.map((row) => 
+                                            <Option key={row.id} value={row.nama}>
+                                                {row.nama}
+                                            </Option>
+                                        ):null
+                                    }
+                                    </AutoComplete>
+                                </Form.Item>
+                            </td>
+                            <td>
+                                <Form.Item
+                                    label="Proyek"
+                                    name="nama_proyek"
+                                    rules={[{required: true, message: 'Nama proyek harus diisi'}]}
+                                >
+                                    <Input 
+                                        data-jenis="namaproyek"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiText}
+                                        style={{ width: 350 }}
+                                    />
+                                </Form.Item>
                             </td>
                         </tr>
                     </tbody>
