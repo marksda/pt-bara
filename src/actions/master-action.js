@@ -473,7 +473,6 @@ export const getCustomer = (url='', authorization) => {
         )
         .then(
             json => {         
-                console.log(json);
                 if(json.status === 200 ) {
                     dispatch({ type: LIST_CUSTOMER_LOADED, payload: json.keterangan });
                 }

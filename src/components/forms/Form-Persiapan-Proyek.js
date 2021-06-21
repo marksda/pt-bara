@@ -60,21 +60,27 @@ class FormPersiapanProyek extends React.Component {
     }
 
     handleChangeNilaiNumeric = (value) => {
+        console.log(value);
         this.itemProyek.perkiraan_nilai = value;
 	}
 
     handleChangeNilaiText = (e) => {
 		switch(e.currentTarget.dataset.jenis) {
             case 'nojob':
-                this.itemProyek.nojob = e.currentTarget.value;
+                this.itemProyek.no_job = e.currentTarget.value;
                 break;
             case 'namaproyek':
-                this.itemProyek.nojob = e.currentTarget.value;
+                this.itemProyek.nama_proyek = e.currentTarget.value;
                 break;
             case 'nohp':
                 this.itemProyek.no_hp_pic_customer = e.currentTarget.value;
                 break;
-            
+            case 'piccustomer':
+                this.itemProyek.pic_customer = e.currentTarget.value;
+                break;
+            case 'keterangan':
+                this.itemProyek.keterangan_persiapan = e.currentTarget.value;
+                break;
 			default:
 		}
 	}
@@ -94,6 +100,17 @@ class FormPersiapanProyek extends React.Component {
 			let tmp = dateString.split('-');
             this.itemProyek.tanggal_persiapan = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
 		}
+	}
+
+    handleOnFinish = (value) => {
+		const { mode } = this.props;
+		this.setState({disabledInput: true});
+		if(mode === 'edit') {
+            this.updatePersiapanProyek();
+        }
+        else {
+			this.savePersiapanProyek();
+        }
 	}
 
     handleReset = () => {
@@ -120,6 +137,35 @@ class FormPersiapanProyek extends React.Component {
         let url = `${restfulServer}/master/statusproyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
         getStatusProyek(url, headerAuthorization);
     }
+
+    savePersiapanProyek = () => {
+        console.log(this.itemProyek);
+		// const { 
+		// 	filterAkun, headerAuthorization, paginationAkun, restfulServer, urutAkun, handleToggleOpenProgressDialog
+		// } = this.props;
+	    // let self = this;
+        
+	    // handleToggleOpenProgressDialog();
+
+	    // axios({
+        //     method: 'put',
+        //     url: `${restfulServer}/master/akun`,
+        //     headers: {...headerAuthorization},
+        //     data: this.itemAkun
+        // })
+	    // .then((r) => {  
+	    // 	if(r.data.status === 200) {        
+		// 		self.loadAkun(filterAkun, paginationAkun, urutAkun);
+	    // 	} 
+	    // 	self.handleReset();
+        //     self.setState({disabledInput: false});
+        //     // handleClose();
+        //     handleToggleOpenProgressDialog();
+	    // })
+	    // .catch((r) => {
+	    // 	self.setState({disabledInput: true});
+	    // });
+	}
 
     render() {
         const { data, listCustomer, listStatusProyek, mode } = this.props;
