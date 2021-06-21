@@ -107,7 +107,7 @@ class ProyekBaru extends React.Component {
                     <Radio.Button value="Monitoring" disabled={disabledRadioMonitoring}>Monitoring</Radio.Button>
                 </Radio.Group>  
             </div>                  
-            <Divider style={{borderTop: '1px solid rgba(17, 123, 236, 0.54)', marginBottom: 16}}/>
+            <Divider style={{borderTop: '1px solid rgba(17, 123, 236, 0.54)'}}/>
             {subPage}
         </>;
 

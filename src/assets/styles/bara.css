@@ -10,19 +10,19 @@
 .table-container-proyek-baru td:nth-child(1),
 .table-container-pengajuan-baru td:nth-child(1) {
     width: 250px;
-}
+} 
 .table-container-proyek-baru td:nth-child(2),
 .table-container-pengajuan-baru td:nth-child(2) {
     width: 250px;
 }
 
-.table-container-cel-pengajuan-baru {
+/*.table-container-cel-pengajuan-baru {
     display: flex;
     flex-direction: column;
 }
 .table-container-cel-pengajuan-baru>.item-label {
     margin-bottom: 8px;
-}
+} */
 .container-preview-img-pegawai {
     display: none;
     /* margin-bottom: 16px; */

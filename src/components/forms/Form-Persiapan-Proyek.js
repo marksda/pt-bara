@@ -9,7 +9,7 @@ const { Option } = AutoComplete;
 const { TextArea } = Input;
 
 const tailLayout = {
-    wrapperCol: { offset: 12, span: 4 },
+    wrapperCol: { offset: 8, span: 4 },
 };
 
 const mapStateToProps = store => {
@@ -35,7 +35,7 @@ class FormPersiapanProyek extends React.Component {
     constructor(props) {
 		super(props);
         this.state ={
-            disabledInput: false
+            disabledInput: true
         }
 
         this.formRef = React.createRef();
@@ -48,6 +48,15 @@ class FormPersiapanProyek extends React.Component {
         if(listStatusProyek === null) {
             this.loadStatusProyek(filterStatusProyek, paginationStatusProyek, urutStatusProyek);
         }
+    }
+
+    handleBaru = () => {
+        this.setState({disabledInput: false});
+    }
+
+    handleBatal = () => {
+        this.formRef.current.resetFields();
+        this.setState({disabledInput: true});
     }
 
     handleChangeNilaiNumeric = (value) => {
@@ -85,6 +94,10 @@ class FormPersiapanProyek extends React.Component {
 			let tmp = dateString.split('-');
             this.itemProyek.tanggal_persiapan = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
 		}
+	}
+
+    handleReset = () => {
+		this.formRef.current.resetFields();
 	}
 
     handleSearchCustomer = (value) => {
@@ -285,19 +298,46 @@ class FormPersiapanProyek extends React.Component {
                         </tr>
                     </tbody>
                 </table>                
-                <Form.Item {...tailLayout}>
+                <Form.Item {...tailLayout} style={{width: 200}}>
                     <Button 
+                        shape="round"
+                        size="default"
+                        htmlType="button" 
+                        onClick={this.handleBaru} 
+                        style={{marginBottom: 8, width: 100}}
+                        disabled={!disabledInput}
+                    >
+                        {mode==='edit'?'Edit':'Baru'}
+                    </Button>
+                    <Button 
+                        danger
+                        type="primary" 
+                        shape="round"
+                        size="default"
+                        htmlType="button" 
+                        onClick={this.handleBatal} 
+                        style={{marginBottom: 8, width: 100}}
+                        disabled={disabledInput}
+                    >
+                    Batal
+                    </Button>
+                    <Button 
+                        shape="round"
+                        size="default"
                         htmlType="button" 
                         onClick={this.handleReset} 
                         disabled={mode==='edit'?true:disabledInput}
-                        style={{marginBottom: 8}}
+                        style={{marginBottom: 8, width: 100}}
                     >
                     Reset
                     </Button>
                     <Button 
                         type="primary" 
+                        shape="round"
+                        size="default"
                         htmlType="submit" 
                         disabled={disabledInput}
+                        style={{width: 100}}
                     >
                     Simpan
                     </Button>
