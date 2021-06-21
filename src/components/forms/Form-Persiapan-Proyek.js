@@ -90,47 +90,66 @@ class FormPersiapanProyek extends React.Component {
                     ["id_status"]: mode==='edit'?data.id_status:null,
                 }}
             >
-                <Form.Item
-	                label="Tanggal Persiapan"
-                    name="tanggal"
-                    rules={[{required: true, message: 'Tanggal persiapan proyek harus harus diisi'}]}
-                >
-                    <DatePicker 
-                        format="DD-MM-YYYY" 
-                        disabled={disabledInput}
-                        style={{width: 130}}
-                        onChange={this.handleChangeTanggal}
-                    />
-                </Form.Item>
-                <Form.Item 
-                    label="Status"
-                    name="id_status"
-                    rules={[{required: true, message: 'Status proyek harus harus diisi'}]}
-                >
-                    <Select 
-                        onChange={this.handleChangeStatus}
-                        disabled={disabledInput}
-                        style={{width: 110}}
-                    >
-                    {
-                        listStatusProyek !== null ? listStatusProyek.data.map((row) => 
-                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
-                        ):null
-                    }	
-                    </Select>
-                </Form.Item>
-                <Form.Item
-	                label="No. Job"
-                    name="no_job"
-                    rules={[{required: true, message: 'No. job proyek harus diisi'}]}
-                >
-                    <Input 
-                        data-jenis="nojob"
-                        disabled={disabledInput}
-                        onChange={this.handleChangeNilaiText}
-                        style={{ width: 120 }}
-                    />
-                </Form.Item>
+                <table className="table-container-proyek-baru">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <Form.Item
+                                    label="Tanggal Persiapan"
+                                    name="tanggal"
+                                    rules={[{required: true, message: 'Tanggal persiapan proyek harus harus diisi'}]}
+                                    style={{marginBottom: 8}}
+                                >
+                                    <DatePicker 
+                                        format="DD-MM-YYYY" 
+                                        disabled={disabledInput}
+                                        style={{width: 130}}
+                                        onChange={this.handleChangeTanggal}
+                                    />
+                                </Form.Item>
+                            </td>
+                            <td>
+                                <Form.Item 
+                                    label="Status"
+                                    name="id_status"
+                                    rules={[{required: true, message: 'Status proyek harus harus diisi'}]}
+                                    style={{marginBottom: 8}}
+                                >
+                                    <Select 
+                                        onChange={this.handleChangeStatus}
+                                        disabled={disabledInput}
+                                        style={{width: 110}}
+                                    >
+                                    {
+                                        listStatusProyek !== null ? listStatusProyek.data.map((row) => 
+                                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
+                                        ):null
+                                    }	
+                                    </Select>
+                                </Form.Item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <Form.Item
+                                    label="No. Job"
+                                    name="no_job"
+                                    rules={[{required: true, message: 'No. job proyek harus diisi'}]}
+                                >
+                                    <Input 
+                                        data-jenis="nojob"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiText}
+                                        style={{ width: 130 }}
+                                    />
+                                </Form.Item>
+                            </td>
+                            <td>
+                                
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </Form>
         </div>;
 

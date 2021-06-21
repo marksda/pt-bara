@@ -2,17 +2,20 @@
     display: flex;
     justify-content: center;
 }
-.table-container-pengajuan-baru td {
+.table-container-pengajuan-baru td, .table-container-proyek-baru td {
     padding: 0px 8px;
     vertical-align: top;
     width: 100%;
 }
+.table-container-proyek-baru td:nth-child(1),
 .table-container-pengajuan-baru td:nth-child(1) {
     width: 150px;
 }
+.table-container-proyek-baru td:nth-child(2),
 .table-container-pengajuan-baru td:nth-child(2) {
     width: 250px;
 }
+
 .table-container-cel-pengajuan-baru {
     display: flex;
     flex-direction: column;
