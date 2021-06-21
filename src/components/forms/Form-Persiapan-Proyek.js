@@ -298,13 +298,13 @@ class FormPersiapanProyek extends React.Component {
                         </tr>
                     </tbody>
                 </table>                
-                <Form.Item {...tailLayout} style={{width: 200}}>
+                <Form.Item {...tailLayout} style={{width:100}}>
                     <Button 
                         shape="round"
                         size="default"
                         htmlType="button" 
                         onClick={this.handleBaru} 
-                        style={{marginBottom: 8, width: 100}}
+                        style={{marginBottom: 8, width: 120}}
                         disabled={!disabledInput}
                     >
                         {mode==='edit'?'Edit':'Baru'}
@@ -316,7 +316,7 @@ class FormPersiapanProyek extends React.Component {
                         size="default"
                         htmlType="button" 
                         onClick={this.handleBatal} 
-                        style={{marginBottom: 8, width: 100}}
+                        style={{marginBottom: 8, width: 120}}
                         disabled={disabledInput}
                     >
                     Batal
@@ -327,7 +327,7 @@ class FormPersiapanProyek extends React.Component {
                         htmlType="button" 
                         onClick={this.handleReset} 
                         disabled={mode==='edit'?true:disabledInput}
-                        style={{marginBottom: 8, width: 100}}
+                        style={{marginBottom: 8, width: 120}}
                     >
                     Reset
                     </Button>
@@ -337,9 +337,19 @@ class FormPersiapanProyek extends React.Component {
                         size="default"
                         htmlType="submit" 
                         disabled={disabledInput}
-                        style={{width: 100}}
+                        style={{width: 120, marginBottom: 100}}
                     >
                     Simpan
+                    </Button>
+                    <Button 
+                        shape="round"
+                        size="default"
+                        htmlType="button" 
+                        onClick={this.handleReset} 
+                        disabled={!disabledInput}
+                        style={{marginBottom: 8, width: 120}}
+                    >
+                    Data Proyek
                     </Button>
                 </Form.Item>
             </div>
