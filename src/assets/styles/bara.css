@@ -9,7 +9,7 @@
 }
 .table-container-proyek-baru td:nth-child(1),
 .table-container-pengajuan-baru td:nth-child(1) {
-    width: 150px;
+    width: 250px;
 }
 .table-container-proyek-baru td:nth-child(2),
 .table-container-pengajuan-baru td:nth-child(2) {
