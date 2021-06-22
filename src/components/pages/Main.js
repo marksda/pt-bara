@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import { setUnauthorization } from "../../actions/notification-action";
-import { setModeProyekBaru } from "../../actions/master-action";
+import { setItemMenuSelected } from "../../actions/master-action";
 
 import Master from "./Master";
 import PengajuanBaru from "./Pengajuan-Baru";
@@ -97,14 +97,15 @@ const mapStateToProps = store => {
         headerAuthorization: store.credential.header_authorization,
         listMenu: store.master.menus,
         restfulServer: store.general.restful_domain,
-        userProfile: store.credential.user_profile
+        userProfile: store.credential.user_profile,
+        itemMenuSelected: store.master.item_menu_selected,
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
         setUnauthorization: () => dispatch(setUnauthorization()),
-        setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai))
+        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
     };
 };
 
@@ -114,18 +115,10 @@ class Main extends React.Component {
 		super(props);
 
         this.state = {
-            itemMenuSelected: '',
             open: false
         }
     }
-
-    componentDidMount() {
-        const { listMenu } = this.props;
-        if(listMenu.length > 0) {
-            this.setState({itemMenuSelected: listMenu[0].menu_item[0].nama});
-        }
-    }
-
+   
     handleDrawerClose = () => {
         this.setState({open: false});
     }
@@ -134,31 +127,14 @@ class Main extends React.Component {
         this.setState({open: true});
     }
 
-    handleToNavDaftarProyek = () => {
-        this.setState({itemMenuSelected: 'Daftar Proyek'});
-    }
-
-    handleAddToNavProyekBaru = () => {
-        const { setModeProyekBaru } = this.props;
-        setModeProyekBaru('add');
-        this.setState({itemMenuSelected: 'Proyek Baru'});
-    }
-
-    handleEditToNavProyekBaru = () => {
-        const { setModeProyekBaru } = this.props;
-        setModeProyekBaru('edit');
-        this.setState({itemMenuSelected: 'Proyek Baru'});
-    }
-
     handleItemMenuClick = (e) => {
-        if(e.currentTarget.textContent !== this.state.itemMenuSelected) {            
-            this.setState({itemMenuSelected: e.currentTarget.textContent});
-        }
+        const { setItemMenuSelected } = this.props;
+        setItemMenuSelected(e.currentTarget.textContent);
     }
     
     render() {
-        const { authorizationNotify, classes, listMenu } = this.props;
-        const { itemMenuSelected, open } = this.state;
+        const { authorizationNotify, classes, itemMenuSelected, listMenu } = this.props;
+        const { open } = this.state;
 
         let page = null;
         let subPage = null;
@@ -166,17 +142,11 @@ class Main extends React.Component {
         switch (itemMenuSelected) {
             case 'Proyek Baru':
                 subPage = 
-                <ProyekBaru 
-                    handleToNavDaftarProyek={this.handleToNavDaftarProyek}
-                    mode={this.modeProyekBaru}
-                />;
+                <ProyekBaru  />;
                 break;
             case 'Daftar Proyek':
                 subPage = 
-                <Proyek 
-                    handleAddProyekBaru={this.handleAddToNavProyekBaru}
-                    handleEditProyekBaru={this.handleEditToNavProyekBaru}
-                />;
+                <Proyek />;
                 break;
             case 'Pengajuan Baru':
                 subPage = <PengajuanBaru />;

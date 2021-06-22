@@ -3,7 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Select } from 'antd';
 import { connect } from "react-redux";
-import { getCustomer, getStatusProyek } from "../../actions/master-action";
+import { getCustomer, getStatusProyek, setItemMenuSelected } from "../../actions/master-action";
 
 
 const { Option } = AutoComplete;
@@ -30,7 +30,8 @@ const mapStateToProps = store => {
 const mapDispatchToProps = dispatch => {    
     return {
         getCustomer: (url, headerAuthorization) => dispatch(getCustomer(url, headerAuthorization)),
-        getStatusProyek: (url, headerAuthorization) => dispatch(getStatusProyek(url, headerAuthorization))
+        getStatusProyek: (url, headerAuthorization) => dispatch(getStatusProyek(url, headerAuthorization)),        
+        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
     };
 };
 
@@ -129,6 +130,11 @@ class FormPersiapanProyek extends React.Component {
         this.itemProyek.id_customer = option.key;
 	}
 
+    handleToNavDaftarProyek = () => {
+        const { setItemMenuSelected } = this.props;
+        setItemMenuSelected('Daftar Proyek');
+    }
+
     loadCustomer = (filter, pagination, urut) => {
         const { getCustomer, headerAuthorization, restfulServer } = this.props; 
         let url = `${restfulServer}/master/customer?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
@@ -171,7 +177,7 @@ class FormPersiapanProyek extends React.Component {
 	}
 
     render() {
-        const { handleToNavDaftarProyek, itemProyekSelected, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
+        const { itemProyekSelected, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
         const { disabledInput } = this.state;
         
         let page =
@@ -405,7 +411,7 @@ class FormPersiapanProyek extends React.Component {
                         shape="round"
                         size="default"
                         htmlType="button" 
-                        onClick={handleToNavDaftarProyek} 
+                        onClick={this.handleToNavDaftarProyek} 
                         disabled={!disabledInput}
                         style={{marginBottom: 8, width: 120}}
                     >

@@ -99,7 +99,6 @@ class ProyekBaru extends React.Component {
                 subPage =
                 <FormPersiapanProyek 
                     handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
-                    handleToNavDaftarProyek={handleToNavDaftarProyek}
                 />;
                 break;
         

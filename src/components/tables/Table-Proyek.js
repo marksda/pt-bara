@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
   
 
-import { getProyek, setFilterProyek, setPaginationProyek, setUrutProyek } from "../../actions/master-action";
+import { getProyek, setFilterProyek, setItemMenuSelected, setModeProyekBaru, setPaginationProyek, setUrutProyek } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -286,7 +286,9 @@ const mapDispatchToProps = dispatch => {
         getProyek: (url, headerAuthorization) => dispatch(getProyek(url, headerAuthorization)),
         setFilterProyek: (value) => dispatch(setFilterProyek(value)),
         setPaginationProyek: (value) => dispatch(setPaginationProyek(value)),
-        setUrutProyek: (value) => dispatch(setUrutProyek(value))
+        setUrutProyek: (value) => dispatch(setUrutProyek(value)),
+        setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)),    
+        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
     };
 };
 
@@ -412,6 +414,18 @@ class TableProyek extends React.Component {
         this.setState({openFormAddProyek: true, mode: 'add'});
     }
 
+    handleAddProyekBaru = () => {
+        const { setItemMenuSelected, setModeProyekBaru } = this.props;
+        setModeProyekBaru('add');
+        setItemMenuSelected('Proyek Baru');
+    }
+
+    handleEditProyekBaru = () => {
+        const { setItemMenuSelected, setModeProyekBaru } = this.props;
+        setModeProyekBaru('edit');
+        setItemMenuSelected('Proyek Baru');
+    }
+
     handleRequestSort = (event, property) => {   
         const { filterProyek, paginationProyek, setUrutProyek, urutProyek } = this.props;
         let isAsc = urutProyek.field === property && urutProyek.order === 'asc';
@@ -434,7 +448,7 @@ class TableProyek extends React.Component {
     }
 
     render() {
-        const { handleAddProyekBaru, handleEditProyekBaru, classes, listProyek, paginationProyek, title, urutProyek } = this.props;
+        const { classes, listProyek, paginationProyek, title, urutProyek } = this.props;
 		const { openConfirmasiHapusProyek, openProcessingDialog } = this.state;
 
         let pageRender = null;
@@ -442,7 +456,7 @@ class TableProyek extends React.Component {
         pageRender =
 		<div className={classes.root}>
 			<EnhancedTableToolbar 
-                handleOpen={handleAddProyekBaru}  
+                handleOpen={this.handleAddProyekBaru}  
                 title={title}
                 handleCari={this.handleChangeFilter}
             />
@@ -505,8 +519,8 @@ class TableProyek extends React.Component {
                                         style={{width: 100, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
-                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={handleAddProyekBaru}/>
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_job} onClick={handleEditProyekBaru} />
+                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddProyekBaru}/>
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_job} onClick={this.handleEditProyekBaru} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>
