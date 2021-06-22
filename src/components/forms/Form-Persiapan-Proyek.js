@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import moment from 'moment';
 import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Select } from 'antd';
 import { connect } from "react-redux";
@@ -35,7 +36,7 @@ class FormPersiapanProyek extends React.Component {
     constructor(props) {
 		super(props);
         this.state ={
-            disabledInput: true
+            disabledInput: true,
         }
 
         this.formRef = React.createRef();
@@ -51,6 +52,7 @@ class FormPersiapanProyek extends React.Component {
     }
 
     handleBaru = () => {
+        this.itemProyek.tanggal_persiapan = `${moment().year()}-${moment().month()}-${moment().date()}`;
         this.setState({disabledInput: false});
     }
 
@@ -60,7 +62,6 @@ class FormPersiapanProyek extends React.Component {
     }
 
     handleChangeNilaiNumeric = (value) => {
-        console.log(value);
         this.itemProyek.perkiraan_nilai = value;
 	}
 
@@ -139,32 +140,32 @@ class FormPersiapanProyek extends React.Component {
     }
 
     savePersiapanProyek = () => {
-        console.log(this.itemProyek);
-		// const { 
-		// 	filterAkun, headerAuthorization, paginationAkun, restfulServer, urutAkun, handleToggleOpenProgressDialog
-		// } = this.props;
-	    // let self = this;
+		const { 
+			headerAuthorization, restfulServer, handleToggleOpenProgressDialog
+		} = this.props;
+	    let self = this;
         
-	    // handleToggleOpenProgressDialog();
+	    handleToggleOpenProgressDialog();
 
-	    // axios({
-        //     method: 'put',
-        //     url: `${restfulServer}/master/akun`,
-        //     headers: {...headerAuthorization},
-        //     data: this.itemAkun
-        // })
-	    // .then((r) => {  
-	    // 	if(r.data.status === 200) {        
-		// 		self.loadAkun(filterAkun, paginationAkun, urutAkun);
-	    // 	} 
-	    // 	self.handleReset();
-        //     self.setState({disabledInput: false});
-        //     // handleClose();
-        //     handleToggleOpenProgressDialog();
-	    // })
-	    // .catch((r) => {
-	    // 	self.setState({disabledInput: true});
-	    // });
+	    axios({
+            method: 'put',
+            url: `${restfulServer}/master/proyek`,
+            headers: {...headerAuthorization},
+            data: this.itemProyek
+        })
+	    .then((r) => {  
+	    	if(r.data.status === 200) {        
+				// self.loadAkun(filterAkun, paginationAkun, urutAkun);
+	    	} 
+	    	// self.handleReset();
+            // self.setState({disabledInput: false});
+            // handleClose();
+            handleToggleOpenProgressDialog();
+	    })
+	    .catch((r) => {
+            self.handleToggleOpenProgressDialog();
+	    	self.setState({disabledInput: true});
+	    });
 	}
 
     render() {

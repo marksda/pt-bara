@@ -4,6 +4,7 @@ import { Divider, Radio } from 'antd';
 
 import { resetStatusProyekSelected, setStatusProyekSelected } from "../../actions/master-action";
 import FormPersiapanProyek from '../forms/Form-Persiapan-Proyek';
+import ProcessingDialog from '../dialogs/Processing-Dialog';
 
 const mapStateToProps = store => {
     return {      
@@ -28,6 +29,7 @@ class ProyekBaru extends React.Component {
             disabledRadioProfile: false,
             disabledRadioBudget: false,
             disabledRadioMonitoring: false,
+            openProcessingDialog: false
         }
     }
 
@@ -81,16 +83,24 @@ class ProyekBaru extends React.Component {
 
     handleChangeItemTab = (e) => {
         this.setState({ itemTabSelected: e.target.value });
+    }   
+
+    handleToggleOpenProgressDialog = () => {
+        this.setState({openProcessingDialog: !this.state.openProcessingDialog});
     }
 
     render() {
-        const { itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, disabledRadioMonitoring  } = this.state;
+        const { itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, disabledRadioMonitoring, openProcessingDialog  } = this.state;
         let subPage = null;
 
         switch (itemTabSelected) {
             case 'Persiapan':
                 subPage =
-                <FormPersiapanProyek mode="add" data={null} />;
+                <FormPersiapanProyek 
+                    mode="add" 
+                    data={null}
+                    handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
+                />;
                 break;
         
             default:
@@ -109,6 +119,7 @@ class ProyekBaru extends React.Component {
             </div>                  
             <Divider style={{borderTop: '1px solid rgba(17, 123, 236, 0.54)'}}/>
             {subPage}
+            <ProcessingDialog open={openProcessingDialog} />
         </>;
 
         return(page);
