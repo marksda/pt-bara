@@ -167,7 +167,7 @@ class Main extends React.Component {
             case 'Proyek Baru':
                 subPage = 
                 <ProyekBaru 
-                    handleDataProyek={this.handleToNavDaftarProyek}
+                    handleToNavDaftarProyek={this.handleToNavDaftarProyek}
                     mode={this.modeProyekBaru}
                 />;
                 break;

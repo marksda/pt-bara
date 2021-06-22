@@ -23,6 +23,7 @@ const mapStateToProps = store => {
         urutStatusProyek: store.master.urut_status_proyek,
         listCustomer: store.master.list_customer,
         modeProyekBaru: store.master.mode_proyek_baru,
+        itemProyekSelected: store.master.item_proyek_selected,
     };
 };
 
@@ -170,7 +171,7 @@ class FormPersiapanProyek extends React.Component {
 	}
 
     render() {
-        const { handleDataProyek, data, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
+        const { handleToNavDaftarProyek, itemProyekSelected, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
         const { disabledInput } = this.state;
         
         let page =
@@ -182,14 +183,14 @@ class FormPersiapanProyek extends React.Component {
             initialValues={{
                 layout: 'vertical',
                 remember: true,
-                ["tanggal"]: modeProyekBaru==='edit'?data.tanggal_persiapan:moment(),
-                ["no_job"]: modeProyekBaru==='edit'?data.no_job:null,
-                ["id_status"]: modeProyekBaru==='edit'?data.id_status:null,
-                ["nama_customer"]: modeProyekBaru==='edit'?data.nama_customer:null,
-                ["perkiraan_nilai"]: modeProyekBaru==='edit'?data.perkiraan_nilai:null,
-                ["pic_customer"]: modeProyekBaru==='edit'?data.pic_customer:null,
-                ["no_hp_pic_customer"]: modeProyekBaru==='edit'?data.no_hp_pic_customer:null,
-                ["keterangan_persiapan"]: modeProyekBaru==='edit'?data.keterangan_persiapan:null,
+                ["tanggal"]: modeProyekBaru==='edit'?itemProyekSelected.tanggal_persiapan:moment(),
+                ["no_job"]: modeProyekBaru==='edit'?itemProyekSelected.no_job:null,
+                ["id_status"]: modeProyekBaru==='edit'?itemProyekSelected.id_status:null,
+                ["nama_customer"]: modeProyekBaru==='edit'?itemProyekSelected.nama_customer:null,
+                ["perkiraan_nilai"]: modeProyekBaru==='edit'?itemProyekSelected.perkiraan_nilai:null,
+                ["pic_customer"]: modeProyekBaru==='edit'?itemProyekSelected.pic_customer:null,
+                ["no_hp_pic_customer"]: modeProyekBaru==='edit'?itemProyekSelected.no_hp_pic_customer:null,
+                ["keterangan_persiapan"]: modeProyekBaru==='edit'?itemProyekSelected.keterangan_persiapan:null,
             }}
         >
             <div className="content-flex-center">
@@ -404,7 +405,7 @@ class FormPersiapanProyek extends React.Component {
                         shape="round"
                         size="default"
                         htmlType="button" 
-                        onClick={handleDataProyek} 
+                        onClick={handleToNavDaftarProyek} 
                         disabled={!disabledInput}
                         style={{marginBottom: 8, width: 120}}
                     >
