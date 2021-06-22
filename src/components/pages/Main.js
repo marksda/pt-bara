@@ -21,7 +21,7 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import { setUnauthorization } from "../../actions/notification-action";
-import { setItemMenuSelected } from "../../actions/master-action";
+import { setItemMenuSelected, setModeProyekBaru } from "../../actions/master-action";
 
 import Master from "./Master";
 import PengajuanBaru from "./Pengajuan-Baru";
@@ -106,6 +106,7 @@ const mapDispatchToProps = dispatch => {
     return {
         setUnauthorization: () => dispatch(setUnauthorization()),
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+        setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)),  
     };
 };
 
@@ -128,8 +129,11 @@ class Main extends React.Component {
     }
 
     handleItemMenuClick = (e) => {
-        const { setItemMenuSelected } = this.props;
-        setItemMenuSelected(e.currentTarget.textContent);
+        const { setItemMenuSelected, setModeProyekBaru } = this.props;
+        if( e.currentTarget.textContent === 'Proyek Baru') {
+            setModeProyekBaru('add');
+        }
+        setItemMenuSelected(e.currentTarget.textContent);        
     }
     
     render() {

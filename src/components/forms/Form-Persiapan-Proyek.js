@@ -3,7 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Select } from 'antd';
 import { connect } from "react-redux";
-import { getCustomer, getStatusProyek, setItemMenuSelected } from "../../actions/master-action";
+import { getCustomer, getStatusProyek, setItemMenuSelected, setModeProyekBaru } from "../../actions/master-action";
 
 
 const { Option } = AutoComplete;
@@ -31,7 +31,8 @@ const mapDispatchToProps = dispatch => {
     return {
         getCustomer: (url, headerAuthorization) => dispatch(getCustomer(url, headerAuthorization)),
         getStatusProyek: (url, headerAuthorization) => dispatch(getStatusProyek(url, headerAuthorization)),        
-        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),        
+        setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)), 
     };
 };
 
@@ -40,6 +41,7 @@ class FormPersiapanProyek extends React.Component {
 		super(props);
         this.state ={
             disabledInput: true,
+            disabledInputEdit: true
         }
 
         this.formRef = React.createRef();
@@ -47,7 +49,11 @@ class FormPersiapanProyek extends React.Component {
     }
 
     componentDidMount() {
-        const { listStatusProyek, filterStatusProyek, paginationStatusProyek, urutStatusProyek } = this.props;
+        const { listStatusProyek, filterStatusProyek, paginationStatusProyek, urutStatusProyek, modeProyekBaru } = this.props;
+
+        if(modeProyekBaru === 'edit') {
+            this.setState({disabledInputEdit: false});
+        }
 
         if(listStatusProyek === null) {
             this.loadStatusProyek(filterStatusProyek, paginationStatusProyek, urutStatusProyek);
@@ -55,13 +61,30 @@ class FormPersiapanProyek extends React.Component {
     }
 
     handleBaru = () => {
+        const { modeProyekBaru, setModeProyekBaru } = this.props;
         this.itemProyek.tanggal_persiapan = `${moment().year()}-${moment().month()}-${moment().date()}`;
         this.setState({disabledInput: false});
+        setTimeout(() => {this.formRef.current.getFieldInstance('no_job').focus();}, 300);
+        if(modeProyekBaru === 'edit') {
+            this.setState({disabledInputEdit: true});
+            setModeProyekBaru('add');
+        }
     }
 
     handleBatal = () => {
+        const { modeProyekBaru } = this.props;
         this.formRef.current.resetFields();
-        this.setState({disabledInput: true});
+        if(modeProyekBaru === 'edit') {
+            this.setState({disabledInput: true, disabledInputEdit: false});
+        }
+        else {
+            this.setState({disabledInput: true});
+        }
+    }
+
+    handleEdit = () => {
+        this.setState({disabledInput: false, disabledInputEdit: true});
+        setTimeout(() => {this.formRef.current.getFieldInstance('nama_proyek').focus();}, 300);
     }
 
     handleChangeNilaiNumeric = (value) => {
@@ -118,7 +141,8 @@ class FormPersiapanProyek extends React.Component {
 	}
 
     handleReset = () => {
-		this.formRef.current.resetFields();
+		this.formRef.current.resetFields();        
+        setTimeout(() => {this.formRef.current.getFieldInstance('no_job').focus();}, 300);
 	}
 
     handleSearchCustomer = (value) => {
@@ -178,26 +202,45 @@ class FormPersiapanProyek extends React.Component {
 
     render() {
         const { itemProyekSelected, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
-        const { disabledInput } = this.state;
-        
+        const { disabledInput, disabledInputEdit } = this.state;
+        let keyForm;
+
+        let initEdit;
+        if(modeProyekBaru === 'edit' && itemProyekSelected !== null ) {
+            initEdit = {
+                layout: 'vertical',
+                remember: true,
+                ["tanggal"]: modeProyekBaru==='edit'?moment(itemProyekSelected.tanggal_persiapan):moment(),
+                ["no_job"]: modeProyekBaru==='edit'?itemProyekSelected.no_job:null,
+                ["id_status_proyek"]: modeProyekBaru==='edit'?itemProyekSelected.id_status_proyek:null,
+                ["nama_proyek"]: modeProyekBaru==='edit'?itemProyekSelected.nama_proyek:null,
+                ["nama_customer"]: modeProyekBaru==='edit'?itemProyekSelected.nama_customer:null,
+                ["perkiraan_nilai"]: modeProyekBaru==='edit'?itemProyekSelected.perkiraan_nilai:null,
+                ["pic_customer"]: modeProyekBaru==='edit'?itemProyekSelected.pic_customer:null,
+                ["no_hp_pic_customer"]: modeProyekBaru==='edit'?itemProyekSelected.no_hp_pic_customer:null,
+                ["keterangan_persiapan"]: modeProyekBaru==='edit'?itemProyekSelected.keterangan_persiapan:null,
+            };
+            keyForm = 'edit'
+        }
+        else {
+            initEdit = {
+                layout: 'vertical',
+                remember: true,
+                ["tanggal"]: moment(),
+                ["id_status_proyek"]: '01'
+            };
+
+            keyForm = 'add';
+        }
+
         let page =
         <Form
             name="form-persiapan-proyek"
             onFinish={this.handleOnFinish}
             ref={this.formRef}
             layout='vertical'
-            initialValues={{
-                layout: 'vertical',
-                remember: true,
-                ["tanggal"]: modeProyekBaru==='edit'?itemProyekSelected.tanggal_persiapan:moment(),
-                ["no_job"]: modeProyekBaru==='edit'?itemProyekSelected.no_job:null,
-                ["id_status"]: modeProyekBaru==='edit'?itemProyekSelected.id_status:null,
-                ["nama_customer"]: modeProyekBaru==='edit'?itemProyekSelected.nama_customer:null,
-                ["perkiraan_nilai"]: modeProyekBaru==='edit'?itemProyekSelected.perkiraan_nilai:null,
-                ["pic_customer"]: modeProyekBaru==='edit'?itemProyekSelected.pic_customer:null,
-                ["no_hp_pic_customer"]: modeProyekBaru==='edit'?itemProyekSelected.no_hp_pic_customer:null,
-                ["keterangan_persiapan"]: modeProyekBaru==='edit'?itemProyekSelected.keterangan_persiapan:null,
-            }}
+            initialValues={initEdit}
+            key={keyForm}
         >
             <div className="content-flex-center">
                 <table className="table-container-proyek-baru" style={{width: '70%'}}>
@@ -207,7 +250,7 @@ class FormPersiapanProyek extends React.Component {
                                 <Form.Item
                                     label="Tanggal Persiapan"
                                     name="tanggal"
-                                    rules={[{required: true, message: 'Tanggal persiapan proyek harus harus diisi'}]}
+                                    rules={[{required: true, message: 'Tanggal persiapan harus diisi'}]}
                                     style={{marginBottom: 8}}
                                 >
                                     <DatePicker 
@@ -221,8 +264,8 @@ class FormPersiapanProyek extends React.Component {
                             <td>
                                 <Form.Item 
                                     label="Status"
-                                    name="id_status"
-                                    rules={[{required: true, message: 'Status proyek harus harus diisi'}]}
+                                    name="id_status_proyek"
+                                    rules={[{required: true, message: 'Status harus diisi'}]}
                                     style={{marginBottom: 8}}
                                 >
                                     <Select 
@@ -244,7 +287,7 @@ class FormPersiapanProyek extends React.Component {
                                 <Form.Item
                                     label="No. Job"
                                     name="no_job"
-                                    rules={[{required: true, message: 'No. job proyek harus diisi'}]}
+                                    rules={[{required: true, message: 'No. job harus diisi'}]}
                                 >
                                     <Input 
                                         data-jenis="nojob"
@@ -258,13 +301,14 @@ class FormPersiapanProyek extends React.Component {
                                 <Form.Item 
                                     label="Customer"
                                     name="nama_customer"
-                                    rules={[{required: true, message: 'Customer harus harus diisi'}]}
+                                    rules={[{required: true, message: 'Customer harus diisi'}]}
                                 >
                                     <AutoComplete 
                                         onSearch={this.handleSearchCustomer}
                                         onSelect={this.handleSelectCustomer}
                                         disabled={disabledInput}
                                         style={{width: 350}}
+                                        placeholder={disabledInput === true? null:'pencarian customer'}
                                     >
                                     {
                                         listCustomer !== null ? listCustomer.data.map((row) => 
@@ -280,7 +324,7 @@ class FormPersiapanProyek extends React.Component {
                                 <Form.Item
                                     label="Proyek"
                                     name="nama_proyek"
-                                    rules={[{required: true, message: 'Nama proyek harus diisi'}]}
+                                    rules={[{required: true, message: 'Proyek harus diisi'}]}
                                     style={{minWidth: 250}}
                                 >
                                     <Input 
@@ -369,9 +413,9 @@ class FormPersiapanProyek extends React.Component {
                         shape="round"
                         size="default"
                         htmlType="button" 
-                        onClick={this.handleBaru} 
+                        onClick={this.handleEdit} 
                         style={{marginBottom: 8, width: 120}}
-                        disabled={modeProyekBaru==='add'?true:disabledInput}
+                        disabled={disabledInputEdit}
                     >
                         Edit
                     </Button>

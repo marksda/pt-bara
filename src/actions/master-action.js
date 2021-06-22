@@ -18,7 +18,7 @@ export const setItemProyekSelected = (url='', authorization) => {
             }
         )
         .then(
-            json => {               
+            json => {           
                 if(json.status !== 200) {
                     dispatch({ type: ITEM_PROYEK_SELECTED_LOADED, payload: null });
                 }
