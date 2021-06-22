@@ -91,15 +91,16 @@ class ProyekBaru extends React.Component {
 
     render() {
         const { itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, disabledRadioMonitoring, openProcessingDialog  } = this.state;
+        const { handleDataProyek, mode } = this.props;
         let subPage = null;
 
         switch (itemTabSelected) {
             case 'Persiapan':
                 subPage =
                 <FormPersiapanProyek 
-                    mode="add" 
                     data={null}
                     handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
+                    handleDataProyek={handleDataProyek}
                 />;
                 break;
         

@@ -21,6 +21,7 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import { setUnauthorization } from "../../actions/notification-action";
+import { setModeProyekBaru } from "../../actions/master-action";
 
 import Master from "./Master";
 import PengajuanBaru from "./Pengajuan-Baru";
@@ -102,7 +103,8 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
-        setUnauthorization: () => dispatch(setUnauthorization())
+        setUnauthorization: () => dispatch(setUnauthorization()),
+        setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai))
     };
 };
 
@@ -132,6 +134,22 @@ class Main extends React.Component {
         this.setState({open: true});
     }
 
+    handleToNavDaftarProyek = () => {
+        this.setState({itemMenuSelected: 'Daftar Proyek'});
+    }
+
+    handleAddToNavProyekBaru = () => {
+        const { setModeProyekBaru } = this.props;
+        setModeProyekBaru('add');
+        this.setState({itemMenuSelected: 'Proyek Baru'});
+    }
+
+    handleEditToNavProyekBaru = () => {
+        const { setModeProyekBaru } = this.props;
+        setModeProyekBaru('edit');
+        this.setState({itemMenuSelected: 'Proyek Baru'});
+    }
+
     handleItemMenuClick = (e) => {
         if(e.currentTarget.textContent !== this.state.itemMenuSelected) {            
             this.setState({itemMenuSelected: e.currentTarget.textContent});
@@ -147,10 +165,18 @@ class Main extends React.Component {
 
         switch (itemMenuSelected) {
             case 'Proyek Baru':
-                subPage = <ProyekBaru />;
+                subPage = 
+                <ProyekBaru 
+                    handleDataProyek={this.handleToNavDaftarProyek}
+                    mode={this.modeProyekBaru}
+                />;
                 break;
             case 'Daftar Proyek':
-                subPage = <Proyek />;
+                subPage = 
+                <Proyek 
+                    handleAddProyekBaru={this.handleAddToNavProyekBaru}
+                    handleEditProyekBaru={this.handleEditToNavProyekBaru}
+                />;
                 break;
             case 'Pengajuan Baru':
                 subPage = <PengajuanBaru />;

@@ -22,6 +22,7 @@ const mapStateToProps = store => {
         paginationStatusProyek: store.master.pagination_status_proyek,
         urutStatusProyek: store.master.urut_status_proyek,
         listCustomer: store.master.list_customer,
+        modeProyekBaru: store.master.mode_proyek_baru,
     };
 };
 
@@ -169,8 +170,9 @@ class FormPersiapanProyek extends React.Component {
 	}
 
     render() {
-        const { data, listCustomer, listStatusProyek, mode } = this.props;
+        const { handleDataProyek, data, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
         const { disabledInput } = this.state;
+        
         let page =
         <Form
             name="form-persiapan-proyek"
@@ -180,14 +182,14 @@ class FormPersiapanProyek extends React.Component {
             initialValues={{
                 layout: 'vertical',
                 remember: true,
-                ["tanggal"]: mode==='edit'?data.tanggal_persiapan:moment(),
-                ["no_job"]: mode==='edit'?data.no_job:null,
-                ["id_status"]: mode==='edit'?data.id_status:null,
-                ["nama_customer"]: mode==='edit'?data.nama_customer:null,
-                ["perkiraan_nilai"]: mode==='edit'?data.perkiraan_nilai:null,
-                ["pic_customer"]: mode==='edit'?data.pic_customer:null,
-                ["no_hp_pic_customer"]: mode==='edit'?data.no_hp_pic_customer:null,
-                ["keterangan_persiapan"]: mode==='edit'?data.keterangan_persiapan:null,
+                ["tanggal"]: modeProyekBaru==='edit'?data.tanggal_persiapan:moment(),
+                ["no_job"]: modeProyekBaru==='edit'?data.no_job:null,
+                ["id_status"]: modeProyekBaru==='edit'?data.id_status:null,
+                ["nama_customer"]: modeProyekBaru==='edit'?data.nama_customer:null,
+                ["perkiraan_nilai"]: modeProyekBaru==='edit'?data.perkiraan_nilai:null,
+                ["pic_customer"]: modeProyekBaru==='edit'?data.pic_customer:null,
+                ["no_hp_pic_customer"]: modeProyekBaru==='edit'?data.no_hp_pic_customer:null,
+                ["keterangan_persiapan"]: modeProyekBaru==='edit'?data.keterangan_persiapan:null,
             }}
         >
             <div className="content-flex-center">
@@ -354,7 +356,17 @@ class FormPersiapanProyek extends React.Component {
                         style={{marginBottom: 8, width: 120}}
                         disabled={!disabledInput}
                     >
-                        {mode==='edit'?'Edit':'Baru'}
+                        Baru
+                    </Button>
+                    <Button 
+                        shape="round"
+                        size="default"
+                        htmlType="button" 
+                        onClick={this.handleBaru} 
+                        style={{marginBottom: 8, width: 120}}
+                        disabled={modeProyekBaru==='add'?true:disabledInput}
+                    >
+                        Edit
                     </Button>
                     <Button 
                         danger
@@ -373,7 +385,7 @@ class FormPersiapanProyek extends React.Component {
                         size="default"
                         htmlType="button" 
                         onClick={this.handleReset} 
-                        disabled={mode==='edit'?true:disabledInput}
+                        disabled={modeProyekBaru==='edit'?true:disabledInput}
                         style={{marginBottom: 8, width: 120}}
                     >
                     Reset
@@ -392,7 +404,7 @@ class FormPersiapanProyek extends React.Component {
                         shape="round"
                         size="default"
                         htmlType="button" 
-                        onClick={this.handleReset} 
+                        onClick={handleDataProyek} 
                         disabled={!disabledInput}
                         style={{marginBottom: 8, width: 120}}
                     >

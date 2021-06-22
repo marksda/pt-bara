@@ -305,7 +305,7 @@ class TableProyek extends React.Component {
 
     componentDidMount() {
     	const { filterProyek, paginationProyek, urutProyek } = this.props;
-        // this.loadProyek(filterProyek, paginationProyek, urutProyek);
+        this.loadProyek(filterProyek, paginationProyek, urutProyek);
     }
 
     deleteProyek = (dataProyek) => {
@@ -343,6 +343,11 @@ class TableProyek extends React.Component {
         });
     }
 
+    flipDate = (tgl) => {
+        let tmptgl = tgl.split('-');
+        return `${tmptgl[2]}-${tmptgl[1]}-${tmptgl[0]}`
+    }
+
     handleBtnDelete = (e) => {
         const { listProyek } = this.props;
         this.itemProyek = {..._.find(listProyek.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
@@ -352,7 +357,6 @@ class TableProyek extends React.Component {
     handleBtnEdit = (e) => {
         const { listProyek } = this.props;
         this.itemProyek = {..._.find(listProyek.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
-        this.itemProyek.nama = this.itemProyek.nama.split(',')[0];
         this.setState({openFormAddProyek: true, mode: 'edit'});
     }
 
@@ -430,27 +434,15 @@ class TableProyek extends React.Component {
     }
 
     render() {
-        const { classes, listProyek, paginationProyek, title, urutProyek } = this.props;
-		const { openConfirmasiHapusProyek, openFormAddProyek, openProcessingDialog, mode } = this.state;
+        const { handleAddProyekBaru, handleEditProyekBaru, classes, listProyek, paginationProyek, title, urutProyek } = this.props;
+		const { openConfirmasiHapusProyek, openProcessingDialog } = this.state;
 
-        // let pageAdd = null;
         let pageRender = null;
-
-		// if(openFormAddProyek === true) {
-        //     pageAdd = 
-        //      <FormAddProyek 
-        //         data={this.itemProyek}
-        //         visible={openFormAddProyek} 
-        //         handleClose={this.handleCloseFormAddProyek}
-        //         mode={mode}
-        //         handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
-        //     />;
-        // }
 
         pageRender =
 		<div className={classes.root}>
 			<EnhancedTableToolbar 
-                handleOpen={this.handleOpenFormAddProyek}  
+                handleOpen={handleAddProyekBaru}  
                 title={title}
                 handleCari={this.handleChangeFilter}
             />
@@ -469,7 +461,7 @@ class TableProyek extends React.Component {
                     			<TableRow 
 	                                hover
 	                                tabIndex={-1}
-	                                key={row.id}      
+	                                key={row.no_job}      
 	                            >
 	                            	<TableCell 
 	                                    align={'right'}
@@ -481,7 +473,9 @@ class TableProyek extends React.Component {
 	                                    align={'left'}
                                         style={{width: 150, verticalAlign: 'top'}}
 	                                >
-	                                    { row.tanggal_persiapan }
+	                                    { 
+                                            this.flipDate(row.tanggal_persiapan)                                      
+                                        }
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
@@ -511,8 +505,8 @@ class TableProyek extends React.Component {
                                         style={{width: 100, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
-                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleOpenFormAddProyek}/>
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.id} onClick={this.handleBtnEdit} />
+                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={handleAddProyekBaru}/>
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_job} onClick={handleEditProyekBaru} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>
