@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
   
 
-import { getProyek, setFilterProyek, setItemMenuSelected, setModeProyekBaru, setPaginationProyek, setUrutProyek } from "../../actions/master-action";
+import { getProyek, setFilterProyek, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, setPaginationProyek, setUrutProyek } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -283,6 +283,7 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
+        setItemProyekSelected: (url, headerAuthorization) => dispatch(setItemProyekSelected(url, headerAuthorization)),
         getProyek: (url, headerAuthorization) => dispatch(getProyek(url, headerAuthorization)),
         setFilterProyek: (value) => dispatch(setFilterProyek(value)),
         setPaginationProyek: (value) => dispatch(setPaginationProyek(value)),
@@ -356,12 +357,6 @@ class TableProyek extends React.Component {
         this.setState({openConfirmasiHapusProyek: true});
     }
 
-    handleBtnEdit = (e) => {
-        const { listProyek } = this.props;
-        this.itemProyek = {..._.find(listProyek.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
-        this.setState({openFormAddProyek: true, mode: 'edit'});
-    }
-
     handleChangeFilter = (v) => {
         const { paginationProyek, setFilterProyek, urutProyek, setPaginationProyek } = this.props;
         let tmpPagination = {...paginationProyek};
@@ -420,8 +415,9 @@ class TableProyek extends React.Component {
         setItemMenuSelected('Proyek Baru');
     }
 
-    handleEditProyekBaru = () => {
-        const { setItemMenuSelected, setModeProyekBaru } = this.props;
+    handleEditProyekBaru = (e) => {
+        const { headerAuthorization, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru } = this.props;
+        setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${e.currentTarget.dataset.id}`, headerAuthorization);
         setModeProyekBaru('edit');
         setItemMenuSelected('Proyek Baru');
     }
