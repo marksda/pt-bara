@@ -82,6 +82,7 @@ class Login extends React.Component {
         this.password = '';
         this.userName = '';
         this.userProfile = {};
+        this.passwordInputRef = React.createRef();
 	}
 
     componentDidMount() {
@@ -155,7 +156,8 @@ class Login extends React.Component {
             elpassword.classList.add("show");    
             let divElmPassword = elpassword.firstChild;
             divElmPassword.style.marginBottom = '0px';
-            this.setState({step: 2});        
+            this.setState({step: 2}); 
+            this.passwordInputRef.current.childNodes[1].childNodes[0].focus();
         }
     }
 
@@ -303,7 +305,6 @@ class Login extends React.Component {
                         </section>                        
                         <section id="step2" className="slide-in from-left hide">
                             <TextField
-                                autoFocus={true} 
                                 classes={{ root: classes.verticalSpacing48 }} 
                                 disabled={isDisabled}
                                 error={isErrorPassword} 
@@ -316,6 +317,7 @@ class Login extends React.Component {
                                 required={true}
                                 helperText={this.errorPasswordMessage}
                                 type={isShowPassword === true ? "text" : "password"}
+                                ref={this.passwordInputRef}
                             />
                             <FormControlLabel
                                 control={

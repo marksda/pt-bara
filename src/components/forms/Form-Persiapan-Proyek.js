@@ -308,7 +308,7 @@ class FormPersiapanProyek extends React.Component {
                                         onSelect={this.handleSelectCustomer}
                                         disabled={disabledInput}
                                         style={{width: 350}}
-                                        placeholder={disabledInput === true? null:'pencarian customer'}
+                                        placeholder={disabledInput === true? null:'Cari customer'}
                                     >
                                     {
                                         listCustomer !== null ? listCustomer.data.map((row) => 

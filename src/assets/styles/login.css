@@ -18,7 +18,7 @@
 }
 .slide-in {
     float: left;
-    width: calc(50% - 48px); 
+    width: calc(57% - 48px); 
     padding: 5px 20px;
     transition: all .5s ease;
 }
