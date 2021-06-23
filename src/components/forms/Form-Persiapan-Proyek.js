@@ -62,12 +62,26 @@ class FormPersiapanProyek extends React.Component {
 
     handleBaru = () => {
         const { modeProyekBaru, setModeProyekBaru } = this.props;
+
         this.itemProyek.tanggal_persiapan = `${moment().year()}-${moment().month()}-${moment().date()}`;
         this.setState({disabledInput: false});
         setTimeout(() => {this.formRef.current.getFieldInstance('no_job').focus();}, 300);
         if(modeProyekBaru === 'edit') {
             this.setState({disabledInputEdit: true});
             setModeProyekBaru('add');
+        }
+        else {
+            this.itemProyek = {
+                no_job: null,
+                id_customer: null,
+                nama_proyek: null,
+                tanggal_persiapan: null,
+                perkiraan_nilai: null,
+                pic_customer: null,
+                no_hp_pic_customer: null,
+                keterangan_persiapan: null,
+                status: null
+            }
         }
     }
 
@@ -83,6 +97,33 @@ class FormPersiapanProyek extends React.Component {
     }
 
     handleEdit = () => {
+        const { itemProyekSelected } = this.props;
+        this.itemProyek = {                
+            no_job: itemProyekSelected.no_job,
+            id_customer: itemProyekSelected.id_customer,
+            nama_proyek: itemProyekSelected.nama_proyek,
+            tanggal_persiapan: itemProyekSelected.tanggal_persiapan,
+            perkiraan_nilai: itemProyekSelected.perkiraan_nilai,
+            pic_customer: itemProyekSelected.pic_customer,
+            no_hp_pic_customer: itemProyekSelected.no_hp_pic_customer,
+            keterangan_persiapan: itemProyekSelected.keterangan_persiapan,
+            id_status_proyek: itemProyekSelected.id_status_proyek,
+            id_pemilik_proyek: itemProyekSelected.id_pemilik_proyek,
+            id_jenis_proyek: itemProyekSelected.id_jenis_proyek,
+            no_kontrak: itemProyekSelected.no_kontrak,
+            nilai_kontrak: itemProyekSelected.nilai_kontrak,
+            no_kontrak_induk: itemProyekSelected.no_kontrak_induk,
+            nip_pic: itemProyekSelected.nip_pic,
+            no_hp_pic: itemProyekSelected.no_hp_pic,
+            ppn: itemProyekSelected.ppn,
+            pph: itemProyekSelected.pph,
+            id_propinsi: itemProyekSelected.id_propinsi,
+            id_kabupaten: itemProyekSelected.id_kabupaten,
+            id_kecamatan: itemProyekSelected.id_kecamatan,
+            id_desa: itemProyekSelected.id_desa,
+            keterangan_alamat: itemProyekSelected.keterangan_alamat,
+            tanggal_aktif: itemProyekSelected.tanggal_aktif
+        };
         this.setState({disabledInput: false, disabledInputEdit: true});
         setTimeout(() => {this.formRef.current.getFieldInstance('nama_proyek').focus();}, 300);
     }
@@ -92,9 +133,16 @@ class FormPersiapanProyek extends React.Component {
 	}
 
     handleChangeNilaiText = (e) => {
+        const { modeProyekBaru } = this.props;
+
 		switch(e.currentTarget.dataset.jenis) {
             case 'nojob':
-                this.itemProyek.no_job = e.currentTarget.value;
+                if( modeProyekBaru === 'edit' ) {
+                    this.itemProyek.no_job_baru = e.currentTarget.value;
+                }
+                else {
+                    this.itemProyek.no_job = e.currentTarget.value;
+                }
                 break;
             case 'namaproyek':
                 this.itemProyek.nama_proyek = e.currentTarget.value;
@@ -113,13 +161,7 @@ class FormPersiapanProyek extends React.Component {
 	}
 
     handleChangeStatus = (value) => {
-        const { mode } = this.props;
-        if(mode === 'edit') {
-            this.itemProyek.status_baru = value;
-        }
-        else {
-            this.itemProyek.status = value;
-        }	
+        this.itemProyek.id_status_proyek = value;
 	}
 
     handleChangeTanggal = (date, dateString) => {
@@ -130,9 +172,9 @@ class FormPersiapanProyek extends React.Component {
 	}
 
     handleOnFinish = (value) => {
-		const { mode } = this.props;
+		const { modeProyekBaru } = this.props;
 		this.setState({disabledInput: true});
-		if(mode === 'edit') {
+		if(modeProyekBaru === 'edit') {
             this.updatePersiapanProyek();
         }
         else {
@@ -173,7 +215,7 @@ class FormPersiapanProyek extends React.Component {
 
     savePersiapanProyek = () => {
 		const { 
-			headerAuthorization, restfulServer, handleToggleOpenProgressDialog
+			headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog
 		} = this.props;
 	    let self = this;
         
@@ -186,19 +228,48 @@ class FormPersiapanProyek extends React.Component {
             data: this.itemProyek
         })
 	    .then((r) => {  
-	    	if(r.data.status === 200) {        
-				// self.loadAkun(filterAkun, paginationAkun, urutAkun);
-	    	} 
-	    	// self.handleReset();
-            // self.setState({disabledInput: false});
-            // handleClose();
             handleToggleOpenProgressDialog();
+            if(modeProyekBaru === 'edit') {
+                self.setState({disabledInput: true, disabledInputEdit: false});
+            }
+            else {
+                self.setState({disabledInput: true});
+            }
 	    })
 	    .catch((r) => {
             self.handleToggleOpenProgressDialog();
 	    	self.setState({disabledInput: true});
 	    });
 	}
+
+    updatePersiapanProyek = () => {
+        console.log(this.itemProyek);
+        const { headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog } = this.props;
+
+        let self = this;    
+                
+        handleToggleOpenProgressDialog();
+
+        axios({
+            method: 'post',
+            url: `${restfulServer}/master/proyek`,
+            headers: {...headerAuthorization},
+            data: this.itemProyek
+        })
+        .then((r) => { 
+            self.setState({disabledInput: false});
+            handleToggleOpenProgressDialog();
+            if(modeProyekBaru === 'edit') {
+                self.setState({disabledInput: true, disabledInputEdit: false});
+            }
+            else {
+                self.setState({disabledInput: true});
+            }
+        })
+        .catch((r) => {         
+            self.setState({disabledInput: false});
+        });        
+    }
 
     render() {
         const { itemProyekSelected, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
