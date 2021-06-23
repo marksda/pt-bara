@@ -4,6 +4,7 @@ import { Divider, Radio } from 'antd';
 
 import { resetStatusProyekSelected, setStatusProyekSelected } from "../../actions/master-action";
 import FormPersiapanProyek from '../forms/Form-Persiapan-Proyek';
+import FormProfileProyek from '../forms/Form-Profile-Proyek';
 import ProcessingDialog from '../dialogs/Processing-Dialog';
 
 const mapStateToProps = store => {
@@ -42,7 +43,8 @@ class ProyekBaru extends React.Component {
                     disabledRadioPersiapan: false,
                     disabledRadioProfile: true,
                     disabledRadioBudget: true,
-                    disabledRadioMonitoring: true
+                    disabledRadioMonitoring: true,
+                    itemTabSelected: 'Persiapan'
                 });
                 break;
             case '02':
@@ -89,6 +91,59 @@ class ProyekBaru extends React.Component {
         this.setState({openProcessingDialog: !this.state.openProcessingDialog});
     }
 
+    resetTab = (statusProyek) => {
+        const {statusProyekSelected, setStatusProyekSelected } = this.props;
+
+        if(statusProyekSelected !== statusProyek) {
+            setStatusProyekSelected(statusProyek);
+        }
+        
+        switch (statusProyek) {
+            case '01':
+                this.setState({
+                    disabledRadioPersiapan: false,
+                    disabledRadioProfile: true,
+                    disabledRadioBudget: true,
+                    disabledRadioMonitoring: true,
+                    itemTabSelected: 'Persiapan',
+                });
+                break;
+            case '02':
+                this.setState({
+                    disabledRadioPersiapan: false,
+                    disabledRadioProfile: false,
+                    disabledRadioBudget: false,
+                    disabledRadioMonitoring: false,
+                    itemTabSelected: 'Profile'
+                });
+                break;
+            case '03':
+                this.setState({
+                    disabledRadioPersiapan: true,
+                    disabledRadioProfile: true,
+                    disabledRadioBudget: true,
+                    disabledRadioMonitoring: true
+                });
+                break;
+            case '04':
+                this.setState({
+                    disabledRadioPersiapan: true,
+                    disabledRadioProfile: true,
+                    disabledRadioBudget: true,
+                    disabledRadioMonitoring: true
+                });
+                break;        
+            default:
+                this.setState({
+                    disabledRadioPersiapan: true,
+                    disabledRadioProfile: true,
+                    disabledRadioBudget: true,
+                    disabledRadioMonitoring: true
+                });
+                break;
+        }
+    }
+
     render() {
         const { itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, disabledRadioMonitoring, openProcessingDialog  } = this.state;
 
@@ -99,9 +154,16 @@ class ProyekBaru extends React.Component {
                 subPage =
                 <FormPersiapanProyek 
                     handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
+                    resetTab={this.resetTab}
                 />;
                 break;
-        
+            case 'Profile':
+                subPage =
+                <FormProfileProyek 
+                    handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
+                    resetTab={this.resetTab}
+                />;
+                break;
             default:
                 break;
         }

@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
   
 
-import { getProyek, setFilterProyek, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, setPaginationProyek, setUrutProyek } from "../../actions/master-action";
+import { getProyek, setFilterProyek, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, setPaginationProyek, setUrutProyek, setStatusProyekSelected } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -291,6 +291,7 @@ const mapDispatchToProps = dispatch => {
         setUrutProyek: (value) => dispatch(setUrutProyek(value)),
         setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)),    
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+        setStatusProyekSelected: (nilai) => dispatch(setStatusProyekSelected(nilai)), 
     };
 };
 
@@ -417,8 +418,10 @@ class TableProyek extends React.Component {
     }
 
     handleEditProyekBaru = (e) => {
-        const { headerAuthorization, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, restfulServer } = this.props;
+        const { headerAuthorization, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, restfulServer, setStatusProyekSelected } = this.props;
         setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${e.currentTarget.dataset.id}`, headerAuthorization);
+        
+        setStatusProyekSelected(e.currentTarget.dataset.status);
         setModeProyekBaru('edit');
         setItemMenuSelected('Proyek Baru');
     }
@@ -517,7 +520,7 @@ class TableProyek extends React.Component {
                                         align={'center'}
                                     >
                                         <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddProyekBaru}/>
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_job} onClick={this.handleEditProyekBaru} />
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_job} onClick={this.handleEditProyekBaru} data-status={row.id_status_proyek} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>

@@ -37,7 +37,7 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
-class FormPersiapanProyek extends React.Component {
+class FormProfileProyek extends React.Component {
     constructor(props) {
 		super(props);
         this.state ={
@@ -551,4 +551,4 @@ class FormPersiapanProyek extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(FormPersiapanProyek);
+export default connect(mapStateToProps, mapDispatchToProps)(FormProfileProyek);
