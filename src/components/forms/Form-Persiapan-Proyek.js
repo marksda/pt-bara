@@ -3,7 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Select } from 'antd';
 import { connect } from "react-redux";
-import { getCustomer, getStatusProyek, setItemMenuSelected, setModeProyekBaru } from "../../actions/master-action";
+import { getCustomer, getStatusProyek, setItemMenuSelected, setModeProyekBaru, setStatusProyekSelected } from "../../actions/master-action";
 
 
 const { Option } = AutoComplete;
@@ -33,6 +33,7 @@ const mapDispatchToProps = dispatch => {
         getStatusProyek: (url, headerAuthorization) => dispatch(getStatusProyek(url, headerAuthorization)),        
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),        
         setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)), 
+        setStatusProyekSelected: (nilai) => dispatch(setStatusProyekSelected(nilai)), 
     };
 };
 
@@ -215,7 +216,8 @@ class FormPersiapanProyek extends React.Component {
 
     savePersiapanProyek = () => {
 		const { 
-			headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog
+			headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog,
+            statusProyekSelected, setStatusProyekSelected
 		} = this.props;
 	    let self = this;
         
@@ -235,6 +237,10 @@ class FormPersiapanProyek extends React.Component {
             else {
                 self.setState({disabledInput: true});
             }
+
+            if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
+                setStatusProyekSelected(self.itemProyek.id_status_proyek)
+            }
 	    })
 	    .catch((r) => {
             self.handleToggleOpenProgressDialog();
@@ -244,7 +250,7 @@ class FormPersiapanProyek extends React.Component {
 
     updatePersiapanProyek = () => {
         console.log(this.itemProyek);
-        const { headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog } = this.props;
+        const { headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog, statusProyekSelected, setStatusProyekSelected } = this.props;
 
         let self = this;    
                 
@@ -265,6 +271,10 @@ class FormPersiapanProyek extends React.Component {
             else {
                 self.setState({disabledInput: true});
             }
+
+            if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
+                setStatusProyekSelected(self.itemProyek.id_status_proyek)
+            }
         })
         .catch((r) => {         
             self.setState({disabledInput: false});
@@ -274,8 +284,8 @@ class FormPersiapanProyek extends React.Component {
     render() {
         const { itemProyekSelected, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
         const { disabledInput, disabledInputEdit } = this.state;
-        let keyForm;
 
+        let keyForm;
         let initEdit;
         if(modeProyekBaru === 'edit' && itemProyekSelected !== null ) {
             initEdit = {

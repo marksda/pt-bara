@@ -793,7 +793,7 @@ export default function master(state = initialState, action) {
                 [ITEM_MENU_SELECTED]: action.payload
             }; 
             break;
-        case ITEM_PROYEK_SELECTED_LOADED:
+        case ITEM_PROYEK_SELECTED_LOADED:            
             return {
                 ...state,
                 [ITEM_PROYEK_SELECTED]: action.payload

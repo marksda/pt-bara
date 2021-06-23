@@ -91,6 +91,7 @@ class ProyekBaru extends React.Component {
 
     render() {
         const { itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, disabledRadioMonitoring, openProcessingDialog  } = this.state;
+
         let subPage = null;
 
         switch (itemTabSelected) {
