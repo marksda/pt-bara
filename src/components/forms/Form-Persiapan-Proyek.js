@@ -541,7 +541,7 @@ class FormPersiapanProyek extends React.Component {
                         disabled={!disabledInput}
                         style={{marginBottom: 8, width: 120}}
                     >
-                    Data Proyek
+                    Daftar Proyek
                     </Button>
                 </Form.Item>
             </div>
