@@ -8,12 +8,15 @@
     width: 100%;
 }
 .table-container-proyek-baru td:nth-child(1),
-.table-container-pengajuan-baru td:nth-child(1) {
-    width: 250px;
-} 
-.table-container-proyek-baru td:nth-child(2),
+.table-container-pengajuan-baru td:nth-child(1),
 .table-container-pengajuan-baru td:nth-child(2) {
     width: 250px;
+} 
+.table-container-proyek-baru td:nth-child(2) {
+    width: 550px;
+}
+.table-container-proyek-baru td:nth-child(3) {
+    width: 550px;
 }
 
 /*.table-container-cel-pengajuan-baru {

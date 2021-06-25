@@ -325,7 +325,7 @@ class FormPersiapanProyek extends React.Component {
             key={keyForm}
         >
             <div className="content-flex-center">
-                <table className="table-container-proyek-baru" style={{width: '70%'}}>
+                <table className="table-container-proyek-baru" style={{width: '75%'}}>
                     <tbody>
                         <tr>
                             <td>
@@ -333,12 +333,12 @@ class FormPersiapanProyek extends React.Component {
                                     label="Tanggal Persiapan"
                                     name="tanggal"
                                     rules={[{required: true, message: 'Tanggal persiapan harus diisi'}]}
-                                    style={{marginBottom: 8}}
+                                    style={{marginBottom: 16}}
                                 >
                                     <DatePicker 
                                         format="DD-MM-YYYY" 
                                         disabled={disabledInput}
-                                        style={{width: 150}}
+                                        style={{minWidth: 150}}
                                         onChange={this.handleChangeTanggal}
                                     />
                                 </Form.Item>
@@ -348,12 +348,12 @@ class FormPersiapanProyek extends React.Component {
                                     label="Status"
                                     name="id_status_proyek"
                                     rules={[{required: true, message: 'Status harus diisi'}]}
-                                    style={{marginBottom: 8}}
+                                    style={{marginBottom: 16}}
                                 >
                                     <Select 
                                         onChange={this.handleChangeStatus}
                                         disabled={disabledInput}
-                                        style={{width: 110}}
+                                        style={{width: 180}}
                                     >
                                     {
                                         listStatusProyek !== null ? listStatusProyek.data.map((row) => 
@@ -369,13 +369,14 @@ class FormPersiapanProyek extends React.Component {
                                 <Form.Item
                                     label="No. Job"
                                     name="no_job"
-                                    rules={[{required: true, message: 'No. job harus diisi'}]}
+                                    rules={[{required: true, message: 'No. job harus diisi'}]}                                    
+                                    style={{ marginBottom: 16 }}
                                 >
                                     <Input 
                                         data-jenis="nojob"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
-                                        style={{ width: 150 }}
+                                        style={{minWidth: 150}}
                                     />
                                 </Form.Item>
                             </td>
@@ -384,12 +385,13 @@ class FormPersiapanProyek extends React.Component {
                                     label="Customer"
                                     name="nama_customer"
                                     rules={[{required: true, message: 'Customer harus diisi'}]}
+                                    style={{marginBottom: 16}}
                                 >
                                     <AutoComplete 
                                         onSearch={this.handleSearchCustomer}
                                         onSelect={this.handleSelectCustomer}
                                         disabled={disabledInput}
-                                        style={{width: 350}}
+                                        style={{minWidth: 350}}
                                         placeholder={disabledInput === true? null:'Cari customer'}
                                     >
                                     {
@@ -406,13 +408,14 @@ class FormPersiapanProyek extends React.Component {
                                 <Form.Item
                                     label="Proyek"
                                     name="nama_proyek"
-                                    rules={[{required: true, message: 'Proyek harus diisi'}]}
-                                    style={{minWidth: 250}}
+                                    rules={[{required: true, message: 'Proyek harus diisi'}]}                                    
+                                    style={{ marginBottom: 16 }}
                                 >
                                     <Input 
                                         data-jenis="namaproyek"
                                         disabled={disabledInput}
-                                        onChange={this.handleChangeNilaiText}
+                                        onChange={this.handleChangeNilaiText}                                        
+                                        style={{minWidth: 250}}
                                     />
                                 </Form.Item>
                             </td>
@@ -422,12 +425,13 @@ class FormPersiapanProyek extends React.Component {
                                 <Form.Item
                                     label="Perkiraan Nilai"
                                     name="perkiraan_nilai"
+                                    style={{ marginBottom: 16 }}
                                 >
                                     <InputNumber  
                                         data-jenis="nilai"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiNumeric}
-                                        style={{ width: 150 }}
+                                        style={{ width: 250 }}
                                         formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '\.')}
                                         parser={value => value.replace(/Rp\s?|(\.*)/g, '')}
                                     />
@@ -435,14 +439,14 @@ class FormPersiapanProyek extends React.Component {
                             </td>
                             <td>
                                 <Form.Item
-                                    label="PIC Proyek (customer)"
+                                    label="PIC Proyek (Customer)"
                                     name="pic_customer"
+                                    style={{ marginBottom: 16 }}
                                 >
                                     <Input 
                                         data-jenis="piccustomer"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
-                                        style={{ width: 250 }}
                                     />
                                 </Form.Item>
                             </td>
@@ -451,8 +455,9 @@ class FormPersiapanProyek extends React.Component {
                             <td></td>
                             <td>
                                 <Form.Item
-                                    label="HP"
+                                    label="No. Handphone PIC Proyek (Customer)"
                                     name="no_hp_pic_customer"
+                                    style={{ marginBottom: 16 }}
                                 >
                                     <Input 
                                         data-jenis="nohp"

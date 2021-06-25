@@ -83,6 +83,10 @@ class ProyekBaru extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        this.resetTab('01');
+    }
+
     handleChangeItemTab = (e) => {
         this.setState({ itemTabSelected: e.target.value });
     }   

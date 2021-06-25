@@ -1,12 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { AutoComplete, Button, DatePicker, Form, Input, InputNumber, Select } from 'antd';
+import { Button, DatePicker, Divider, Form, Input, InputNumber, Select } from 'antd';
 import { connect } from "react-redux";
-import { getCustomer, getDesa, getPropinsi, getKabupaten, getKecamatan, getStatusProyek, setItemMenuSelected, setModeProyekBaru, setStatusProyekSelected } from "../../actions/master-action";
+import { getCustomer, getDesa, getJenisProyek, getPegawai, getPropinsi, getKabupaten, getKecamatan, getStatusProyek, setItemMenuSelected, setModeProyekBaru, setStatusProyekSelected } from "../../actions/master-action";
 
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
-const { Option } = AutoComplete;
 const { TextArea } = Input;
 
 const tailLayout = {
@@ -22,6 +22,9 @@ const mapStateToProps = store => {
         paginationStatusProyek: store.master.pagination_status_proyek,
         urutStatusProyek: store.master.urut_status_proyek,
         listCustomer: store.master.list_customer,
+        filterCustomer: store.master.filter_customer,
+        paginationCustomer: store.master.pagination_customer,
+        urutCustomer: store.master.urut_customer,
         modeProyekBaru: store.master.mode_proyek_baru,
         itemProyekSelected: store.master.item_proyek_selected,
         listPropinsi: store.master.list_propinsi,
@@ -40,6 +43,14 @@ const mapStateToProps = store => {
         filterDesa: store.master.filter_desa,
         paginationDesa: store.master.pagination_desa,
         urutDesa: store.master.urut_desa,
+        listJenisProyek: store.master.list_jenis_proyek,
+        filterJenisProyek: store.master.filter_jenis_proyek,
+        paginationJenisProyek: store.master.pagination_jenis_proyek,
+        urutJenisProyek: store.master.urut_jenis_proyek,
+        listPegawai: store.master.list_pegawai,
+        filterPegawai: store.master.filter_pegawai,
+        paginationPegawai: store.master.pagination_pegawai,
+        urutPegawai: store.master.urut_pegawai,
     };
 };
 
@@ -47,9 +58,11 @@ const mapDispatchToProps = dispatch => {
     return {
         getCustomer: (url, headerAuthorization) => dispatch(getCustomer(url, headerAuthorization)),
         getPropinsi: (url, headerAuthorization) => dispatch(getPropinsi(url, headerAuthorization)),
+        getPegawai: (url, headerAuthorization) => dispatch(getPegawai(url, headerAuthorization)),
         getKabupaten: (url, headerAuthorization) => dispatch(getKabupaten(url, headerAuthorization)),
         getKecamatan: (url, headerAuthorization) => dispatch(getKecamatan(url, headerAuthorization)),
         getDesa: (url, headerAuthorization) => dispatch(getDesa(url, headerAuthorization)),
+        getJenisProyek: (url, headerAuthorization) => dispatch(getJenisProyek(url, headerAuthorization)), 
         getStatusProyek: (url, headerAuthorization) => dispatch(getStatusProyek(url, headerAuthorization)),        
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),        
         setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)), 
@@ -72,10 +85,19 @@ class FormProfileProyek extends React.Component {
     componentDidMount() {
         const { listStatusProyek, filterStatusProyek, paginationStatusProyek, urutStatusProyek, modeProyekBaru,
         listPropinsi, filterPropinsi, paginationPropinsi, urutPropinsi, listKabupaten, filterKabupaten, paginationKabupaten,
-        urutKabupaten, listKecamatan, filterKecamatan,paginationKecamatan, urutKecamatan, listDesa, filterDesa, paginationDesa, urutDesa } = this.props;
+        urutKabupaten, listKecamatan, filterKecamatan,paginationKecamatan, urutKecamatan, listDesa, filterDesa, paginationDesa, 
+        urutDesa, listCustomer, filterCustomer, paginationCustomer, urutCustomer, listJenisProyek, filterJenisProyek, paginationJenisProyek, urutJenisProyek,listPegawai, filterPegawai, paginationPegawai, urutPegawai } = this.props;
 
         if(modeProyekBaru === 'edit') {
             this.setState({disabledInputEdit: false});
+        }
+
+        if(listCustomer === null) {
+            this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
+        }
+
+        if(listJenisProyek === null) {
+            this.loadJenisProyek(filterJenisProyek, paginationJenisProyek, urutJenisProyek);
         }
 
         if(listStatusProyek === null) {
@@ -97,43 +119,15 @@ class FormProfileProyek extends React.Component {
         if(listDesa === null) {
             this.loadDesa(filterDesa, paginationDesa, urutDesa);
         }
-    }
 
-    handleBaru = () => {
-        const { modeProyekBaru, setModeProyekBaru, resetTab } = this.props;
-
-        this.itemProyek.tanggal_persiapan = `${moment().year()}-${moment().month()}-${moment().date()}`;
-        this.setState({disabledInput: false});
-        setTimeout(() => {this.formRef.current.getFieldInstance('no_job').focus();}, 300);
-        if(modeProyekBaru === 'edit') {
-            this.setState({disabledInputEdit: true});
-            setModeProyekBaru('add');
-            resetTab('01');
-        }
-        else {
-            this.itemProyek = {
-                no_job: null,
-                id_customer: null,
-                nama_proyek: null,
-                tanggal_persiapan: null,
-                perkiraan_nilai: null,
-                pic_customer: null,
-                no_hp_pic_customer: null,
-                keterangan_persiapan: null,
-                status: null
-            }
+        if(listPegawai === null) {
+            this.loadPegawai(filterPegawai, paginationPegawai, urutPegawai);
         }
     }
 
     handleBatal = () => {
-        const { modeProyekBaru } = this.props;
         this.formRef.current.resetFields();
-        if(modeProyekBaru === 'edit') {
-            this.setState({disabledInput: true, disabledInputEdit: false});
-        }
-        else {
-            this.setState({disabledInput: true});
-        }
+        this.setState({disabledInput: true, disabledInputEdit: false});
     }
 
     handleEdit = () => {
@@ -162,14 +156,30 @@ class FormProfileProyek extends React.Component {
             id_kecamatan: itemProyekSelected.id_kecamatan,
             id_desa: itemProyekSelected.id_desa,
             keterangan_alamat: itemProyekSelected.keterangan_alamat,
+            keterangan_proyek: itemProyekSelected.keterangan_proyek,
             tanggal_aktif: itemProyekSelected.tanggal_aktif
         };
+        if(this.itemProyek.tanggal_aktif === null) {
+            this.itemProyek.tanggal_aktif =  `${moment().year()}-${moment().month()}-${moment().date()}`;
+        }
         this.setState({disabledInput: false, disabledInputEdit: true});
-        setTimeout(() => {this.formRef.current.getFieldInstance('nama_proyek').focus();}, 300);
+        setTimeout(() => {this.formRef.current.getFieldInstance('pemilik_proyek').focus();}, 300);
     }
 
-    handleChangeNilaiNumeric = (value) => {
-        this.itemProyek.perkiraan_nilai = value;
+    handleChangeJenis = (value) => {
+        this.itemProyek.id_jenis_proyek = value;
+	}
+
+    handleChangeNilaiKontrak = (value) => {
+        this.itemProyek.nilai_kontrak = value;
+	}
+
+    handleChangeNilaiPpn = (value) => {
+        this.itemProyek.ppn = value;
+	}
+
+    handleChangeNilaiPph = (value) => {
+        this.itemProyek.pph = value;
 	}
 
     handleChangeNilaiText = (e) => {
@@ -187,16 +197,29 @@ class FormProfileProyek extends React.Component {
             case 'namaproyek':
                 this.itemProyek.nama_proyek = e.currentTarget.value;
                 break;
-            case 'nohp':
+            case 'nohpcustomer':
                 this.itemProyek.no_hp_pic_customer = e.currentTarget.value;
                 break;
             case 'piccustomer':
                 this.itemProyek.pic_customer = e.currentTarget.value;
                 break;
-            case 'keterangan':
-                this.itemProyek.keterangan_persiapan = e.currentTarget.value;
+            case 'nokontrak':
+                this.itemProyek.no_kontrak = e.currentTarget.value;
+                break;
+            case 'ketalamat':
+                this.itemProyek.keterangan_alamat = e.currentTarget.value;
+                break;
+            case 'nokontrakinduk':
+                this.itemProyek.no_kontrak_induk = e.currentTarget.value;
+                break;
+            case 'nohpbara':
+                this.itemProyek.no_hp_pic = e.currentTarget.value;
+                break;
+            case 'ketproyek':
+                this.itemProyek.keterangan_proyek = e.currentTarget.value;
                 break;
 			default:
+                break;
 		}
 	}
 
@@ -207,19 +230,13 @@ class FormProfileProyek extends React.Component {
     handleChangeTanggal = (date, dateString) => {
 		if(date !== null) {
 			let tmp = dateString.split('-');
-            this.itemProyek.tanggal_persiapan = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
+            this.itemProyek.tanggal_aktif = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
 		}
 	}
 
     handleOnFinish = (value) => {
-		const { modeProyekBaru } = this.props;
 		this.setState({disabledInput: true});
-		if(modeProyekBaru === 'edit') {
-            this.updatePersiapanProyek();
-        }
-        else {
-			this.savePersiapanProyek();
-        }
+        this.updatePofileProyek();
 	}
 
     handleReset = () => {
@@ -232,16 +249,16 @@ class FormProfileProyek extends React.Component {
         this.loadCustomer({	field: "m.nama", search: value }, { current: 1, pageSize: 10 }, { field: "m.nama", order: "asc" });
 	}
 
-    handleSelectCustomer = (value, option) => {
-        this.itemProyek.id_customer = option.key;
+    handleChangeCustomer = (value) => {
+        this.itemProyek.id_customer = value;
 	}
 
     handleSearchPemilikProyek = (value) => {
         this.loadCustomer({	field: "m.nama", search: value }, { current: 1, pageSize: 10 }, { field: "m.nama", order: "asc" });
 	}
 
-    handleSelectPemilikProyek = (value, option) => {
-        this.itemProyek.id_pemilik_proyek = option.key;
+    handleChangePemilikProyek = (value) => {
+        this.itemProyek.id_pemilik_proyek = value;
 	}
 
     handleSearchPropinsi = (value) => {
@@ -266,6 +283,22 @@ class FormProfileProyek extends React.Component {
 
     handleChangeKecamatan = (value) => {
         this.itemProyek.id_kecamatan = value;
+    }
+
+    handleSearchDesa = (value) => {
+        this.loadDesa({field: "m.nama", search: value }, { current: 1, pageSize: 50 }, { field: "m.nama", order: "asc" });
+    }
+
+    handleChangeDesa = (value) => {
+        this.itemProyek.id_desa = value;
+    }
+
+    handleSearchPICBara = (value) => {
+        this.loadPegawai({field: "m.nama", search: value }, { current: 1, pageSize: 50 }, { field: "m.nama", order: "asc" });
+    }
+
+    handleChangePICBara = (value) => {
+        this.itemProyek.nip_pic = value;
     }
 
     handleToNavDaftarProyek = () => {
@@ -303,81 +336,60 @@ class FormProfileProyek extends React.Component {
         getDesa(url, headerAuthorization);
     }
 
+    loadPegawai = (filter, pagination, urut) => {
+        const { getPegawai, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/pegawai?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getPegawai(url, headerAuthorization);
+    }
+
+    loadJenisProyek = (filter, pagination, urut) => {
+        const { getJenisProyek, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/jenisproyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getJenisProyek(url, headerAuthorization);
+    }
+
     loadStatusProyek = (filter, pagination, urut) => {
         const { getStatusProyek, headerAuthorization, restfulServer } = this.props; 
         let url = `${restfulServer}/master/statusproyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
         getStatusProyek(url, headerAuthorization);
     }
 
-    savePersiapanProyek = () => {
-		const { 
-			headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog,
-            statusProyekSelected, setStatusProyekSelected
-		} = this.props;
-	    let self = this;
-        
-	    handleToggleOpenProgressDialog();
-
-	    axios({
-            method: 'put',
-            url: `${restfulServer}/master/proyek`,
-            headers: {...headerAuthorization},
-            data: this.itemProyek
-        })
-	    .then((r) => {  
-            handleToggleOpenProgressDialog();
-            if(modeProyekBaru === 'edit') {
-                self.setState({disabledInput: true, disabledInputEdit: false});
-            }
-            else {
-                self.setState({disabledInput: true});
-            }
-
-            if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
-                setStatusProyekSelected(self.itemProyek.id_status_proyek)
-            }
-	    })
-	    .catch((r) => {
-            self.handleToggleOpenProgressDialog();
-	    	self.setState({disabledInput: true});
-	    });
-	}
-
-    updatePersiapanProyek = () => {
+    updatePofileProyek = () => {
         console.log(this.itemProyek);
-        const { headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog, statusProyekSelected, setStatusProyekSelected } = this.props;
+        // console.log(this.itemProyek);
+        // const { headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog, statusProyekSelected, setStatusProyekSelected } = this.props;
 
-        let self = this;    
+        // let self = this;    
                 
-        handleToggleOpenProgressDialog();
+        // handleToggleOpenProgressDialog();
 
-        axios({
-            method: 'post',
-            url: `${restfulServer}/master/proyek`,
-            headers: {...headerAuthorization},
-            data: this.itemProyek
-        })
-        .then((r) => { 
-            self.setState({disabledInput: false});
-            handleToggleOpenProgressDialog();
-            if(modeProyekBaru === 'edit') {
-                self.setState({disabledInput: true, disabledInputEdit: false});
-            }
-            else {
-                self.setState({disabledInput: true});
-            }
+        // axios({
+        //     method: 'post',
+        //     url: `${restfulServer}/master/proyek`,
+        //     headers: {...headerAuthorization},
+        //     data: this.itemProyek
+        // })
+        // .then((r) => { 
+        //     self.setState({disabledInput: false});
+        //     handleToggleOpenProgressDialog();
+        //     if(modeProyekBaru === 'edit') {
+        //         self.setState({disabledInput: true, disabledInputEdit: false});
+        //     }
+        //     else {
+        //         self.setState({disabledInput: true});
+        //     }
 
-            if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
-                setStatusProyekSelected(self.itemProyek.id_status_proyek)
-            }
-        })
-        .catch((r) => {         
-            self.setState({disabledInput: false});
-        });        
+        //     if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
+        //         setStatusProyekSelected(self.itemProyek.id_status_proyek)
+        //     }
+        // })
+        // .catch((r) => {         
+        //     self.setState({disabledInput: false});
+        // });        
     }
 
     render() {
-        const { itemProyekSelected, listCustomer, listDesa, listKecamatan, listPropinsi, modeProyekBaru, listStatusProyek, listKabupaten } = this.props;
+        const { itemProyekSelected, listCustomer, listDesa, listPegawai, listJenisProyek, listKecamatan, listPropinsi, modeProyekBaru, listStatusProyek, listKabupaten } = this.props;
         const { disabledInput, disabledInputEdit } = this.state;
         
         let keyForm;
@@ -386,7 +398,7 @@ class FormProfileProyek extends React.Component {
             initEdit = {
                 layout: 'vertical',
                 remember: true,
-                ["tanggal"]: moment(itemProyekSelected.tanggal_persiapan),
+                ["tanggal"]: itemProyekSelected.tanggal_aktif !== null?moment(itemProyekSelected.tanggal_aktif):moment(),
                 ["no_job"]: itemProyekSelected.no_job,
                 ["id_status_proyek"]: itemProyekSelected.id_status_proyek,
                 ["nama_proyek"]: itemProyekSelected.nama_proyek,
@@ -394,12 +406,18 @@ class FormProfileProyek extends React.Component {
                 ["perkiraan_nilai"]: itemProyekSelected.perkiraan_nilai,
                 ["pic_customer"]: itemProyekSelected.pic_customer,
                 ["no_hp_pic_customer"]: itemProyekSelected.no_hp_pic_customer,
-                ["keterangan_persiapan"]: itemProyekSelected.keterangan_persiapan,
+                ["nip_pic"]: itemProyekSelected.nip_pic,
+                ["no_hp_pic"]: itemProyekSelected.no_hp_pic,
+                ["keterangan_proyek"]: itemProyekSelected.keterangan_proyek,
                 ["pemilik_proyek"]: itemProyekSelected.pemilik_proyek,
                 ["id_propinsi"]: itemProyekSelected.id_propinsi,
                 ["id_kabupaten"]: itemProyekSelected.id_kabupaten,
                 ["id_kecamatan"]: itemProyekSelected.id_kecamatan,
                 ["id_desa"]: itemProyekSelected.id_desa,
+                ["id_jenis_proyek"]: itemProyekSelected.id_jenis_proyek,
+                ["no_kontrak"]: itemProyekSelected.no_kontrak,
+                ["keterangan_alamat"]: itemProyekSelected.keterangan_alamat,
+                ["no_kontrak_induk"]: itemProyekSelected.no_kontrak_induk,
             };
             keyForm = 'edit'
         }
@@ -408,9 +426,9 @@ class FormProfileProyek extends React.Component {
                 layout: 'vertical',
                 remember: true,
                 ["tanggal"]: moment(),
-                ["id_status_proyek"]: '01'
+                ["id_status_proyek"]: '01',
+                ["id_jenis_proyek"]: '01',
             };
-
             keyForm = 'add';
         }
 
@@ -424,15 +442,15 @@ class FormProfileProyek extends React.Component {
             key={keyForm}
         >
             <div className="content-flex-center">
-                <table className="table-container-proyek-baru" style={{width: '70%'}}>
+                <table className="table-container-proyek-baru" style={{width: '80%'}}>
                     <tbody>
                         <tr>
                             <td>
                                 <Form.Item
-                                    label="Tanggal Persiapan"
+                                    label="Tanggal Aktif"
                                     name="tanggal"
-                                    rules={[{required: true, message: 'Tanggal persiapan harus diisi'}]}
-                                    style={{marginBottom: 8}}
+                                    rules={[{required: true, message: 'Tanggal Aktif harus diisi'}]}
+                                    style={{marginBottom: 16}}
                                 >
                                     <DatePicker 
                                         format="DD-MM-YYYY" 
@@ -444,15 +462,15 @@ class FormProfileProyek extends React.Component {
                             </td>
                             <td>
                                 <Form.Item 
-                                    label="Status"
+                                    label="Status Proyek"
                                     name="id_status_proyek"
                                     rules={[{required: true, message: 'Status harus diisi'}]}
-                                    style={{marginBottom: 8}}
+                                    style={{marginBottom: 16}}
                                 >
                                     <Select 
                                         onChange={this.handleChangeStatus}
                                         disabled={disabledInput}
-                                        style={{width: 110}}
+                                        style={{width: 180}}
                                         placeholder="Pilih status"
                                     >
                                     {
@@ -470,12 +488,13 @@ class FormProfileProyek extends React.Component {
                                     label="No. Job"
                                     name="no_job"
                                     rules={[{required: true, message: 'No. job harus diisi'}]}
+                                    style={{marginBottom: 16}}
                                 >
                                     <Input 
                                         data-jenis="nojob"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
-                                        style={{ width: 150 }}
+                                        style={{ minWidth: 150 }}
                                     />
                                 </Form.Item>
                             </td>
@@ -484,21 +503,25 @@ class FormProfileProyek extends React.Component {
                                     label="Customer"
                                     name="nama_customer"
                                     rules={[{required: true, message: 'Customer harus diisi'}]}
+                                    style={{marginBottom: 16}}
                                 >
-                                    <AutoComplete 
-                                        onSearch={this.handleSearchCustomer}
-                                        onSelect={this.handleSelectCustomer}
+                                    <Select 
+                                        showSearch
+                                        onChange={this.handleChangeCustomer}
                                         disabled={disabledInput}
-                                        style={{width: 350}}
+                                        placeholder="Pilih pemilik proyek"
+                                        showArrow={false}
+                                        onSearch={this.handleSearchCustomer}
+                                        filterOption={false}
+                                        defaultActiveFirstOption={false}
+                                        notFoundContent={null}
                                     >
                                     {
                                         listCustomer !== null ? listCustomer.data.map((row) => 
-                                            <Option key={row.id} value={row.nama}>
-                                                {row.nama}
-                                            </Option>
+                                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
                                         ):null
-                                    }
-                                    </AutoComplete>
+                                    }	
+                                    </Select>
                                 </Form.Item>
                             </td>
                             <td>
@@ -507,6 +530,7 @@ class FormProfileProyek extends React.Component {
                                     name="nama_proyek"
                                     rules={[{required: true, message: 'Proyek harus diisi'}]}
                                     style={{minWidth: 250}}
+                                    style={{marginBottom: 16}}
                                 >
                                     <Input 
                                         data-jenis="namaproyek"
@@ -520,24 +544,46 @@ class FormProfileProyek extends React.Component {
                             <td></td>
                             <td>
                                 <Form.Item 
-                                    label="Pemilik proyek"
+                                    label="Pemilik Proyek"
                                     name="pemilik_proyek"
-                                    rules={[{required: true, message: 'Pemilik proyek harus diisi'}]}
+                                    rules={[{required: true, message: 'Pemilik Proyek harus diisi'}]}
+                                    style={{marginBottom: 16}}
                                 >
-                                    <AutoComplete 
-                                        onSearch={this.handleSearchPemilikProyek}
-                                        onSelect={this.handleSelectPemilikProyek}
+                                    <Select 
+                                        showSearch
+                                        onChange={this.handleChangePemilikProyek}
                                         disabled={disabledInput}
-                                        style={{width: 350}}
+                                        placeholder="Pilih pemilik proyek"
+                                        showArrow={false}
+                                        onSearch={this.handleSearchPemilikProyek}
+                                        filterOption={false}
+                                        defaultActiveFirstOption={false}
+                                        notFoundContent={null}
                                     >
                                     {
                                         listCustomer !== null ? listCustomer.data.map((row) => 
-                                            <Option key={row.id} value={row.nama}>
-                                                {row.nama}
-                                            </Option>
+                                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
                                         ):null
-                                    }
-                                    </AutoComplete>
+                                    }	
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item 
+                                    label="Jenis Proyek"
+                                    name="id_jenis_proyek"
+                                    rules={[{required: true, message: 'Status harus diisi'}]}
+                                >
+                                    <Select 
+                                        onChange={this.handleChangeJenis}
+                                        disabled={disabledInput}
+                                        placeholder="Pilih Jenis Proyek"
+                                        style={{width: 180}}
+                                    >
+                                    {
+                                        listJenisProyek !== null ? listJenisProyek.data.map((row) => 
+                                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
+                                        ):null
+                                    }	
+                                    </Select>
                                 </Form.Item>
                             </td>
                             <td>
@@ -638,19 +684,46 @@ class FormProfileProyek extends React.Component {
                                     }	
                                     </Select>
                                 </Form.Item>
-                            </td>
-                        </tr>
-                        <tr>                            
-                            <td>
                                 <Form.Item
-                                    label="PIC Proyek (customer)"
-                                    name="pic_customer"
+                                    name="keterangan_alamat"
+                                    style={{marginBottom: 16}}
                                 >
-                                    <Input 
-                                        data-jenis="piccustomer"
+                                    <TextArea 
+                                        data-jenis="ketalamat"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
-                                        style={{ width: 250 }}
+                                        placeholder="isi dengan nama jalan, nama komplek, rt/rw, atau blok jika ada"
+                                        rows={3}
+                                    />
+                                </Form.Item>
+                            </td>
+                        </tr>  
+                        <tr>
+                            <td></td>
+                            <td>
+                                <Form.Item
+                                    label="No. Kontrak/PO"
+                                    name="no_kontrak"
+                                    rules={[{required: true, message: 'No. Kontrak/PO harus diisi'}]}
+                                    style={{marginBottom: 16}}
+                                >
+                                    <Input 
+                                        data-jenis="nokontrak"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiText}
+                                    />
+                                </Form.Item>
+                            </td>
+                            <td>
+                                <Form.Item
+                                    label="No. Kontrak Induk (Jika ada)"
+                                    name="no_kontrak_induk"
+                                    style={{marginBottom: 16}}
+                                >
+                                    <Input 
+                                        data-jenis="nokontrakinduk"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiText}
                                     />
                                 </Form.Item>
                             </td>
@@ -659,11 +732,125 @@ class FormProfileProyek extends React.Component {
                             <td></td>
                             <td>
                                 <Form.Item
-                                    label="HP"
-                                    name="no_hp_pic_customer"
+                                    label="Nilai Kontrak/PO"
+                                    name="nilai_kontrak"
+                                    style={{marginBottom: 16}}
+                                >
+                                    <InputNumber  
+                                        data-jenis="nilai"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiKontrak}
+                                        style={{width: 250}}
+                                        formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '\.')}
+                                        parser={value => value.replace(/Rp\s?|(\.*)/g, '')}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Ppn"
+                                    name="ppn"
+                                    style={{marginBottom: 16}}
+                                >
+                                    <InputNumber  
+                                        data-jenis="ppn"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiPpn}
+                                        style={{width: 250}}
+                                        formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '\.')}
+                                        parser={value => value.replace(/Rp\s?|(\.*)/g, '')}
+                                    />
+                                </Form.Item>
+                                <Form.Item
+                                    label="Pph"
+                                    name="pph"
+                                    style={{marginBottom: 16}}
+                                >
+                                    <InputNumber  
+                                        data-jenis="pph"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiPph}
+                                        style={{width: 250}}
+                                        formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '\.')}
+                                        parser={value => value.replace(/Rp\s?|(\.*)/g, '')}
+                                    />
+                                </Form.Item>
+                            </td>
+                            <td>
+                                <Form.Item label="No. Kontrak/PO Addendum" style={{marginBottom: 16}}>
+                                    <Button
+                                        type="dashed"
+                                        icon={<PlusOutlined />}
+                                    >
+                                        Add
+                                    </Button>
+                                </Form.Item>
+                            </td>
+                        </tr>
+                        <tr>  
+                            <td></td>                          
+                            <td>
+                                <Form.Item
+                                    label="PIC Proyek (BARA)"
+                                    name="nip_pic"
+                                    style={{marginBottom: 16}}
+                                >
+                                   <Select 
+                                        showSearch
+                                        onChange={this.handleChangePICBara}
+                                        disabled={disabledInput}
+                                        style={{width: 200}}
+                                        placeholder="Pilih PIC Bara"
+                                        showArrow={false}
+                                        onSearch={this.handleSearchPICBara}
+                                        filterOption={false}
+                                        defaultActiveFirstOption={false}
+                                        notFoundContent={null}
+                                    >
+                                    {
+                                        listPegawai !== null ? listPegawai.data.map((row) => 
+                                            <Select.Option key={row.nip} value={row.nip}>{row.nama}</Select.Option>
+                                        ):null
+                                    }	
+                                    </Select>
+                                </Form.Item>
+                            </td>
+                            <td>
+                                <Form.Item
+                                    label="PIC Proyek (Customer)"
+                                    name="pic_customer"
+                                    style={{marginBottom: 16}}
                                 >
                                     <Input 
-                                        data-jenis="nohp"
+                                        data-jenis="piccustomer"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiText}
+                                    />
+                                </Form.Item>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <Form.Item
+                                    label="No. Handphone PIC Proyek (BARA)"
+                                    name="no_hp_pic"
+                                    style={{marginBottom: 16}}
+                                >
+                                    <Input 
+                                        data-jenis="nohpbara"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiText}
+                                        style={{ width: 250 }}
+                                    />
+                                </Form.Item>
+                            </td>
+                            <td>
+                                <Form.Item
+                                    label="No. Handphone PIC Proyek (Customer)"
+                                    name="no_hp_pic_customer"
+                                    style={{marginBottom: 16}}
+                                >
+                                    <Input 
+                                        data-jenis="nohpcustomer"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
                                         style={{ width: 250 }}
@@ -675,47 +862,21 @@ class FormProfileProyek extends React.Component {
                             <td colSpan="3">
                                 <Form.Item
                                     label="Keterangan"
-                                    name="keterangan_persiapan"
+                                    name="keterangan_proyek"
                                 >
                                     <TextArea  
                                         rows={6}
-                                        data-jenis="keterangan"
+                                        data-jenis="ketproyek"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
                                     />
                                 </Form.Item>
                             </td>
                         </tr>
-                        <tr>
-                        <td>
-                            <Form.Item
-                                label="Perkiraan Nilai"
-                                name="perkiraan_nilai"
-                            >
-                                <InputNumber  
-                                    data-jenis="nilai"
-                                    disabled={disabledInput}
-                                    onChange={this.handleChangeNilaiNumeric}
-                                    style={{ width: 150 }}
-                                    formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '\.')}
-                                    parser={value => value.replace(/Rp\s?|(\.*)/g, '')}
-                                />
-                            </Form.Item>
-                        </td>
-                        </tr>
+                        
                     </tbody>
                 </table>                
                 <Form.Item {...tailLayout} style={{width:100}}>
-                    <Button 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleBaru} 
-                        style={{marginBottom: 8, width: 120}}
-                        disabled={!disabledInput}
-                    >
-                        Baru
-                    </Button>
                     <Button 
                         shape="round"
                         size="default"
