@@ -355,7 +355,7 @@ class TableProyek extends React.Component {
 
     handleBtnDelete = (e) => {
         const { listProyek } = this.props;
-        this.itemProyek = {..._.find(listProyek.data, function(o) { return o.id === e.currentTarget.dataset.id; })};
+        this.itemProyek = {..._.find(listProyek.data, function(o) { return o.no_job === e.currentTarget.dataset.id; })};
         this.setState({openConfirmasiHapusProyek: true});
     }
 
@@ -521,7 +521,7 @@ class TableProyek extends React.Component {
                                     >
                                         <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddProyekBaru}/>
                                         <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_job} onClick={this.handleEditProyekBaru} data-status={row.id_status_proyek} />
-                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.id} onClick={this.handleBtnDelete}/>
+                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.no_job} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>
                     		);
@@ -543,7 +543,7 @@ class TableProyek extends React.Component {
             <KonfirmasiDialog 
                 open={openConfirmasiHapusProyek} 
                 aksi={this.handleDeleteProyek} 
-                message={`Hapus item ${this.itemProyek.nama}`}
+                message={`Hapus item proyek dengan No. Job: ${this.itemProyek.no_job}`}
             />
 		</div>;
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { Button, DatePicker, Form, Input, InputNumber, Select } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, notification, Select } from 'antd';
 import { connect } from "react-redux";
-import { getCustomer, getDesa, getJenisProyek, getPegawai, getPropinsi, getKabupaten, getKecamatan, getStatusProyek, setItemMenuSelected, setModeProyekBaru, setStatusProyekSelected } from "../../actions/master-action";
+import { getCustomer, getDesa, getJenisProyek, getPegawai, getPropinsi, getKabupaten, getKecamatan, getStatusProyek, setItemMenuSelected, setModeProyekBaru, setStatusProyekSelected, setItemProyekSelected } from "../../actions/master-action";
 
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
@@ -67,6 +67,7 @@ const mapDispatchToProps = dispatch => {
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),        
         setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)), 
         setStatusProyekSelected: (nilai) => dispatch(setStatusProyekSelected(nilai)), 
+        setItemProyekSelected: (url, headerAuthorization) => dispatch(setItemProyekSelected(url, headerAuthorization)),
     };
 };
 
@@ -157,10 +158,11 @@ class FormProfileProyek extends React.Component {
             id_desa: itemProyekSelected.id_desa,
             keterangan_alamat: itemProyekSelected.keterangan_alamat,
             keterangan_proyek: itemProyekSelected.keterangan_proyek,
-            tanggal_aktif: itemProyekSelected.tanggal_aktif
+            tanggal_aktif: itemProyekSelected.tanggal_aktif,
+            no_kontrak_addendum: itemProyekSelected.no_kontrak_addendum
         };
         if(this.itemProyek.tanggal_aktif === null) {
-            this.itemProyek.tanggal_aktif =  `${moment().year()}-${moment().month()}-${moment().date()}`;
+            this.itemProyek.tanggal_aktif =  `${moment().year()}-${moment().month()+1}-${moment().date()}`;
         }
         this.setState({disabledInput: false, disabledInputEdit: true});
         setTimeout(() => {this.formRef.current.getFieldInstance('pemilik_proyek').focus();}, 300);
@@ -171,7 +173,6 @@ class FormProfileProyek extends React.Component {
 	}
 
     handleChangeNilaiKontrak = (value) => {
-        console.log(`nilai kontrak: ${value} ${typeof value}`);
         this.itemProyek.nilai_kontrak = value;
 	}
 
@@ -218,6 +219,13 @@ class FormProfileProyek extends React.Component {
                 break;
             case 'ketproyek':
                 this.itemProyek.keterangan_proyek = e.currentTarget.value;
+                break;
+            case 'addendum':
+                if(this.itemProyek.no_kontrak_addendum === null) {
+                    this.itemProyek.no_kontrak_addendum = [];
+                }
+                this.itemProyek.no_kontrak_addendum[Number(e.currentTarget.dataset.idx)] = e.currentTarget.value;
+                console.log(this.itemProyek.no_kontrak_addendum);
                 break;
 			default:
                 break;
@@ -307,6 +315,14 @@ class FormProfileProyek extends React.Component {
         setItemMenuSelected('Daftar Proyek');
     }
 
+    handleRemoveAddendum = (idx) => {
+        this.itemProyek.no_kontrak_addendum.splice(idx,1);
+        if(this.itemProyek.no_kontrak_addendum === undefined) {
+            this.itemProyekSelected.no_kontrak_addendum = null;
+        }
+        console.log(this.itemProyek.no_kontrak_addendum);
+    }
+
     loadCustomer = (filter, pagination, urut) => {
         const { getCustomer, headerAuthorization, restfulServer } = this.props; 
         let url = `${restfulServer}/master/customer?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
@@ -356,37 +372,49 @@ class FormProfileProyek extends React.Component {
     }
 
     updatePofileProyek = () => {
-        console.log(this.itemProyek);
-        // console.log(this.itemProyek);
-        // const { headerAuthorization, modeProyekBaru, restfulServer, handleToggleOpenProgressDialog, statusProyekSelected, setStatusProyekSelected } = this.props;
+        const { headerAuthorization, restfulServer, handleToggleOpenProgressDialog, resetTab, statusProyekSelected, setItemProyekSelected } = this.props;
 
-        // let self = this;    
+        let self = this;    
                 
-        // handleToggleOpenProgressDialog();
+        handleToggleOpenProgressDialog();
 
-        // axios({
-        //     method: 'post',
-        //     url: `${restfulServer}/master/proyek`,
-        //     headers: {...headerAuthorization},
-        //     data: this.itemProyek
-        // })
-        // .then((r) => { 
-        //     self.setState({disabledInput: false});
-        //     handleToggleOpenProgressDialog();
-        //     if(modeProyekBaru === 'edit') {
-        //         self.setState({disabledInput: true, disabledInputEdit: false});
-        //     }
-        //     else {
-        //         self.setState({disabledInput: true});
-        //     }
+        axios({
+            method: 'post',
+            url: `${restfulServer}/master/proyek`,
+            headers: {...headerAuthorization},
+            data: this.itemProyek
+        })
+        .then((r) => { 
+            self.setState({disabledInput: false});
+            handleToggleOpenProgressDialog();
 
-        //     if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
-        //         setStatusProyekSelected(self.itemProyek.id_status_proyek)
-        //     }
-        // })
-        // .catch((r) => {         
-        //     self.setState({disabledInput: false});
-        // });        
+            if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
+                resetTab(self.itemProyek.id_status_proyek);
+                self.setState({disabledInput: true, disabledInputEdit: false});                    
+                setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${self.itemProyek.no_job}`, headerAuthorization);
+            }
+            else {
+                self.setState({disabledInput: true, disabledInputEdit: false}); 
+            }
+
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Proyek baru berhasil diupdate.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+        })
+        .catch((r) => {         
+            self.setState({disabledInput: false});
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Proyek baru gagal diupdate.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+        });        
     }
 
     formatterRupiah = (value) => {        
@@ -409,7 +437,7 @@ class FormProfileProyek extends React.Component {
     render() {
         const { itemProyekSelected, listCustomer, listDesa, listPegawai, listJenisProyek, listKecamatan, listPropinsi, modeProyekBaru, listStatusProyek, listKabupaten } = this.props;
         const { disabledInput, disabledInputEdit } = this.state;
-        
+
         let keyForm;
         let initEdit;
         if(modeProyekBaru === 'edit' && itemProyekSelected !== null ) {
@@ -436,6 +464,7 @@ class FormProfileProyek extends React.Component {
                 ["no_kontrak"]: itemProyekSelected.no_kontrak,
                 ["keterangan_alamat"]: itemProyekSelected.keterangan_alamat,
                 ["no_kontrak_induk"]: itemProyekSelected.no_kontrak_induk,
+                ["no_kontrak_addendum"]: itemProyekSelected.no_kontrak_addendum === null?[]:itemProyekSelected.no_kontrak_addendum
             };
             keyForm = 'edit'
         }
@@ -793,7 +822,7 @@ class FormProfileProyek extends React.Component {
                                 </Form.Item>
                             </td>
                             <td>
-                                <Form.List name="no_adendum">
+                                <Form.List name="no_kontrak_addendum">
                                     {
                                         (fields, { add, remove }, { errors }) => (
                                             <>
@@ -811,15 +840,24 @@ class FormProfileProyek extends React.Component {
                                                                     validateTrigger={['onChange', 'onBlur']}
                                                                     noStyle
                                                                 >
-                                                                    <Input disabled={disabledInput} style={{ width: '60%', marginRight: 8 }} />
+                                                                    <Input 
+                                                                        data-jenis="addendum"
+                                                                        data-idx={index}
+                                                                        disabled={disabledInput} 
+                                                                        style={{ width: '60%', marginRight: 8 }} 
+                                                                        onChange={this.handleChangeNilaiText}
+                                                                    />
                                                                 </Form.Item>
-                                                                {fields.length > 1 ? (
                                                                 <MinusCircleOutlined
                                                                     className="dynamic-delete-button"
                                                                     disabled={disabledInput}
-                                                                    onClick={() => remove(field.name)}
+                                                                    onClick={
+                                                                        () => {
+                                                                            remove(field.name);
+                                                                            this.handleRemoveAddendum(index);
+                                                                        } 
+                                                                    }
                                                                 />
-                                                                ) : null}
                                                             </Form.Item>
                                                         )
                                                     )
