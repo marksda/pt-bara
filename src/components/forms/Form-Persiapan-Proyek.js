@@ -194,8 +194,8 @@ class FormPersiapanProyek extends React.Component {
         this.loadCustomer({	field: "m.nama", search: value }, { current: 1, pageSize: 10 }, { field: "m.nama", order: "asc" });
 	}
 
-    handleSelectCustomer = (value, option) => {
-        this.itemProyek.id_customer = option.key;
+    handleSelectCustomer = (value) => {
+        this.itemProyek.id_customer = value;
 	}
 
     handleToNavDaftarProyek = () => {
@@ -213,6 +213,23 @@ class FormPersiapanProyek extends React.Component {
         const { getStatusProyek, headerAuthorization, restfulServer } = this.props; 
         let url = `${restfulServer}/master/statusproyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
         getStatusProyek(url, headerAuthorization);
+    }
+
+    formatterRupiah = (value) => {        
+        let tmp = value.split('.');
+        if(tmp.length>1){
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]},${tmp[1]}`;
+        }
+        else {
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]}`;
+        }
+    }
+
+    parserRupiah = (value) => {
+        value = value.replace(/Rp\s?|(\.*)/g, '')
+        return value.replace(/\,/g, '.');
     }
 
     savePersiapanProyek = () => {
@@ -387,21 +404,23 @@ class FormPersiapanProyek extends React.Component {
                                     rules={[{required: true, message: 'Customer harus diisi'}]}
                                     style={{marginBottom: 16}}
                                 >
-                                    <AutoComplete 
-                                        onSearch={this.handleSearchCustomer}
-                                        onSelect={this.handleSelectCustomer}
+                                    <Select 
+                                        showSearch
+                                        onChange={this.handleSelectCustomer}
                                         disabled={disabledInput}
-                                        style={{minWidth: 350}}
-                                        placeholder={disabledInput === true? null:'Cari customer'}
+                                        placeholder="Pilih Customer"
+                                        showArrow={false}
+                                        onSearch={this.handleSearchCustomer}
+                                        filterOption={false}
+                                        defaultActiveFirstOption={false}
+                                        notFoundContent={null}
                                     >
                                     {
                                         listCustomer !== null ? listCustomer.data.map((row) => 
-                                            <Option key={row.id} value={row.nama}>
-                                                {row.nama}
-                                            </Option>
+                                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
                                         ):null
-                                    }
-                                    </AutoComplete>
+                                    }	
+                                    </Select>
                                 </Form.Item>
                             </td>
                             <td>
@@ -432,8 +451,8 @@ class FormPersiapanProyek extends React.Component {
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiNumeric}
                                         style={{ width: 250 }}
-                                        formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '\.')}
-                                        parser={value => value.replace(/Rp\s?|(\.*)/g, '')}
+                                        formatter={this.formatterRupiah}
+                                        parser={this.parserRupiah}
                                     />
                                 </Form.Item>
                             </td>

@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { Button, DatePicker, Divider, Form, Input, InputNumber, Select } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, Select } from 'antd';
 import { connect } from "react-redux";
 import { getCustomer, getDesa, getJenisProyek, getPegawai, getPropinsi, getKabupaten, getKecamatan, getStatusProyek, setItemMenuSelected, setModeProyekBaru, setStatusProyekSelected } from "../../actions/master-action";
 
@@ -171,6 +171,7 @@ class FormProfileProyek extends React.Component {
 	}
 
     handleChangeNilaiKontrak = (value) => {
+        console.log(`nilai kontrak: ${value} ${typeof value}`);
         this.itemProyek.nilai_kontrak = value;
 	}
 
@@ -386,6 +387,23 @@ class FormProfileProyek extends React.Component {
         // .catch((r) => {         
         //     self.setState({disabledInput: false});
         // });        
+    }
+
+    formatterRupiah = (value) => {        
+        let tmp = value.split('.');
+        if(tmp.length>1){
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]},${tmp[1]}`;
+        }
+        else {
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]}`;
+        }
+    }
+
+    parserRupiah = (value) => {
+        value = value.replace(/Rp\s?|(\.*)/g, '')
+        return value.replace(/\,/g, '.');
     }
 
     render() {
@@ -736,13 +754,13 @@ class FormProfileProyek extends React.Component {
                                     name="nilai_kontrak"
                                     style={{marginBottom: 16}}
                                 >
-                                    <InputNumber  
-                                        data-jenis="nilai"
+                                    <InputNumber
+                                        data-jenis="nilaikontrak"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiKontrak}
-                                        style={{width: 250}}
-                                        formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '\.')}
-                                        parser={value => value.replace(/Rp\s?|(\.*)/g, '')}
+                                        style={{minWidth: 250}}
+                                        formatter={this.formatterRupiah}
+                                        parser={this.parserRupiah}
                                     />
                                 </Form.Item>
                                 <Form.Item
@@ -755,8 +773,8 @@ class FormProfileProyek extends React.Component {
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiPpn}
                                         style={{width: 250}}
-                                        formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '\.')}
-                                        parser={value => value.replace(/Rp\s?|(\.*)/g, '')}
+                                        formatter={this.formatterRupiah}
+                                        parser={this.parserRupiah}
                                     />
                                 </Form.Item>
                                 <Form.Item
@@ -769,20 +787,60 @@ class FormProfileProyek extends React.Component {
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiPph}
                                         style={{width: 250}}
-                                        formatter={value => `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '\.')}
-                                        parser={value => value.replace(/Rp\s?|(\.*)/g, '')}
+                                        formatter={this.formatterRupiah}
+                                        parser={this.parserRupiah}
                                     />
                                 </Form.Item>
                             </td>
                             <td>
-                                <Form.Item label="No. Kontrak/PO Addendum" style={{marginBottom: 16}}>
-                                    <Button
-                                        type="dashed"
-                                        icon={<PlusOutlined />}
-                                    >
-                                        Add
-                                    </Button>
-                                </Form.Item>
+                                <Form.List name="no_adendum">
+                                    {
+                                        (fields, { add, remove }, { errors }) => (
+                                            <>
+                                                {
+                                                    fields.map(
+                                                        (field, index) => (
+                                                            <Form.Item
+                                                                label={index === 0 ? 'No. Kontrak/PO Addendum' : ''}
+                                                                required={false}
+                                                                key={field.key}                                                                
+							                                    style={{marginBottom: 8}}
+                                                            >
+                                                                <Form.Item
+                                                                    {...field}
+                                                                    validateTrigger={['onChange', 'onBlur']}
+                                                                    noStyle
+                                                                >
+                                                                    <Input disabled={disabledInput} style={{ width: '60%', marginRight: 8 }} />
+                                                                </Form.Item>
+                                                                {fields.length > 1 ? (
+                                                                <MinusCircleOutlined
+                                                                    className="dynamic-delete-button"
+                                                                    disabled={disabledInput}
+                                                                    onClick={() => remove(field.name)}
+                                                                />
+                                                                ) : null}
+                                                            </Form.Item>
+                                                        )
+                                                    )
+                                                }
+                                                <Form.Item
+                                                    label={fields.length === 0 ? 'No. Kontrak/PO Addendum' : ''}
+                                                    style={{marginBottom: 16}}
+                                                >
+                                                    <Button
+                                                        type="dashed"
+                                                        icon={<PlusOutlined />}
+                                                        onClick={() => add()}
+                                                        disabled={disabledInput}
+                                                    >
+                                                        Add
+                                                    </Button>
+                                                </Form.Item>
+                                            </>
+                                        )
+                                    }
+                                </Form.List>                                
                             </td>
                         </tr>
                         <tr>  
@@ -872,8 +930,7 @@ class FormProfileProyek extends React.Component {
                                     />
                                 </Form.Item>
                             </td>
-                        </tr>
-                        
+                        </tr>                        
                     </tbody>
                 </table>                
                 <Form.Item {...tailLayout} style={{width:100}}>
