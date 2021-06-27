@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from "react-redux";
 import { Divider, Radio } from 'antd';
 
-import { resetStatusProyekSelected, setStatusProyekSelected } from "../../actions/master-action";
+import { resetStatusProyekSelected, setStatusProyekSelected, resetItemProyekSelected } from "../../actions/master-action";
 import FormPersiapanProyek from '../forms/Form-Persiapan-Proyek';
 import FormProfileProyek from '../forms/Form-Profile-Proyek';
 import ProcessingDialog from '../dialogs/Processing-Dialog';
@@ -17,6 +17,7 @@ const mapDispatchToProps = dispatch => {
     return {
         setStatusProyekSelected: (nilai) => dispatch(setStatusProyekSelected(nilai)),
         resetStatusProyekSelected: () => dispatch(resetStatusProyekSelected()),
+        resetItemProyekSelected:() => dispatch(resetItemProyekSelected())
     };
 };
 
@@ -84,7 +85,9 @@ class ProyekBaru extends React.Component {
     }
 
     componentWillUnmount() {
+        const { resetItemProyekSelected } = this.props;
         this.resetTab('01');
+        resetItemProyekSelected();
     }
 
     handleChangeItemTab = (e) => {

@@ -164,6 +164,9 @@ class FormProfileProyek extends React.Component {
         if(this.itemProyek.tanggal_aktif === null) {
             this.itemProyek.tanggal_aktif =  `${moment().year()}-${moment().month()+1}-${moment().date()}`;
         }
+
+        console.log(this.itemProyek);
+
         this.setState({disabledInput: false, disabledInputEdit: true});
         setTimeout(() => {this.formRef.current.getFieldInstance('pemilik_proyek').focus();}, 300);
     }
@@ -225,7 +228,6 @@ class FormProfileProyek extends React.Component {
                     this.itemProyek.no_kontrak_addendum = [];
                 }
                 this.itemProyek.no_kontrak_addendum[Number(e.currentTarget.dataset.idx)] = e.currentTarget.value;
-                console.log(this.itemProyek.no_kontrak_addendum);
                 break;
 			default:
                 break;
@@ -441,6 +443,7 @@ class FormProfileProyek extends React.Component {
         let keyForm;
         let initEdit;
         if(modeProyekBaru === 'edit' && itemProyekSelected !== null ) {
+            console.log(itemProyekSelected);
             initEdit = {
                 layout: 'vertical',
                 remember: true,
