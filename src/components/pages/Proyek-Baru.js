@@ -171,6 +171,13 @@ class ProyekBaru extends React.Component {
                     resetTab={this.resetTab}
                 />;
                 break;
+            case 'Budget':
+                subPage =
+                <FormBudget 
+                    handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
+                    resetTab={this.resetTab}
+                />;
+                break;
             default:
                 break;
         }
