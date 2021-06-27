@@ -393,11 +393,12 @@ class FormProfileProyek extends React.Component {
             if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
                 resetTab(self.itemProyek.id_status_proyek);
                 self.setState({disabledInput: true, disabledInputEdit: false});                    
-                setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${self.itemProyek.no_job}`, headerAuthorization);
             }
             else {
                 self.setState({disabledInput: true, disabledInputEdit: false}); 
             }
+            
+            setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${self.itemProyek.no_job}`, headerAuthorization);
 
             notification.open({
                 message: 'Pemberitahuan',

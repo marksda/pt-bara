@@ -1,7 +1,7 @@
 import React from "react";
 import AddBoxOutlineIcon from '@material-ui/icons/AddOutlined';
 import axios from 'axios';
-// import FormAddBudget from "../forms/Form-Add-Budget";
+import FormAddBudget from "../forms/Form-Add-Budget";
 import IconButton from '@material-ui/core/IconButton';
 import KonfirmasiDialog from "../dialogs/Konfirmasi-Dialog";
 import ProcessingDialog from '../dialogs/Processing-Dialog';
@@ -31,7 +31,6 @@ import { getBudget, setFilterBudget, setPaginationBudget, setUrutBudget } from "
 import { connect } from "react-redux";
 
 const { Title } = Typography;
-const { Search } = Input;
 
 const useToolbarStyles = makeStyles(theme => ({
     actions: {
@@ -55,13 +54,13 @@ const useToolbarStyles = makeStyles(theme => ({
     },
     title: {
         flex: '0 0 auto',
-        marginTop: 16
+        marginTop: 8
     },
 }));
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { handleOpen, title, handleCari } = props;
+    const { handleOpen, title } = props;
 
     return(
         <Toolbar
@@ -82,11 +81,6 @@ const EnhancedTableToolbar = (props) => {
                         <AddBoxOutlineIcon />
                     </IconButton>                             
                 </Tooltip>
-                <Search
-                  placeholder="pencarian"
-                  onSearch={handleCari}
-                  style={{ width: 250 }}
-                />
             </div>            
         </Toolbar>
     );
@@ -94,9 +88,9 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.nama', numerik: false, label: 'Pos budget'},
-    {id: 'm.nilai', numerik: true, label: 'Nilai'},
-    {id: 'm.jumlah', numerik: true, label: 'Jumlah'},
+    {id: 'm.nama', numerik: false, label: 'Pos Budget'},
+    {id: 'm.nilai', numerik: true, label: 'Sub-Budget'},
+    {id: 'm.jumlah', numerik: true, label: 'Jumlah Budget'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -148,7 +142,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'right'}
-                                    style={{width: 150}}
+                                    style={{width: 250}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -158,7 +152,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'right'}
-                                    style={{width: 150}}
+                                    style={{width: 250}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -184,9 +178,8 @@ const EnhancedTableHead = (props) => {
 
 const styles = theme => ({
     root: {
-        width: '100%',
-        minWidth: 1200,
-        marginTop: -20
+        width: '80%',
+        minWidth: 800,
     },
     tableWrapper: {
         overflowX: 'auto',
@@ -362,11 +355,23 @@ class TableBudget extends React.Component {
 		const { openConfirmasiHapusBudget, openProcessingDialog } = this.state;
 
         let pageRender = null;
+        let pageAdd = null;
+
+        if(openFormAddBudget === true) {
+            pageAdd = 
+             <FormAddBudget
+                data={this.itemBudget}
+                visible={openFormAddBudget} 
+                handleClose={this.handleCloseFormAddBudget}
+                mode={mode}
+                handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
+            />;
+        }
 
         pageRender =
 		<div className={classes.root}>
 			<EnhancedTableToolbar 
-                handleOpen={this.handleAddBudgetBaru}  
+                handleOpen={this.handleOpenFormAddBudget}  
                 title={title}
                 handleCari={this.handleChangeFilter}
             />
@@ -397,17 +402,17 @@ class TableBudget extends React.Component {
 	                                    align={'left'}
                                         style={{minWidth: 250, verticalAlign: 'top'}}
 	                                >
-	                                    { row.nama }
+	                                    { row.status_header === true? <b>{row.nama}</b>:<label style={{marginLeft: 16}}>{row.nama}</label>}
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'right'}
-                                        style={{width: 150, verticalAlign: 'top'}}
+                                        style={{width: 250, verticalAlign: 'top'}}
 	                                >
 	                                    { row.status_header===true?null:row.saldo }
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'right'}
-                                        style={{width: 150, verticalAlign: 'top'}}
+                                        style={{width: 250, verticalAlign: 'top'}}
 	                                >
 	                                    { row.status_header===true?row.saldo:null }
 	                                </TableCell>
@@ -441,6 +446,7 @@ class TableBudget extends React.Component {
                 aksi={this.handleDeleteBudget} 
                 message={`Hapus item budget dengan No. Job: ${this.itemBudget.no_job}`}
             />
+            {pageAdd}
 		</div>;
 
         return(pageRender);

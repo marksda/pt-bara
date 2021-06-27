@@ -184,7 +184,7 @@ const EnhancedTableHead = (props) => {
 
 const styles = theme => ({
     root: {
-        width: '100%',
+        width: '75%',
         marginTop: -20
     },
     tableWrapper: {

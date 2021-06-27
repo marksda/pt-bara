@@ -83,7 +83,8 @@ class FormBudget extends React.Component {
             initialValues={initEdit}
             key={keyForm}
         >
-            <div className="content-flex-center">
+            <div style={{display: 'flex', flexDirection: 'column'}}>
+                <div className="content-flex-center">
                 <table className="table-container-proyek-baru" style={{width: '80%'}}>
                     <tbody>
                         <tr>
@@ -166,14 +167,17 @@ class FormBudget extends React.Component {
                                         icon={<PlusOutlined />}
                                         disabled={false}
                                     >
-                                        Add
+                                        Upload file
                                     </Button>
                                 </Form.Item>
                             </td>
                         </tr>                        
                     </tbody>
                 </table> 
-                <TableBudget title="Data Budget" />
+                </div>
+                <div className="content-flex-center">
+                    <TableBudget title="Data Budget" />
+                </div>
             </div>
         </Form>;
 

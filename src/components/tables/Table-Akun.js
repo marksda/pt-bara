@@ -55,7 +55,7 @@ const useToolbarStyles = makeStyles(theme => ({
     },
     title: {
         flex: '0 0 auto',
-        marginTop: 16
+        marginTop: 8
     },
 }));
 
@@ -149,7 +149,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
-                                    style={{width: 350}}
+                                    style={{width: 400}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -190,7 +190,8 @@ const EnhancedTableHead = (props) => {
                                 page =
                                 <TableCell
                                     key={headCell.id}
-                                    align={'right'}
+                                    align={'center'}
+                                    style={{width: 100}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -206,7 +207,7 @@ const EnhancedTableHead = (props) => {
 
 const styles = theme => ({
     root: {
-        width: '100%',
+        width: '75%',
         marginTop: -20
     },
     tableWrapper: {
@@ -444,9 +445,9 @@ class TableAkun extends React.Component {
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{verticalAlign: 'top', width: 350}}
+                                        style={{verticalAlign: 'top', minWidth: 400}}
 	                                >
-	                                    { row.status_header === true? <b>{row.nama}</b>:row.nama }
+	                                    { row.status_header === true? <b>{row.nama}</b>:<label style={{marginLeft: 16}}>{row.nama}</label>}
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
@@ -455,8 +456,8 @@ class TableAkun extends React.Component {
 	                                    { row.status_header === true ? <b>Header</b>:'Detail' }
 	                                </TableCell>
 	                                <TableCell 
-                                        style={{verticalAlign: 'top'}}
-                                        align={'right'}
+                                        style={{width: 100, verticalAlign: 'top'}}
+                                        align={'center'}
                                     >
                                         <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleOpenFormAddAkun}/>
                                         <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.id} onClick={this.handleBtnEdit} />
