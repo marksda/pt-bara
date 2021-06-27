@@ -544,7 +544,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="nojob"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
-                                        style={{ minWidth: 150 }}
+                                        style={{ minWidth: 150}}
                                     />
                                 </Form.Item>
                             </td>
@@ -579,13 +579,13 @@ class FormProfileProyek extends React.Component {
                                     label="Proyek"
                                     name="nama_proyek"
                                     rules={[{required: true, message: 'Proyek harus diisi'}]}
-                                    style={{minWidth: 250}}
                                     style={{marginBottom: 16}}
                                 >
                                     <Input 
                                         data-jenis="namaproyek"
                                         disabled={disabledInput}
-                                        onChange={this.handleChangeNilaiText}
+                                        onChange={this.handleChangeNilaiText}                                        
+                                        style={{minWidth: 250}}
                                     />
                                 </Form.Item>
                             </td>

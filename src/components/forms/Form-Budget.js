@@ -3,15 +3,16 @@ import axios from 'axios';
 import moment from 'moment';
 import { Button, DatePicker, Form, Input, InputNumber, notification, Select } from 'antd';
 import { connect } from "react-redux";
-import { getCustomer, getStatusProyek, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, setStatusProyekSelected } from "../../actions/master-action";
-
+import { getCustomer, getDesa, getJenisProyek, getPegawai, getPropinsi, getKabupaten, getKecamatan, getStatusProyek, setItemMenuSelected, setModeProyekBaru, setStatusProyekSelected, setItemProyekSelected } from "../../actions/master-action";
+import TableBudget from '../tables/Table-Budget';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 
 const tailLayout = {
     wrapperCol: { offset: 8, span: 4 },
 };
-
+    
 const mapStateToProps = store => {
     return {      
         filterStatusProyek: store.master.filter_status_proyek,
@@ -26,16 +27,45 @@ const mapStateToProps = store => {
         urutCustomer: store.master.urut_customer,
         modeProyekBaru: store.master.mode_proyek_baru,
         itemProyekSelected: store.master.item_proyek_selected,
-        statusProyekSelected: store.master.status_proyek_selected,
+        listPropinsi: store.master.list_propinsi,
+        filterPropinsi: store.master.filter_propinsi,
+        paginationPropinsi: store.master.pagination_propinsi,
+        urutPropinsi: store.master.urut_propinsi,
+        listKabupaten: store.master.list_kabupaten,
+        filterKabupaten: store.master.filter_kabupaten,
+        paginationKabupaten: store.master.pagination_kabupaten,
+        urutKabupaten: store.master.urut_kabupaten,
+        listKecamatan: store.master.list_kecamatan,
+        filterKecamatan: store.master.filter_kecamatan,
+        paginationKecamatan: store.master.pagination_kecamatan,
+        urutKecamatan: store.master.urut_kecamatan,
+        listDesa: store.master.list_desa,
+        filterDesa: store.master.filter_desa,
+        paginationDesa: store.master.pagination_desa,
+        urutDesa: store.master.urut_desa,
+        listJenisProyek: store.master.list_jenis_proyek,
+        filterJenisProyek: store.master.filter_jenis_proyek,
+        paginationJenisProyek: store.master.pagination_jenis_proyek,
+        urutJenisProyek: store.master.urut_jenis_proyek,
+        listPegawai: store.master.list_pegawai,
+        filterPegawai: store.master.filter_pegawai,
+        paginationPegawai: store.master.pagination_pegawai,
+        urutPegawai: store.master.urut_pegawai,
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
         getCustomer: (url, headerAuthorization) => dispatch(getCustomer(url, headerAuthorization)),
-        setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)),        
+        getPropinsi: (url, headerAuthorization) => dispatch(getPropinsi(url, headerAuthorization)),
+        getPegawai: (url, headerAuthorization) => dispatch(getPegawai(url, headerAuthorization)),
+        getKabupaten: (url, headerAuthorization) => dispatch(getKabupaten(url, headerAuthorization)),
+        getKecamatan: (url, headerAuthorization) => dispatch(getKecamatan(url, headerAuthorization)),
+        getDesa: (url, headerAuthorization) => dispatch(getDesa(url, headerAuthorization)),
+        getJenisProyek: (url, headerAuthorization) => dispatch(getJenisProyek(url, headerAuthorization)), 
         getStatusProyek: (url, headerAuthorization) => dispatch(getStatusProyek(url, headerAuthorization)),        
-        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),        
+        setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)), 
         setStatusProyekSelected: (nilai) => dispatch(setStatusProyekSelected(nilai)), 
         setItemProyekSelected: (url, headerAuthorization) => dispatch(setItemProyekSelected(url, headerAuthorization)),
     };
@@ -54,54 +84,51 @@ class FormBudget extends React.Component {
     }
 
     componentDidMount() {
-        const { listStatusProyek, filterStatusProyek, paginationStatusProyek, urutStatusProyek, modeProyekBaru, listCustomer, filterCustomer, paginationCustomer, urutCustomer } = this.props;
+        const { listStatusProyek, filterStatusProyek, paginationStatusProyek, urutStatusProyek, modeProyekBaru,
+        listPropinsi, filterPropinsi, paginationPropinsi, urutPropinsi, listKabupaten, filterKabupaten, paginationKabupaten,
+        urutKabupaten, listKecamatan, filterKecamatan,paginationKecamatan, urutKecamatan, listDesa, filterDesa, paginationDesa, 
+        urutDesa, listCustomer, filterCustomer, paginationCustomer, urutCustomer, listJenisProyek, filterJenisProyek, paginationJenisProyek, urutJenisProyek,listPegawai, filterPegawai, paginationPegawai, urutPegawai } = this.props;
 
         if(modeProyekBaru === 'edit') {
             this.setState({disabledInputEdit: false});
+        }
+
+        if(listCustomer === null) {
+            this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
+        }
+
+        if(listJenisProyek === null) {
+            this.loadJenisProyek(filterJenisProyek, paginationJenisProyek, urutJenisProyek);
         }
 
         if(listStatusProyek === null) {
             this.loadStatusProyek(filterStatusProyek, paginationStatusProyek, urutStatusProyek);
         }
 
-        if(listCustomer === null) {
-            this.loadCustomer(filterCustomer, paginationCustomer, urutCustomer);
-        }
-    }
-
-    handleBaru = () => {
-        const { modeProyekBaru, setModeProyekBaru, resetTab } = this.props;
-
-        this.setState({disabledInput: false});
-        setTimeout(() => {this.formRef.current.getFieldInstance('no_job').focus();}, 300);
-        if(modeProyekBaru === 'edit') {
-            this.setState({disabledInputEdit: true});
-            setModeProyekBaru('add');
-            resetTab('01');
+        if(listPropinsi === null) {
+            this.loadPropinsi(filterPropinsi, paginationPropinsi, urutPropinsi);
         }
 
-        this.itemProyek = {
-            no_job: null,
-            id_customer: null,
-            nama_proyek: null,
-            id_status_proyek: '01',
-            tanggal_persiapan: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
-            perkiraan_nilai: null,
-            pic_customer: null,
-            no_hp_pic_customer: null,
-            keterangan_persiapan: null,
+        if(listKabupaten === null) {
+            this.loadKabupaten(filterKabupaten, paginationKabupaten, urutKabupaten);
+        }
+
+        if(listKecamatan === null) {
+            this.loadKecamatan(filterKecamatan, paginationKecamatan, urutKecamatan);
+        }
+
+        if(listDesa === null) {
+            this.loadDesa(filterDesa, paginationDesa, urutDesa);
+        }
+
+        if(listPegawai === null) {
+            this.loadPegawai(filterPegawai, paginationPegawai, urutPegawai);
         }
     }
 
     handleBatal = () => {
-        const { modeProyekBaru } = this.props;
         this.formRef.current.resetFields();
-        if(modeProyekBaru === 'edit') {
-            this.setState({disabledInput: true, disabledInputEdit: false});
-        }
-        else {
-            this.setState({disabledInput: true});
-        }
+        this.setState({disabledInput: true, disabledInputEdit: false});
     }
 
     handleEdit = () => {
@@ -130,16 +157,34 @@ class FormBudget extends React.Component {
             id_kecamatan: itemProyekSelected.id_kecamatan,
             id_desa: itemProyekSelected.id_desa,
             keterangan_alamat: itemProyekSelected.keterangan_alamat,
+            keterangan_proyek: itemProyekSelected.keterangan_proyek,
             tanggal_aktif: itemProyekSelected.tanggal_aktif,
             no_kontrak_addendum: itemProyekSelected.no_kontrak_addendum
         };
+        if(this.itemProyek.tanggal_aktif === null) {
+            this.itemProyek.tanggal_aktif =  `${moment().year()}-${moment().month()+1}-${moment().date()}`;
+        }
+
+        console.log(this.itemProyek);
 
         this.setState({disabledInput: false, disabledInputEdit: true});
-        setTimeout(() => {this.formRef.current.getFieldInstance('nama_proyek').focus();}, 300);
+        setTimeout(() => {this.formRef.current.getFieldInstance('pemilik_proyek').focus();}, 300);
     }
 
-    handleChangeNilaiNumeric = (value) => {
-        this.itemProyek.perkiraan_nilai = value;
+    handleChangeJenis = (value) => {
+        this.itemProyek.id_jenis_proyek = value;
+	}
+
+    handleChangeNilaiKontrak = (value) => {
+        this.itemProyek.nilai_kontrak = value;
+	}
+
+    handleChangeNilaiPpn = (value) => {
+        this.itemProyek.ppn = value;
+	}
+
+    handleChangeNilaiPph = (value) => {
+        this.itemProyek.pph = value;
 	}
 
     handleChangeNilaiText = (e) => {
@@ -157,16 +202,35 @@ class FormBudget extends React.Component {
             case 'namaproyek':
                 this.itemProyek.nama_proyek = e.currentTarget.value;
                 break;
-            case 'nohp':
+            case 'nohpcustomer':
                 this.itemProyek.no_hp_pic_customer = e.currentTarget.value;
                 break;
             case 'piccustomer':
                 this.itemProyek.pic_customer = e.currentTarget.value;
                 break;
-            case 'keterangan':
-                this.itemProyek.keterangan_persiapan = e.currentTarget.value;
+            case 'nokontrak':
+                this.itemProyek.no_kontrak = e.currentTarget.value;
+                break;
+            case 'ketalamat':
+                this.itemProyek.keterangan_alamat = e.currentTarget.value;
+                break;
+            case 'nokontrakinduk':
+                this.itemProyek.no_kontrak_induk = e.currentTarget.value;
+                break;
+            case 'nohpbara':
+                this.itemProyek.no_hp_pic = e.currentTarget.value;
+                break;
+            case 'ketproyek':
+                this.itemProyek.keterangan_proyek = e.currentTarget.value;
+                break;
+            case 'addendum':
+                if(this.itemProyek.no_kontrak_addendum === null) {
+                    this.itemProyek.no_kontrak_addendum = [];
+                }
+                this.itemProyek.no_kontrak_addendum[Number(e.currentTarget.dataset.idx)] = e.currentTarget.value;
                 break;
 			default:
+                break;
 		}
 	}
 
@@ -177,19 +241,13 @@ class FormBudget extends React.Component {
     handleChangeTanggal = (date, dateString) => {
 		if(date !== null) {
 			let tmp = dateString.split('-');
-            this.itemProyek.tanggal_persiapan = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
+            this.itemProyek.tanggal_aktif = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
 		}
 	}
 
     handleOnFinish = (value) => {
-		const { modeProyekBaru } = this.props;
 		this.setState({disabledInput: true});
-		if(modeProyekBaru === 'edit') {
-            this.updateBudget();
-        }
-        else {
-			this.saveBudget();
-        }
+        this.updatePofileProyek();
 	}
 
     handleReset = () => {
@@ -202,13 +260,69 @@ class FormBudget extends React.Component {
         this.loadCustomer({	field: "m.nama", search: value }, { current: 1, pageSize: 10 }, { field: "m.nama", order: "asc" });
 	}
 
-    handleSelectCustomer = (value) => {
+    handleChangeCustomer = (value) => {
         this.itemProyek.id_customer = value;
 	}
+
+    handleSearchPemilikProyek = (value) => {
+        this.loadCustomer({	field: "m.nama", search: value }, { current: 1, pageSize: 10 }, { field: "m.nama", order: "asc" });
+	}
+
+    handleChangePemilikProyek = (value) => {
+        this.itemProyek.id_pemilik_proyek = value;
+	}
+
+    handleSearchPropinsi = (value) => {
+        this.loadPropinsi({	field: "m.nama", search: value }, { current: 1, pageSize: 50 }, { field: "m.nama", order: "asc" });
+    }
+
+    handleChangePropinsi = (value) => {
+        this.itemProyek.id_propinsi = value;
+    }
+
+    handleSearchKabupaten = (value) => {
+        this.loadKabupaten({	field: "m.nama", search: value }, { current: 1, pageSize: 50 }, { field: "m.nama", order: "asc" });
+    }
+
+    handleChangeKabupaten = (value) => {
+        this.itemProyek.id_kabupaten = value;
+    }
+
+    handleSearchKecamatan = (value) => {
+        this.loadKecamatan({field: "m.nama", search: value }, { current: 1, pageSize: 50 }, { field: "m.nama", order: "asc" });
+    }
+
+    handleChangeKecamatan = (value) => {
+        this.itemProyek.id_kecamatan = value;
+    }
+
+    handleSearchDesa = (value) => {
+        this.loadDesa({field: "m.nama", search: value }, { current: 1, pageSize: 50 }, { field: "m.nama", order: "asc" });
+    }
+
+    handleChangeDesa = (value) => {
+        this.itemProyek.id_desa = value;
+    }
+
+    handleSearchPICBara = (value) => {
+        this.loadPegawai({field: "m.nama", search: value }, { current: 1, pageSize: 50 }, { field: "m.nama", order: "asc" });
+    }
+
+    handleChangePICBara = (value) => {
+        this.itemProyek.nip_pic = value;
+    }
 
     handleToNavDaftarProyek = () => {
         const { setItemMenuSelected } = this.props;
         setItemMenuSelected('Daftar Proyek');
+    }
+
+    handleRemoveAddendum = (idx) => {
+        this.itemProyek.no_kontrak_addendum.splice(idx,1);
+        if(this.itemProyek.no_kontrak_addendum === undefined) {
+            this.itemProyekSelected.no_kontrak_addendum = null;
+        }
+        console.log(this.itemProyek.no_kontrak_addendum);
     }
 
     loadCustomer = (filter, pagination, urut) => {
@@ -217,10 +331,92 @@ class FormBudget extends React.Component {
         getCustomer(url, headerAuthorization);
     }
 
+    loadPropinsi = (filter, pagination, urut) => {
+        const { getPropinsi, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/propinsi?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getPropinsi(url, headerAuthorization);
+    }
+
+    loadKabupaten = (filter, pagination, urut) => {
+        const { getKabupaten, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/kabupaten?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getKabupaten(url, headerAuthorization);
+    }
+
+    loadKecamatan = (filter, pagination, urut) => {
+        const { getKecamatan, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/kecamatan?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getKecamatan(url, headerAuthorization);
+    }
+
+    loadDesa = (filter, pagination, urut) => {
+        const { getDesa, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/desa?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getDesa(url, headerAuthorization);
+    }
+
+    loadPegawai = (filter, pagination, urut) => {
+        const { getPegawai, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/pegawai?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getPegawai(url, headerAuthorization);
+    }
+
+    loadJenisProyek = (filter, pagination, urut) => {
+        const { getJenisProyek, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/jenisproyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getJenisProyek(url, headerAuthorization);
+    }
+
     loadStatusProyek = (filter, pagination, urut) => {
         const { getStatusProyek, headerAuthorization, restfulServer } = this.props; 
         let url = `${restfulServer}/master/statusproyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
         getStatusProyek(url, headerAuthorization);
+    }
+
+    updatePofileProyek = () => {
+        const { headerAuthorization, restfulServer, handleToggleOpenProgressDialog, resetTab, statusProyekSelected, setItemProyekSelected } = this.props;
+
+        let self = this;    
+                
+        handleToggleOpenProgressDialog();
+
+        axios({
+            method: 'post',
+            url: `${restfulServer}/master/proyek`,
+            headers: {...headerAuthorization},
+            data: this.itemProyek
+        })
+        .then((r) => { 
+            self.setState({disabledInput: false});
+            handleToggleOpenProgressDialog();
+
+            if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
+                resetTab(self.itemProyek.id_status_proyek);
+                self.setState({disabledInput: true, disabledInputEdit: false});                    
+                setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${self.itemProyek.no_job}`, headerAuthorization);
+            }
+            else {
+                self.setState({disabledInput: true, disabledInputEdit: false}); 
+            }
+
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Proyek baru berhasil diupdate.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+        })
+        .catch((r) => {         
+            self.setState({disabledInput: false});
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Proyek baru gagal diupdate.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+        });        
     }
 
     formatterRupiah = (value) => {        
@@ -240,121 +436,38 @@ class FormBudget extends React.Component {
         return value.replace(/\,/g, '.');
     }
 
-    saveBudget = () => {
-		const { 
-			headerAuthorization, restfulServer, handleToggleOpenProgressDialog,
-            statusProyekSelected, resetTab, setModeProyekBaru, setItemProyekSelected
-		} = this.props;
-	    let self = this;
-        
-	    handleToggleOpenProgressDialog();
-
-	    axios({
-            method: 'put',
-            url: `${restfulServer}/master/proyek`,
-            headers: {...headerAuthorization},
-            data: this.itemProyek
-        })
-	    .then((r) => {  
-            handleToggleOpenProgressDialog();
-            
-            if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
-                resetTab(self.itemProyek.id_status_proyek);
-                self.setState({disabledInput: true, disabledInputEdit: false});                    
-                setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${self.itemProyek.no_job}`, headerAuthorization);
-                setModeProyekBaru('edit');
-            }
-            else {
-                self.formRef.current.resetFields();
-                self.setState({disabledInput: true});
-            }
-
-            notification.open({
-                message: 'Pemberitahuan',
-                description:
-                  'Proyek baru berhasil ditambahkan.',
-                duration: 4,
-                placement: 'bottomRight'
-            });
-	    })
-	    .catch((r) => {
-            handleToggleOpenProgressDialog();            
-            this.formRef.current.resetFields();
-            self.setState({disabledInput: true});
-            notification.open({
-                message: 'Pemberitahuan',
-                description:
-                  'Proyek baru gagal ditambahkan.',
-                duration: 4,
-                placement: 'bottomRight'
-            });
-	    });
-	}
-
-    updateBudget = () => {
-        const { headerAuthorization, restfulServer, handleToggleOpenProgressDialog, statusProyekSelected, resetTab } = this.props;
-
-        let self = this;    
-                
-        handleToggleOpenProgressDialog();
-
-        axios({
-            method: 'post',
-            url: `${restfulServer}/master/proyek`,
-            headers: {...headerAuthorization},
-            data: this.itemProyek
-        })
-        .then((r) => { 
-            handleToggleOpenProgressDialog();
-            if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
-                resetTab(self.itemProyek.id_status_proyek);
-                self.setState({disabledInput: true, disabledInputEdit: false});                    
-                setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${self.itemProyek.no_job}`, headerAuthorization);
-            }
-            else {
-                self.setState({disabledInput: true, disabledInputEdit: false}); 
-            }
-
-            notification.open({
-                message: 'Pemberitahuan',
-                description:
-                  'Proyek baru berhasil diupdate.',
-                duration: 4,
-                placement: 'bottomRight'
-            });
-        })
-        .catch((r) => {         
-            handleToggleOpenProgressDialog();
-            self.setState({disabledInput: true, disabledInputEdit: false}); 
-            notification.open({
-                message: 'Pemberitahuan',
-                description:
-                  'Proyek baru gagal diupdate.',
-                duration: 4,
-                placement: 'bottomRight'
-            });
-        });        
-    }
-
     render() {
-        const { itemProyekSelected, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
+        const { itemProyekSelected, listCustomer, listDesa, listPegawai, listJenisProyek, listKecamatan, listPropinsi, modeProyekBaru, listStatusProyek, listKabupaten } = this.props;
         const { disabledInput, disabledInputEdit } = this.state;
 
         let keyForm;
         let initEdit;
         if(modeProyekBaru === 'edit' && itemProyekSelected !== null ) {
+            console.log(itemProyekSelected);
             initEdit = {
                 layout: 'vertical',
                 remember: true,
-                ["tanggal"]: modeProyekBaru==='edit'?moment(itemProyekSelected.tanggal_persiapan):moment(),
-                ["no_job"]: modeProyekBaru==='edit'?itemProyekSelected.no_job:null,
-                ["id_status_proyek"]: modeProyekBaru==='edit'?itemProyekSelected.id_status_proyek:null,
-                ["nama_proyek"]: modeProyekBaru==='edit'?itemProyekSelected.nama_proyek:null,
-                ["nama_customer"]: modeProyekBaru==='edit'?itemProyekSelected.nama_customer:null,
-                ["perkiraan_nilai"]: modeProyekBaru==='edit'?itemProyekSelected.perkiraan_nilai:null,
-                ["pic_customer"]: modeProyekBaru==='edit'?itemProyekSelected.pic_customer:null,
-                ["no_hp_pic_customer"]: modeProyekBaru==='edit'?itemProyekSelected.no_hp_pic_customer:null,
-                ["keterangan_persiapan"]: modeProyekBaru==='edit'?itemProyekSelected.keterangan_persiapan:null,
+                ["tanggal"]: itemProyekSelected.tanggal_aktif !== null?moment(itemProyekSelected.tanggal_aktif):moment(),
+                ["no_job"]: itemProyekSelected.no_job,
+                ["id_status_proyek"]: itemProyekSelected.id_status_proyek,
+                ["nama_proyek"]: itemProyekSelected.nama_proyek,
+                ["nama_customer"]: itemProyekSelected.nama_customer,
+                ["perkiraan_nilai"]: itemProyekSelected.perkiraan_nilai,
+                ["pic_customer"]: itemProyekSelected.pic_customer,
+                ["no_hp_pic_customer"]: itemProyekSelected.no_hp_pic_customer,
+                ["nip_pic"]: itemProyekSelected.nip_pic,
+                ["no_hp_pic"]: itemProyekSelected.no_hp_pic,
+                ["keterangan_proyek"]: itemProyekSelected.keterangan_proyek,
+                ["pemilik_proyek"]: itemProyekSelected.pemilik_proyek,
+                ["id_propinsi"]: itemProyekSelected.id_propinsi,
+                ["id_kabupaten"]: itemProyekSelected.id_kabupaten,
+                ["id_kecamatan"]: itemProyekSelected.id_kecamatan,
+                ["id_desa"]: itemProyekSelected.id_desa,
+                ["id_jenis_proyek"]: itemProyekSelected.id_jenis_proyek,
+                ["no_kontrak"]: itemProyekSelected.no_kontrak,
+                ["keterangan_alamat"]: itemProyekSelected.keterangan_alamat,
+                ["no_kontrak_induk"]: itemProyekSelected.no_kontrak_induk,
+                ["no_kontrak_addendum"]: itemProyekSelected.no_kontrak_addendum === null?[]:itemProyekSelected.no_kontrak_addendum
             };
             keyForm = 'edit'
         }
@@ -363,9 +476,9 @@ class FormBudget extends React.Component {
                 layout: 'vertical',
                 remember: true,
                 ["tanggal"]: moment(),
-                ["id_status_proyek"]: '01'
+                ["id_status_proyek"]: '01',
+                ["id_jenis_proyek"]: '01',
             };
-
             keyForm = 'add';
         }
 
@@ -379,58 +492,18 @@ class FormBudget extends React.Component {
             key={keyForm}
         >
             <div className="content-flex-center">
-                <table className="table-container-proyek-baru" style={{width: '75%'}}>
+                <table className="table-container-proyek-baru" style={{width: '80%'}}>
                     <tbody>
-                        <tr>
-                            <td>
-                                <Form.Item
-                                    label="Tanggal Persiapan"
-                                    name="tanggal"
-                                    rules={[{required: true, message: 'Tanggal persiapan harus diisi'}]}
-                                    style={{marginBottom: 16}}
-                                >
-                                    <DatePicker 
-                                        format="DD-MM-YYYY" 
-                                        disabled={disabledInput}
-                                        style={{minWidth: 150}}
-                                        onChange={this.handleChangeTanggal}
-                                    />
-                                </Form.Item>
-                            </td>
-                            <td>
-                                <Form.Item 
-                                    label="Status"
-                                    name="id_status_proyek"
-                                    rules={[{required: true, message: 'Status harus diisi'}]}
-                                    style={{marginBottom: 16}}
-                                >
-                                    <Select 
-                                        onChange={this.handleChangeStatus}
-                                        disabled={disabledInput}
-                                        style={{width: 180}}
-                                    >
-                                    {
-                                        listStatusProyek !== null ? listStatusProyek.data.map((row) => 
-                                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
-                                        ):null
-                                    }	
-                                    </Select>
-                                </Form.Item>
-                            </td>
-                        </tr>
                         <tr>
                             <td>
                                 <Form.Item
                                     label="No. Job"
                                     name="no_job"
-                                    rules={[{required: true, message: 'No. job harus diisi'}]}                                    
-                                    style={{ marginBottom: 16 }}
+                                    style={{marginBottom: 16}}
                                 >
                                     <Input 
-                                        data-jenis="nojob"
-                                        disabled={disabledInput}
-                                        onChange={this.handleChangeNilaiText}
-                                        style={{minWidth: 150}}
+                                        disabled={true}
+                                        style={{ minWidth: 150, color: 'red' }}
                                     />
                                 </Form.Item>
                             </td>
@@ -438,40 +511,24 @@ class FormBudget extends React.Component {
                                 <Form.Item 
                                     label="Customer"
                                     name="nama_customer"
-                                    rules={[{required: true, message: 'Customer harus diisi'}]}
                                     style={{marginBottom: 16}}
                                 >
-                                    <Select 
-                                        showSearch
-                                        onChange={this.handleSelectCustomer}
-                                        disabled={disabledInput}
-                                        placeholder="Pilih Customer"
-                                        showArrow={false}
-                                        onSearch={this.handleSearchCustomer}
-                                        filterOption={false}
-                                        defaultActiveFirstOption={false}
-                                        notFoundContent={null}
-                                    >
-                                    {
-                                        listCustomer !== null ? listCustomer.data.map((row) => 
-                                            <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
-                                        ):null
-                                    }	
-                                    </Select>
+                                    <Input 
+                                        disabled={true}
+                                        style={{color: 'red'}}
+                                    />
                                 </Form.Item>
                             </td>
                             <td>
                                 <Form.Item
                                     label="Proyek"
                                     name="nama_proyek"
-                                    rules={[{required: true, message: 'Proyek harus diisi'}]}                                    
-                                    style={{ marginBottom: 16 }}
+                                    style={{marginBottom: 16}}
                                 >
                                     <Input 
                                         data-jenis="namaproyek"
-                                        disabled={disabledInput}
-                                        onChange={this.handleChangeNilaiText}                                        
-                                        style={{minWidth: 250}}
+                                        disabled={true}
+                                        style={{minWidth: 250, color: 'red'}}
                                     />
                                 </Form.Item>
                             </td>
@@ -479,16 +536,14 @@ class FormBudget extends React.Component {
                         <tr>
                             <td>
                                 <Form.Item
-                                    label="Perkiraan Nilai"
-                                    name="perkiraan_nilai"
-                                    style={{ marginBottom: 16 }}
+                                    label="Nilai Kontrak/PO"
+                                    name="nilai_kontrak"
+                                    style={{marginBottom: 16}}
                                 >
-                                    <InputNumber  
-                                        data-jenis="nilai"
-                                        disabled={disabledInput}
-                                        onChange={this.handleChangeNilaiNumeric}
-                                        style={{ width: 250 }}
-                                        precision={2}
+                                    <InputNumber
+                                        data-jenis="nilaikontrak"
+                                        disabled={true}
+                                        style={{minWidth: 250, color: 'red'}}
                                         formatter={this.formatterRupiah}
                                         parser={this.parserRupiah}
                                     />
@@ -496,116 +551,37 @@ class FormBudget extends React.Component {
                             </td>
                             <td>
                                 <Form.Item
-                                    label="PIC Proyek (Customer)"
-                                    name="pic_customer"
-                                    style={{ marginBottom: 16 }}
+                                    label="Jumlah Budget"
+                                    name="jumlah_budget"
+                                    style={{marginBottom: 16, marginRight: 16}}
                                 >
-                                    <Input 
-                                        data-jenis="piccustomer"
-                                        disabled={disabledInput}
-                                        onChange={this.handleChangeNilaiText}
+                                    <InputNumber
+                                        data-jenis="jumlahbudget"
+                                        disabled={true}
+                                        style={{minWidth: 250, color: 'red'}}
+                                        formatter={this.formatterRupiah}
+                                        parser={this.parserRupiah}
                                     />
                                 </Form.Item>
                             </td>
-                        </tr>
-                        <tr>
-                            <td></td>
                             <td>
                                 <Form.Item
-                                    label="No. Handphone PIC Proyek (Customer)"
-                                    name="no_hp_pic_customer"
-                                    style={{ marginBottom: 16 }}
+                                    label="File Budged"
+                                    style={{marginBottom: 16}}
                                 >
-                                    <Input 
-                                        data-jenis="nohp"
-                                        disabled={disabledInput}
-                                        onChange={this.handleChangeNilaiText}
-                                        style={{ width: 250 }}
-                                    />
+                                    <Button
+                                        type="dashed"
+                                        icon={<PlusOutlined />}
+                                        disabled={false}
+                                    >
+                                        Add
+                                    </Button>
                                 </Form.Item>
                             </td>
-                        </tr>
-                        <tr>
-                            <td colSpan="3">
-                                <Form.Item
-                                    label="Keterangan"
-                                    name="keterangan_persiapan"
-                                >
-                                    <TextArea  
-                                        rows={6}
-                                        data-jenis="keterangan"
-                                        disabled={disabledInput}
-                                        onChange={this.handleChangeNilaiText}
-                                    />
-                                </Form.Item>
-                            </td>
-                        </tr>
+                        </tr>                        
                     </tbody>
-                </table>                
-                <Form.Item {...tailLayout} style={{width:100}}>
-                    <Button 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleBaru} 
-                        style={{marginBottom: 8, width: 120}}
-                        disabled={!disabledInput}
-                    >
-                        Baru
-                    </Button>
-                    <Button 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleEdit} 
-                        style={{marginBottom: 8, width: 120}}
-                        disabled={disabledInputEdit}
-                    >
-                        Edit
-                    </Button>
-                    <Button 
-                        danger
-                        type="primary" 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleBatal} 
-                        style={{marginBottom: 8, width: 120}}
-                        disabled={disabledInput}
-                    >
-                    Batal
-                    </Button>
-                    <Button 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleReset} 
-                        disabled={modeProyekBaru==='edit'?true:disabledInput}
-                        style={{marginBottom: 8, width: 120}}
-                    >
-                    Reset
-                    </Button>
-                    <Button 
-                        type="primary" 
-                        shape="round"
-                        size="default"
-                        htmlType="submit" 
-                        disabled={disabledInput}
-                        style={{width: 120, marginBottom: 100}}
-                    >
-                    Simpan
-                    </Button>
-                    <Button 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleToNavDaftarProyek} 
-                        disabled={!disabledInput}
-                        style={{marginBottom: 8, width: 120}}
-                    >
-                    Daftar Proyek
-                    </Button>
-                </Form.Item>
+                </table> 
+                <TableBudget title="Data Budget" />
             </div>
         </Form>;
 
