@@ -443,7 +443,6 @@ class FormProfileProyek extends React.Component {
         let keyForm;
         let initEdit;
         if(modeProyekBaru === 'edit' && itemProyekSelected !== null ) {
-            console.log(itemProyekSelected);
             initEdit = {
                 layout: 'vertical',
                 remember: true,
@@ -465,6 +464,7 @@ class FormProfileProyek extends React.Component {
                 ["id_desa"]: itemProyekSelected.id_desa,
                 ["id_jenis_proyek"]: itemProyekSelected.id_jenis_proyek,
                 ["no_kontrak"]: itemProyekSelected.no_kontrak,
+                ["nilai_kontrak"]: itemProyekSelected.nilai_kontrak,
                 ["keterangan_alamat"]: itemProyekSelected.keterangan_alamat,
                 ["no_kontrak_induk"]: itemProyekSelected.no_kontrak_induk,
                 ["no_kontrak_addendum"]: itemProyekSelected.no_kontrak_addendum === null?[]:itemProyekSelected.no_kontrak_addendum
@@ -484,7 +484,7 @@ class FormProfileProyek extends React.Component {
 
         let page =
         <Form
-            name="form-persiapan-proyek"
+            name="form-profile-proyek"
             onFinish={this.handleOnFinish}
             ref={this.formRef}
             layout='vertical'

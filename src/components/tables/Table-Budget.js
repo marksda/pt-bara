@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
   
 
-import { getBudget, setFilterBudget, setItemMenuSelected, setItemBudgetSelected, setModeBudgetBaru, setPaginationBudget, setUrutBudget, setStatusBudgetSelected } from "../../actions/master-action";
+import { getBudget, setFilterBudget, setPaginationBudget, setUrutBudget } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
@@ -94,11 +94,9 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.tanggal_persiapan', numerik: false, label: 'Tgl. persiapan'},
-    {id: 'm.no_job', numerik: false, label: 'No. job'},
-    {id: 'm.nama_customer', numerik: false, label: 'Customer'},
-    {id: 'm.nama_budget', numerik: false, label: 'Budget'},
-    {id: 'm.status', numerik: false, label: 'Status'},
+    {id: 'm.nama', numerik: false, label: 'Pos budget'},
+    {id: 'm.nilai', numerik: true, label: 'Nilai'},
+    {id: 'm.jumlah', numerik: true, label: 'Jumlah'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -130,7 +128,6 @@ const EnhancedTableHead = (props) => {
                                     <TableCell
                                         key={headCell.id}
                                         align={'left'}
-                                        style={{width: 150}}
                                     >
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
@@ -150,85 +147,22 @@ const EnhancedTableHead = (props) => {
                                 page = 
                                 <TableCell
                                     key={headCell.id}
-                                    align={'left'}
+                                    align={'right'}
                                     style={{width: 150}}
                                 >
-                                    <TableSortLabel
-                                      active={orderBy === headCell.id}
-                                      direction={orderBy === headCell.id ? order : 'desc'}
-                                      onClick={createSortHandler(headCell.id)}
-                                    >
-                                        {headCell.label}
-                                        {orderBy === headCell.id ? (
-                                            <span className={classes.visuallyHidden}>
-                                              {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                            </span>
-                                        ) : null}
-                                    </TableSortLabel>
+                                    {headCell.label}
                                 </TableCell>;
                                 break;
                             case 3:
                                 page = 
                                 <TableCell
                                     key={headCell.id}
-                                    align={'left'}
-                                >
-                                    <TableSortLabel
-                                        active={orderBy === headCell.id}
-                                        direction={orderBy === headCell.id ? order : 'desc'}
-                                        onClick={createSortHandler(headCell.id)}
-                                    >
-                                        {headCell.label}
-                                        {orderBy === headCell.id ? (
-                                            <span className={classes.visuallyHidden}>
-                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                            </span>
-                                        ) : null}
-                                    </TableSortLabel>
-                                </TableCell>;
-                                break;
-                            case 4:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'left'}
-                                    style={{width: 300}}
-                                >
-                                    <TableSortLabel
-                                        active={orderBy === headCell.id}
-                                        direction={orderBy === headCell.id ? order : 'desc'}
-                                        onClick={createSortHandler(headCell.id)}
-                                    >
-                                        {headCell.label}
-                                        {orderBy === headCell.id ? (
-                                            <span className={classes.visuallyHidden}>
-                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                            </span>
-                                        ) : null}
-                                    </TableSortLabel>
-                                </TableCell>;
-                                break;
-                            case 5:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'left'}
+                                    align={'right'}
                                     style={{width: 150}}
                                 >
-                                    <TableSortLabel
-                                        active={orderBy === headCell.id}
-                                        direction={orderBy === headCell.id ? order : 'desc'}
-                                        onClick={createSortHandler(headCell.id)}
-                                    >
-                                        {headCell.label}
-                                        {orderBy === headCell.id ? (
-                                            <span className={classes.visuallyHidden}>
-                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                            </span>
-                                        ) : null}
-                                    </TableSortLabel>
+                                    {headCell.label}
                                 </TableCell>;
-                                break;                                
+                                break;                                               
                             default:
                                 page =
                                 <TableCell
@@ -284,14 +218,10 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
-        setItemBudgetSelected: (url, headerAuthorization) => dispatch(setItemBudgetSelected(url, headerAuthorization)),
         getBudget: (url, headerAuthorization) => dispatch(getBudget(url, headerAuthorization)),
         setFilterBudget: (value) => dispatch(setFilterBudget(value)),
         setPaginationBudget: (value) => dispatch(setPaginationBudget(value)),
         setUrutBudget: (value) => dispatch(setUrutBudget(value)),
-        setModeBudgetBaru: (nilai) => dispatch(setModeBudgetBaru(nilai)),    
-        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
-        setStatusBudgetSelected: (nilai) => dispatch(setStatusBudgetSelected(nilai)), 
     };
 };
 
@@ -346,11 +276,6 @@ class TableBudget extends React.Component {
             self.itemBudget.nama = null;
             self.setState({openProcessingDialog: false});
         });
-    }
-
-    flipDate = (tgl) => {
-        let tmptgl = tgl.split('-');
-        return `${tmptgl[2]}-${tmptgl[1]}-${tmptgl[0]}`
     }
 
     handleBtnDelete = (e) => {
@@ -411,21 +336,6 @@ class TableBudget extends React.Component {
         this.setState({openFormAddBudget: true, mode: 'add'});
     }
 
-    handleAddBudgetBaru = () => {
-        const { setItemMenuSelected, setModeBudgetBaru } = this.props;
-        setModeBudgetBaru('add');
-        setItemMenuSelected('Budget Baru');
-    }
-
-    handleEditBudgetBaru = (e) => {
-        const { headerAuthorization, setItemMenuSelected, setItemBudgetSelected, setModeBudgetBaru, restfulServer, setStatusBudgetSelected } = this.props;
-        setItemBudgetSelected(`${restfulServer}/master/detailbudget?no_job=${e.currentTarget.dataset.id}`, headerAuthorization);
-        
-        setStatusBudgetSelected(e.currentTarget.dataset.status);
-        setModeBudgetBaru('edit');
-        setItemMenuSelected('Budget Baru');
-    }
-
     handleRequestSort = (event, property) => {   
         const { filterBudget, paginationBudget, setUrutBudget, urutBudget } = this.props;
         let isAsc = urutBudget.field === property && urutBudget.order === 'asc';
@@ -475,7 +385,7 @@ class TableBudget extends React.Component {
                     			<TableRow 
 	                                hover
 	                                tabIndex={-1}
-	                                key={row.no_job}      
+	                                key={index}      
 	                            >
 	                            	<TableCell 
 	                                    align={'right'}
@@ -485,35 +395,21 @@ class TableBudget extends React.Component {
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{width: 150, verticalAlign: 'top'}}
+                                        style={{minWidth: 250, verticalAlign: 'top'}}
 	                                >
-	                                    { 
-                                            this.flipDate(row.tanggal_persiapan)                                      
-                                        }
+	                                    { row.nama }
 	                                </TableCell>
 	                                <TableCell 
-	                                    align={'left'}
+	                                    align={'right'}
                                         style={{width: 150, verticalAlign: 'top'}}
 	                                >
-	                                    { row.no_job }
+	                                    { row.status_header===true?null:row.saldo }
 	                                </TableCell>
                                     <TableCell 
-	                                    align={'left'}
-                                        style={{verticalAlign: 'top'}}
-	                                >
-	                                    { row.nama_customer }
-	                                </TableCell>
-                                    <TableCell 
-	                                    align={'left'}
-                                        style={{width: 300, verticalAlign: 'top'}}
-	                                >
-	                                    { row.nama_budget }
-	                                </TableCell>
-                                    <TableCell 
-	                                    align={'left'}
+	                                    align={'right'}
                                         style={{width: 150, verticalAlign: 'top'}}
 	                                >
-	                                    { row.status }
+	                                    { row.status_header===true?row.saldo:null }
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 100, verticalAlign: 'top'}}
@@ -531,7 +427,7 @@ class TableBudget extends React.Component {
             	</Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[10,15,25,50,100,250,500,1000,10000]}
+                rowsPerPageOptions={[10,25,50,100,250,500,1000]}
                 component="div"
                 count={listBudget !== null ? listBudget.total:0}
                 rowsPerPage={paginationBudget.pageSize}
