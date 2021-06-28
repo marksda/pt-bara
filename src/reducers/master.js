@@ -220,10 +220,7 @@ const initialState = {
         order: "asc"
     },
     list_budget: null,
-    filter_budget: {
-        field: null,
-        search: null
-    },
+    filter_budget: null,
     pagination_budget: {
         current: 1,
         pageSize: 50,
