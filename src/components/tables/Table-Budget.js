@@ -88,9 +88,9 @@ const EnhancedTableToolbar = (props) => {
 
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.nama', numerik: false, label: 'Pos Budget'},
-    {id: 'm.nilai', numerik: true, label: 'Sub-Budget'},
-    {id: 'm.jumlah', numerik: true, label: 'Jumlah Budget'},
+    {id: 'm.nama', numerik: false, label: 'Nama'},
+    {id: 'm.nilai', numerik: true, label: 'Nilai'},
+    {id: 'm.jumlah', numerik: true, label: 'Sub-Total'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -352,7 +352,7 @@ class TableBudget extends React.Component {
 
     render() {
         const { classes, listBudget, paginationBudget, title, urutBudget } = this.props;
-		const { openConfirmasiHapusBudget, openProcessingDialog } = this.state;
+		const { mode, openConfirmasiHapusBudget, openFormAddBudget, openProcessingDialog } = this.state;
 
         let pageRender = null;
         let pageAdd = null;
@@ -420,9 +420,9 @@ class TableBudget extends React.Component {
                                         style={{width: 100, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
-                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddBudgetBaru}/>
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_job} onClick={this.handleEditBudgetBaru} data-status={row.id_status_budget} />
-                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.no_job} onClick={this.handleBtnDelete}/>
+                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleOpenFormAddBudget}/>
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={index} onClick={this.handleEditBudgetBaru} data-status={row.id_status_budget} />
+                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={index} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>
                     		);

@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import axios from 'axios';
-import { Button, Form, Input, Modal, Select } from 'antd';
+import { Button, Form, Input, InputNumber, Modal, Select } from 'antd';
 import { connect } from "react-redux";
 import { getBudget } from "../../actions/master-action";
 
 const mapStateToProps = store => {
     return {      
+        itemProyekSelected: store.master.item_proyek_selected,
         filterBudget: store.master.filter_budget,
         headerAuthorization: store.credential.header_authorization,
         paginationBudget: store.master.pagination_budget,
@@ -34,6 +35,7 @@ class FormAddBudget extends Component {
 		super(props);
 		this.state = {
 			disabledInput: false,
+            isHeader: true
 		};
 
 		this.formRef = React.createRef();
@@ -47,21 +49,17 @@ class FormAddBudget extends Component {
             this.itemBudget = {...data};
         }
         else {
-            this.itemBudget.status_header = false;
+            this.itemBudget.status_header = true;
         }
     }
+
+    handleChangeNilaiNumeric = (value) => {
+        this.itemBudget.saldo = value;
+	}
 
     handleChangeNilaiText = (e) => {
         const { mode } = this.props;
 		switch(e.currentTarget.dataset.jenis) {
-            case 'id':
-                if(mode === "edit") {
-                    this.itemBudget.idbaru = e.currentTarget.value;
-                }
-				else {
-                    this.itemBudget.id = e.currentTarget.value;
-                }
-				break;
 			case 'nama':
 				this.itemBudget.nama = e.currentTarget.value;
 				break;
@@ -71,6 +69,7 @@ class FormAddBudget extends Component {
 
     handleChangeStatusHeader = (value) => {
         this.itemBudget.status_header = (value === 'true');
+        this.setState({isHeader:  this.itemBudget.status_header});
 	}
 
     handleOnFinish = (value) => {
@@ -86,6 +85,7 @@ class FormAddBudget extends Component {
 
     handleReset = () => {
 		this.formRef.current.resetFields();
+        this.setState({isHeader:  true});
 	}
 
     loadBudget = (filter, pagination, urut) => {
@@ -96,9 +96,11 @@ class FormAddBudget extends Component {
 
     saveBudget = () => {
 		const { 
-			filterBudget, headerAuthorization, paginationBudget, restfulServer, urutBudget, handleToggleOpenProgressDialog
+			filterBudget, headerAuthorization, itemProyekSelected, paginationBudget, restfulServer, urutBudget, handleToggleOpenProgressDialog
 		} = this.props;
 	    let self = this;
+
+        this.itemBudget.no_job = itemProyekSelected.no_job;
         
 	    handleToggleOpenProgressDialog();
 
@@ -114,7 +116,6 @@ class FormAddBudget extends Component {
 	    	} 
 	    	self.handleReset();
             self.setState({disabledInput: false});
-            // handleClose();
             handleToggleOpenProgressDialog();
 	    })
 	    .catch((r) => {
@@ -150,9 +151,26 @@ class FormAddBudget extends Component {
         });        
     }
 
+    formatterRupiah = (value) => {        
+        let tmp = value.split('.');
+        if(tmp.length>1){
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]},${tmp[1]}`;
+        }
+        else {
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]}`;
+        }
+    }
+
+    parserRupiah = (value) => {
+        value = value.replace(/Rp\s?|(\.*)/g, '')
+        return value.replace(/\,/g, '.');
+    }
+
     render() {
         const { data, handleClose, mode, visible } = this.props;
-		const { disabledInput } = this.state;
+		const { disabledInput, isHeader } = this.state;
 
 		let page = null;
 
@@ -172,23 +190,12 @@ class FormAddBudget extends Component {
                 ref={this.formRef}
                 initialValues={{
                     remember: true,
-                    ["id"]: mode==='edit'?data.id:'',
                     ["nama"]: mode==='edit'?data.nama:'',
-                    ["status_header"]: mode==='edit'?data.status_header.toString():'false'
+                    ["status_header"]: mode==='edit'?data.status_header.toString():'true',
+                    ["id_parent"]: mode==='edit'?data.id_parent:null,
+                    ["saldo"]: mode==='edit'?data.saldo:null
                 }}
-            >                
-                <Form.Item
-	                label="Id"
-                    name="id"
-                    rules={[{required: true, message: 'Kode budget harus diisi'}]}
-                >
-                    <Input 
-                        data-jenis="id"
-                        disabled={disabledInput}
-                        onChange={this.handleChangeNilaiText}
-                        style={{width: 150}}
-                    />
-                </Form.Item>                
+            >                   
                 <Form.Item 
                     label="Header/Detail"
                     name="status_header"
@@ -203,10 +210,28 @@ class FormAddBudget extends Component {
                         <Select.Option value="false">Detail</Select.Option>
                     </Select>
                 </Form.Item>
+                {
+                    isHeader === false ?
+                    <Form.Item 
+                        label="Parent Pos"
+                        name="id_parent"
+                        rules={[{required: true, message: 'Parent pos harus harus diisi'}]}
+                    >
+                        <Select 
+                            onChange={this.handleChangeStatusHeader}
+                            disabled={disabledInput}
+                            style={{width: 200}}
+                        >
+                            <Select.Option value="true">Header</Select.Option>
+                            <Select.Option value="false">Detail</Select.Option>
+                        </Select>
+                    </Form.Item>
+                    :null
+                }
                 <Form.Item
-	                label="Nama"
+	                label="Nama Pos"
                     name="nama"
-                    rules={[{required: true, message: 'Nama budget harus diisi'}]}
+                    rules={[{required: true, message: 'Nama pos budget harus diisi'}]}
                 >
                     <Input 
                         data-jenis="nama"
@@ -214,6 +239,26 @@ class FormAddBudget extends Component {
                         onChange={this.handleChangeNilaiText}
                     />
                 </Form.Item>
+                {
+                    isHeader === false ?
+                    <Form.Item
+                        label="Saldo"
+                        name="saldo"
+                        style={{ marginBottom: 16 }}
+                        rules={[{required: true, message: 'Saldo pos harus harus diisi'}]}
+                    >
+                        <InputNumber  
+                            data-jenis="saldo"
+                            disabled={disabledInput}
+                            onChange={this.handleChangeNilaiNumeric}
+                            style={{ width: 250 }}
+                            precision={2}
+                            formatter={this.formatterRupiah}
+                            parser={this.parserRupiah}
+                        />
+                    </Form.Item>
+                    :null
+                }
                 <Form.Item {...tailLayout}>
                     <Button 
                         htmlType="button" 

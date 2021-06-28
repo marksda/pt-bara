@@ -144,7 +144,7 @@ class FormBudget extends React.Component {
                             </td>
                             <td>
                                 <Form.Item
-                                    label="Jumlah Budget"
+                                    label="Total Budget"
                                     name="jumlah_budget"
                                     style={{marginBottom: 16, marginRight: 16}}
                                 >
