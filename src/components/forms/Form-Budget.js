@@ -1,4 +1,6 @@
 import React from 'react';
+import axios from 'axios';
+import FormUploadFileBudget from "./Form-Upload-File-Budget"
 import { Button, Form, Input, InputNumber  } from 'antd';
 import { connect } from "react-redux";
 import { setModeProyekBaru, setItemProyekSelected } from "../../actions/master-action";
@@ -27,11 +29,17 @@ class FormBudget extends React.Component {
 		super(props);
         this.state ={
             disabledInput: true,
-            disabledInputEdit: true
+            disabledInputEdit: true,
+            totalBudget: 0.0,
+            openFormUploadFile: false,
         }
 
         this.formRef = React.createRef();
         this.itemProyek = {};
+    }
+
+    componentDidMount() {
+        this.getTotalBudget();
     }
 
     formatterRupiah = (value) => {        
@@ -51,10 +59,39 @@ class FormBudget extends React.Component {
         return value.replace(/\,/g, '.');
     }
 
+    getTotalBudget = () => {
+        const { headerAuthorization, itemProyekSelected, restfulServer } = this.props;
+
+        let self = this;    
+                
+        axios({
+            method: 'get',
+            url: `${restfulServer}/master/totalbudget`,
+            headers: {...headerAuthorization},
+            params: { no_job: itemProyekSelected.no_job }
+        })
+        .then((r) => {         
+            if(r.data.status === 200) {
+                self.setState({totalBudget: r.data.keterangan});
+            }
+        })
+        .catch((r) => {         
+            self.setState({disabledInput: false});
+        });        
+    }
+
+    handleOpenUploadFile = () => {
+    	this.setState({openFormUploadFile: true});
+    }
+
+    handleCloseUploadFile = () => {
+    	this.setState({openFormUploadFile: false});
+    }
+
     render() {
         const { itemProyekSelected, modeProyekBaru } = this.props;
+        const { totalBudget } = this.state;
 
-        let keyForm;
         let initEdit;
         if(modeProyekBaru === 'edit' && itemProyekSelected !== null ) {
             initEdit = {
@@ -64,16 +101,17 @@ class FormBudget extends React.Component {
                 ["nama_proyek"]: itemProyekSelected.nama_proyek,
                 ["nama_customer"]: itemProyekSelected.nama_customer,
                 ["nilai_kontrak"]: itemProyekSelected.nilai_kontrak,
+                ["total_budget"]: totalBudget
             };
-            keyForm = 'edit'
         }
         else {
             initEdit = {
                 layout: 'vertical',
                 remember: true
             };
-            keyForm = 'add';
         }
+
+        console.log(initEdit);
 
         let page =
         <Form
@@ -81,7 +119,7 @@ class FormBudget extends React.Component {
             ref={this.formRef}
             layout='vertical'
             initialValues={initEdit}
-            key={keyForm}
+            key={totalBudget}
         >
             <div style={{display: 'flex', flexDirection: 'column'}}>
                 <div className="content-flex-center">
@@ -145,11 +183,10 @@ class FormBudget extends React.Component {
                             <td>
                                 <Form.Item
                                     label="Total Budget"
-                                    name="jumlah_budget"
+                                    name="total_budget"
                                     style={{marginBottom: 16, marginRight: 16}}
                                 >
                                     <InputNumber
-                                        data-jenis="jumlahbudget"
                                         disabled={true}
                                         style={{minWidth: 250, color: 'red'}}
                                         formatter={this.formatterRupiah}
@@ -166,6 +203,7 @@ class FormBudget extends React.Component {
                                         type="dashed"
                                         icon={<PlusOutlined />}
                                         disabled={false}
+                                        onClick={this.handleOpenUploadFile}
                                     >
                                         Upload file
                                     </Button>
@@ -176,8 +214,12 @@ class FormBudget extends React.Component {
                 </table> 
                 </div>
                 <div className="content-flex-center">
-                    <TableBudget title="Data Budget" />
+                    <TableBudget title="Data Budget" getTotalBudget={this.getTotalBudget}/>
                 </div>
+                <FormUploadFileBudget
+                    visible={openFormUploadFile} 
+                    handleClose={this.handleCloseUploadFile}
+                />
             </div>
         </Form>;
 

@@ -89,8 +89,8 @@ const EnhancedTableToolbar = (props) => {
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
     {id: 'm.nama', numerik: false, label: 'Nama'},
-    {id: 'm.nilai', numerik: true, label: 'Nilai'},
-    {id: 'm.jumlah', numerik: true, label: 'Sub-Total'},
+    {id: 'm.nilai', numerik: true, label: 'Nilai(Rp)'},
+    {id: 'm.jumlah', numerik: true, label: 'Sub-Total(Rp)'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -162,7 +162,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'center'}
-                                    style={{width: 100}}
+                                    style={{width: 120}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -238,7 +238,7 @@ class TableBudget extends React.Component {
 
     deleteBudget = (dataBudget) => {
         const { 
-            filterBudget, headerAuthorization, paginationBudget, restfulServer, urutBudget         
+            filterBudget, getTotalBudget, headerAuthorization, paginationBudget, restfulServer, urutBudget         
         } = this.props;
         let self = this;    
          
@@ -251,29 +251,24 @@ class TableBudget extends React.Component {
         .then((r) => {  
             self.setState({openProcessingDialog: false});  
             if(r.data.status === 200) {
-                self.itemBudget.id = null;
-                self.itemBudget.nama = null;
+                getTotalBudget();
                 self.loadBudget(
                     filterBudget,
                     paginationBudget,
                     urutBudget
                 );
             }
-            else {
-                self.itemBudget.id = null;
-                self.itemBudget.nama = null;
-            }
+            self.itemBudget= {};
         })
         .catch((r) => { 
-            self.itemBudget.id = null;
-            self.itemBudget.nama = null;
+            self.itemBudget= {};
             self.setState({openProcessingDialog: false});
         });
     }
 
     handleBtnDelete = (e) => {
         const { listBudget } = this.props;
-        this.itemBudget = {..._.find(listBudget.data, function(o) { return o.no_job === e.currentTarget.dataset.id; })};
+        this.itemBudget = {...listBudget.data[Number(e.currentTarget.dataset.id)]};
         this.setState({openConfirmasiHapusBudget: true});
     }
 
@@ -312,7 +307,9 @@ class TableBudget extends React.Component {
     }
 
     handleCloseFormAddBudget = () => {
+        const { getTotalBudget } = this.props;
         this.setState({openFormAddBudget: false});
+        getTotalBudget();
     }
 
     handleDeleteBudget = (status) => {        
@@ -323,6 +320,12 @@ class TableBudget extends React.Component {
         else {
             this.setState({openConfirmasiHapusBudget: false});
         }
+    }
+
+    handleEditBudget = (e) => {
+        const { listBudget } = this.props;
+        this.itemBudget = {...listBudget.data[Number(e.currentTarget.dataset.id)]};
+        this.setState({openFormAddBudget: true, mode: 'edit'});
     }
 
     handleOpenFormAddBudget = () => {
@@ -346,12 +349,18 @@ class TableBudget extends React.Component {
 
     loadBudget = (filter, pagination, urut) => {
         const { getBudget, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/budget?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        let url;
+        if(filter === null) {
+            url = `${restfulServer}/master/budget?pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;        
+        }
+        else {
+            url = `${restfulServer}/master/budget?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;
+        } 
         getBudget(url, headerAuthorization);
     }
 
     render() {
-        const { classes, listBudget, paginationBudget, title, urutBudget } = this.props;
+        const { classes, getTotalBudget, listBudget, paginationBudget, title, urutBudget } = this.props;
 		const { mode, openConfirmasiHapusBudget, openFormAddBudget, openProcessingDialog } = this.state;
 
         let pageRender = null;
@@ -408,20 +417,20 @@ class TableBudget extends React.Component {
 	                                    align={'right'}
                                         style={{width: 250, verticalAlign: 'top'}}
 	                                >
-	                                    { row.status_header===true?null:row.saldo }
+	                                    { row.status_header===true?null:new Intl.NumberFormat('id').format(row.saldo)}
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'right'}
                                         style={{width: 250, verticalAlign: 'top'}}
 	                                >
-	                                    { row.status_header===true?row.saldo:null }
+	                                    { row.status_header===true?<b>{new Intl.NumberFormat('id').format(row.saldo)}</b>:null }
 	                                </TableCell>
 	                                <TableCell 
-                                        style={{width: 100, verticalAlign: 'top'}}
+                                        style={{width: 120, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
                                         <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleOpenFormAddBudget}/>
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={index} onClick={this.handleEditBudgetBaru} data-status={row.id_status_budget} />
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={index} onClick={this.handleEditBudget} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={index} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>
@@ -444,7 +453,7 @@ class TableBudget extends React.Component {
             <KonfirmasiDialog 
                 open={openConfirmasiHapusBudget} 
                 aksi={this.handleDeleteBudget} 
-                message={`Hapus item budget dengan No. Job: ${this.itemBudget.no_job}`}
+                message={`Hapus item budget : ${this.itemBudget.nama}`}
             />
             {pageAdd}
 		</div>;

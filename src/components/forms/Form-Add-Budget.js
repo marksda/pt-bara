@@ -35,7 +35,8 @@ class FormAddBudget extends Component {
 		super(props);
 		this.state = {
 			disabledInput: false,
-            isHeader: true
+            isHeader: true,
+            listParentBudget: null
 		};
 
 		this.formRef = React.createRef();
@@ -43,14 +44,24 @@ class FormAddBudget extends Component {
 	}
 
     componentDidMount() {
-        const { data, mode } = this.props;
+        const { data, paginationBudget, itemProyekSelected, mode, urutBudget } = this.props;
+        let filter = [
+            {field: 'm.status_header', header: true},
+            {field: 'm.no_job', nojob: itemProyekSelected.no_job}
+        ];
+
+        this.loadParentBudget(filter, paginationBudget, urutBudget);
                
         if(mode === 'edit') {
             this.itemBudget = {...data};
+            this.itemBudget.id_parent = `${data.id.split('-')[0]}-00`;
+            this.setState({isHeader: this.itemBudget.status_header});
         }
         else {
             this.itemBudget.status_header = true;
         }
+
+        setTimeout(() => {this.formRef.current.getFieldInstance('nama').focus();}, 300);
     }
 
     handleChangeNilaiNumeric = (value) => {
@@ -65,6 +76,20 @@ class FormAddBudget extends Component {
 				break;
 			default:
 		}
+	}
+
+    handleSearchParentPost = (value) => {
+        const { itemProyekSelected, paginationBudget, urutBudget} = this.props;
+        let filter = [
+            {field: 'm.nama', search: value},
+            {field: 'm.status_header', header: true},
+            {field: 'm.no_job', nojob: itemProyekSelected.no_job}
+        ];
+        this.loadParentBudget(filter, paginationBudget, urutBudget);
+	}
+
+    handleChangeParentPost = (value) => {
+        this.itemBudget.id_parent = value;
 	}
 
     handleChangeStatusHeader = (value) => {
@@ -84,14 +109,48 @@ class FormAddBudget extends Component {
 	}
 
     handleReset = () => {
+        let tmpStatusHeader = this.itemBudget.status_header;
 		this.formRef.current.resetFields();
-        this.setState({isHeader:  true});
+        this.setState({isHeader: tmpStatusHeader});
+        this.itemBudget = {};
+        this.itemBudget.status_header = tmpStatusHeader;
+        if(this.itemBudget.status_header === true) {
+            setTimeout(() => {this.formRef.current.getFieldInstance('nama').focus();}, 300);
+        }
+        else {
+            setTimeout(() => {this.formRef.current.getFieldInstance('id_parent').focus();}, 300);
+        }
 	}
 
     loadBudget = (filter, pagination, urut) => {
         const { getBudget, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/budget?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        let url;
+        if(filter === null) {
+            url = `${restfulServer}/master/budget?pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;        
+        }
+        else {
+            url = `${restfulServer}/master/budget?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;
+        } 
         getBudget(url, headerAuthorization);
+    }
+
+    loadParentBudget = (f, p, u) => {
+        const { headerAuthorization, restfulServer } = this.props;
+	    let self = this;
+        axios({
+            method: 'get',
+            url: `${restfulServer}/master/budget`,
+            headers: {...headerAuthorization},
+            params: {filter: JSON.stringify(f), pagination: p, sorter: u},
+        })
+	    .then((r) => {  
+	    	if(r.data.status === 200) {        
+                self.setState({listParentBudget: r.data.keterangan});
+	    	} 
+	    })
+	    .catch((r) => {
+	    	console.log(r.toString());
+	    });
     }
 
     saveBudget = () => {
@@ -112,9 +171,16 @@ class FormAddBudget extends Component {
         })
 	    .then((r) => {  
 	    	if(r.data.status === 200) {        
+                let filter = [
+                    {field: 'm.status_header', header: true},
+                    {field: 'm.no_job', nojob: itemProyekSelected.no_job}
+                ];
+        
+                self.loadParentBudget(filter, paginationBudget, urutBudget);
+
 				self.loadBudget(filterBudget, paginationBudget, urutBudget);
+                self.handleReset(); 
 	    	} 
-	    	self.handleReset();
             self.setState({disabledInput: false});
             handleToggleOpenProgressDialog();
 	    })
@@ -136,7 +202,6 @@ class FormAddBudget extends Component {
         })
         .then((r) => {         
             if(r.data.status === 200) {
-                console.log(paginationBudget);
                 self.loadBudget(
                     filterBudget,
                     paginationBudget,
@@ -170,9 +235,9 @@ class FormAddBudget extends Component {
 
     render() {
         const { data, handleClose, mode, visible } = this.props;
-		const { disabledInput, isHeader } = this.state;
+		const { disabledInput, isHeader, listParentBudget } = this.state;
 
-		let page = null;
+        let page = null;
 
         page =
         <Modal
@@ -192,7 +257,7 @@ class FormAddBudget extends Component {
                     remember: true,
                     ["nama"]: mode==='edit'?data.nama:'',
                     ["status_header"]: mode==='edit'?data.status_header.toString():'true',
-                    ["id_parent"]: mode==='edit'?data.id_parent:null,
+                    ["id_parent"]: mode==='edit'?`${data.id.split('-')[0]}-00`:null,
                     ["saldo"]: mode==='edit'?data.saldo:null
                 }}
             >                   
@@ -203,7 +268,7 @@ class FormAddBudget extends Component {
                 >
                     <Select 
                         onChange={this.handleChangeStatusHeader}
-                        disabled={disabledInput}
+                        disabled={mode === 'edit'?true:disabledInput}
                         style={{width: 200}}
                     >
                         <Select.Option value="true">Header</Select.Option>
@@ -218,12 +283,21 @@ class FormAddBudget extends Component {
                         rules={[{required: true, message: 'Parent pos harus harus diisi'}]}
                     >
                         <Select 
-                            onChange={this.handleChangeStatusHeader}
-                            disabled={disabledInput}
-                            style={{width: 200}}
+                            showSearch
+                            onChange={this.handleChangeParentPost}
+                            disabled={mode === 'edit'?true:disabledInput}
+                            placeholder="Pilih parent pos"
+                            showArrow={false}
+                            onSearch={this.handleSearchParentPost}
+                            filterOption={false}
+                            defaultActiveFirstOption={false}
+                            notFoundContent={null}
                         >
-                            <Select.Option value="true">Header</Select.Option>
-                            <Select.Option value="false">Detail</Select.Option>
+                            {
+                            listParentBudget !== null ? listParentBudget.data.map((row) => 
+                                <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
+                            ):null
+                            }
                         </Select>
                     </Form.Item>
                     :null
