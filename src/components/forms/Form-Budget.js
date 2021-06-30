@@ -1,11 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-import FormUploadFileBudget from "./Form-Upload-File-Budget"
-import { Button, Form, Input, InputNumber  } from 'antd';
+import { Button, Form, Input, InputNumber, Progress, Upload } from 'antd';
 import { connect } from "react-redux";
 import { setModeProyekBaru, setItemProyekSelected } from "../../actions/master-action";
 import TableBudget from '../tables/Table-Budget';
-import { PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined } from '@ant-design/icons';
 
     
 const mapStateToProps = store => {
@@ -31,15 +30,53 @@ class FormBudget extends React.Component {
             disabledInput: true,
             disabledInputEdit: true,
             totalBudget: 0.0,
-            openFormUploadFile: false,
+            isUploadFile: false
         }
 
         this.formRef = React.createRef();
         this.itemProyek = {};
+        this.fileBudget = null;
     }
 
     componentDidMount() {
         this.getTotalBudget();
+    }
+
+    beforeUploadfile = (file) => {
+        this.fileBudget = file;
+        console.log(file);
+        return true;
+    }
+
+    handleUpload = async () => {
+        this.setState({isUploadFile: true});
+    	// const { headerAuthorization, restfulServer } = this.props;    	
+	    // const formData = new FormData();
+	    
+	    // const option = {
+	    //     headers: { ...headerAuthorization }
+	    // };
+
+	    // formData.append('no_job', idReimburse);
+        // formData.append('file', file);
+	    
+	    // this.setState({uploading: true});
+	    // let self = this;
+
+	    // await axios.put(
+	    //     `${restfulServer}/reimburse/dokumen_pendukung`, 
+	    //     formData, 
+	    //     option
+	    // )
+	    // .then((r) => {  
+	    //     if(r.data.status === 200) {        
+		// 		self.setState({uploading: false});
+		// 		handleClose();
+	    //     }                      
+	    // })
+	    // .catch((r) => {
+        //     console.log(r.toString());
+	    // });
     }
 
     formatterRupiah = (value) => {        
@@ -80,17 +117,9 @@ class FormBudget extends React.Component {
         });        
     }
 
-    handleOpenUploadFile = () => {
-    	this.setState({openFormUploadFile: true});
-    }
-
-    handleCloseUploadFile = () => {
-    	this.setState({openFormUploadFile: false});
-    }
-
     render() {
         const { itemProyekSelected, modeProyekBaru } = this.props;
-        const { totalBudget } = this.state;
+        const { isUploadFile, totalBudget } = this.state;
 
         let initEdit;
         if(modeProyekBaru === 'edit' && itemProyekSelected !== null ) {
@@ -110,8 +139,6 @@ class FormBudget extends React.Component {
                 remember: true
             };
         }
-
-        console.log(initEdit);
 
         let page =
         <Form
@@ -199,14 +226,22 @@ class FormBudget extends React.Component {
                                     label="File Budged"
                                     style={{marginBottom: 16}}
                                 >
-                                    <Button
-                                        type="dashed"
-                                        icon={<PlusOutlined />}
-                                        disabled={false}
-                                        onClick={this.handleOpenUploadFile}
+                                    <Upload 
+                                        beforeUpload={this.beforeUploadfile}
+                                        multiple={false}
+                                        showUploadList={false}
+                                        action={this.handleUpload}
                                     >
-                                        Upload file
-                                    </Button>
+                                        <Button type="dashed" danger disabled={isUploadFile}>
+                                            <UploadOutlined /> Upload file budget
+                                        </Button>
+                                    </Upload>
+                                    {
+                                        isUploadFile === true ?
+                                        <div style={{ width: 170 }}>
+                                            <Progress percent={30} size="small" />
+                                        </div>:null
+                                    }                                    
                                 </Form.Item>
                             </td>
                         </tr>                        
@@ -216,10 +251,6 @@ class FormBudget extends React.Component {
                 <div className="content-flex-center">
                     <TableBudget title="Data Budget" getTotalBudget={this.getTotalBudget}/>
                 </div>
-                <FormUploadFileBudget
-                    visible={openFormUploadFile} 
-                    handleClose={this.handleCloseUploadFile}
-                />
             </div>
         </Form>;
 
