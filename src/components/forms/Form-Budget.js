@@ -1,10 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, Form, Input, InputNumber, Progress, Upload } from 'antd';
+import { Button, Dropdown, Form, Input, InputNumber, Menu, Progress, Tooltip, Upload } from 'antd';
 import { connect } from "react-redux";
 import { setModeProyekBaru, setItemProyekSelected } from "../../actions/master-action";
 import TableBudget from '../tables/Table-Budget';
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, FileExcelOutlined, FileOutlined, FilePdfOutlined,FileWordOutlined } from '@ant-design/icons';
 
     
 const mapStateToProps = store => {
@@ -44,39 +44,147 @@ class FormBudget extends React.Component {
 
     beforeUploadfile = (file) => {
         this.fileBudget = file;
-        console.log(file);
-        return true;
+        setTimeout(() => {this.handleUpload();}, 300);
+        return false;
     }
 
+    downloadFile = () => {  
+		const { 
+    		restfulServer, headerAuthorization, itemProyekSelected
+    	} = this.props;
+
+    	let self = this;   
+        this.setState({isUploadFile: false});
+
+        axios({
+            method: 'GET',
+            url: `${restfulServer}/master/file_budget`,
+            headers: {...headerAuthorization},
+            params: {no_job: itemProyekSelected.no_job, nama_file: itemProyekSelected.file_budget},
+            responseType: 'blob'
+        })
+        .then((r) => {   
+        	let namaFile = r.headers['content-disposition'].split('=')[1];
+			self.setState({isUploadFile: false});              
+            let url = window.URL.createObjectURL(new Blob([r.data]));
+            let link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', namaFile);
+            document.body.appendChild(link);
+            /*setTimeout(function() { 
+        		handleToggleOpenProgressDialog();
+            	link.click();
+            	link.remove();
+            	window.URL.revokeObjectURL(url);
+            }, 300);  */      
+            
+        	link.click();
+        	link.remove();
+        	window.URL.revokeObjectURL(url);                
+        })
+        .catch((r) => {
+        	// handleToggleOpenProgressDialog();
+            console.log(r.toString());
+        });
+    }
+
+    handleIconFile = (ext) => {
+		switch(ext) {
+			case 'pdf':
+				return (
+					<FilePdfOutlined 
+						style={{ 
+							fontSize: '24px', 
+							color: 'rgba(232, 69, 69, 0.81)' 
+						}}
+					/>
+				);
+			case 'xls':
+				return (
+					<FileExcelOutlined 
+						style={{ 
+							fontSize: '24px', 
+							color: 'rgb(42, 123, 2)' 
+						}}
+					/>
+				);
+			case 'xlsx':
+				return (
+					<FileExcelOutlined 
+						style={{ 
+							fontSize: '24px', 
+							color: 'rgb(42, 123, 2)' 
+						}}
+					/>
+				);
+			case 'doc':
+				return (
+					<FileWordOutlined 
+						style={{ 
+							fontSize: '24px', 
+							color: 'rgb(19, 94, 189)' 
+						}}
+					/>
+				);
+			case 'docx':
+				return (
+					<FileWordOutlined 
+						style={{ 
+							fontSize: '24px', 
+							color: 'rgb(19, 94, 189)' 
+						}}
+					/>
+				);
+			default:
+				return (
+					<FileOutlined 
+						style={{ 
+							fontSize: '24px', 
+							color: 'rgb(27, 26, 26)' 
+						}}
+					/>
+				);
+		}
+	}
+
+    handleMenuFile = (e) => {
+		if(e.key === "download") {
+			this.downloadFile();
+		}
+		else {
+			// this.idFile = data[0];
+			// this.jenisDokumen = data[2];
+			// this.setState({openConfirmasiHapusDokumenPendukung: true});
+		}
+	}
+
     handleUpload = async () => {
+    	const { headerAuthorization, itemProyekSelected, restfulServer } = this.props;    	
+	    const formData = new FormData();	    
+	    const option = {
+	        headers: { ...headerAuthorization }
+	    };
+
+	    formData.append('no_job', itemProyekSelected.no_job);
+        formData.append('file', this.fileBudget);
+	    
         this.setState({isUploadFile: true});
-    	// const { headerAuthorization, restfulServer } = this.props;    	
-	    // const formData = new FormData();
-	    
-	    // const option = {
-	    //     headers: { ...headerAuthorization }
-	    // };
+	    let self = this;
 
-	    // formData.append('no_job', idReimburse);
-        // formData.append('file', file);
-	    
-	    // this.setState({uploading: true});
-	    // let self = this;
-
-	    // await axios.put(
-	    //     `${restfulServer}/reimburse/dokumen_pendukung`, 
-	    //     formData, 
-	    //     option
-	    // )
-	    // .then((r) => {  
-	    //     if(r.data.status === 200) {        
-		// 		self.setState({uploading: false});
-		// 		handleClose();
-	    //     }                      
-	    // })
-	    // .catch((r) => {
-        //     console.log(r.toString());
-	    // });
+	    await axios.put(
+	        `${restfulServer}/master/file_budget`, 
+	        formData, 
+	        option
+	    )
+	    .then((r) => {  
+	        if(r.data.status === 200) {        
+				self.setState({isUploadFile: false});
+				// handleClose();
+	        }                      
+	    })
+	    .catch((r) => {
+            console.log(r.toString());
+	    });
     }
 
     formatterRupiah = (value) => {        
@@ -122,6 +230,7 @@ class FormBudget extends React.Component {
         const { isUploadFile, totalBudget } = this.state;
 
         let initEdit;
+        let iconFile = null;
         if(modeProyekBaru === 'edit' && itemProyekSelected !== null ) {
             initEdit = {
                 layout: 'vertical',
@@ -132,6 +241,42 @@ class FormBudget extends React.Component {
                 ["nilai_kontrak"]: itemProyekSelected.nilai_kontrak,
                 ["total_budget"]: totalBudget
             };
+            
+            if(itemProyekSelected.file_budget !== null) {
+                iconFile =
+                <Tooltip title={itemProyekSelected.nama_file_budget}>
+                    <Dropdown 
+                        overlay={
+                            <Menu onClick={this.handleMenuFile}>
+                                <Menu.Item key="download">Download</Menu.Item>
+                                <Menu.Item key="delete">Delete</Menu.Item>
+                            </Menu>
+                        }
+                    >
+                        <Button 
+                            type="text" 
+                            style={{marginLeft: 8}}
+                        >
+                            {
+                                this.handleIconFile(itemProyekSelected.file_budget.split('.')[1])
+                            }
+                        </Button>
+                    </Dropdown>
+                </Tooltip>;
+            }
+            else {
+                iconFile =
+                <Upload 
+                    beforeUpload={this.beforeUploadfile}
+                    multiple={false}
+                    showUploadList={false}
+                    action={this.handleUpload}
+                >
+                    <Button type="dashed" danger disabled={isUploadFile}>
+                        <UploadOutlined /> Upload file budget
+                    </Button>
+                </Upload>;
+            }
         }
         else {
             initEdit = {
@@ -226,16 +371,7 @@ class FormBudget extends React.Component {
                                     label="File Budged"
                                     style={{marginBottom: 16}}
                                 >
-                                    <Upload 
-                                        beforeUpload={this.beforeUploadfile}
-                                        multiple={false}
-                                        showUploadList={false}
-                                        action={this.handleUpload}
-                                    >
-                                        <Button type="dashed" danger disabled={isUploadFile}>
-                                            <UploadOutlined /> Upload file budget
-                                        </Button>
-                                    </Upload>
+                                    {iconFile}
                                     {
                                         isUploadFile === true ?
                                         <div style={{ width: 170 }}>
