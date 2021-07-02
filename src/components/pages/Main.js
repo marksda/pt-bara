@@ -153,7 +153,7 @@ class Main extends React.Component {
                 <Proyek />;
                 break;
             case 'Pengajuan Baru':
-                subPage = <PengajuanBaru />;
+                subPage = <PengajuanBaru mode="add" />;
                 break;
             case 'Master':
                 subPage = <Master />;

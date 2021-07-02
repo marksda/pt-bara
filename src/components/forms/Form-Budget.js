@@ -4,6 +4,7 @@ import { Button, Dropdown, Form, Input, InputNumber, Menu, Progress, Tooltip, Up
 import { connect } from "react-redux";
 import { setModeProyekBaru, setItemProyekSelected } from "../../actions/master-action";
 import TableBudget from '../tables/Table-Budget';
+import ProcessingDialog from '../dialogs/Processing-Dialog';
 import { UploadOutlined, FileExcelOutlined, FileOutlined, FilePdfOutlined,FileWordOutlined } from '@ant-design/icons';
 
     
@@ -30,7 +31,8 @@ class FormBudget extends React.Component {
             disabledInput: true,
             disabledInputEdit: true,
             totalBudget: 0.0,
-            isUploadFile: false
+            isUploadFile: false,
+            openProcessingDialog: false
         }
 
         this.formRef = React.createRef();
@@ -48,43 +50,60 @@ class FormBudget extends React.Component {
         return false;
     }
 
+    deleteFile = () => {
+		const { 
+			headerAuthorization, itemProyekSelected, restfulServer, setItemProyekSelected
+		} = this.props;
+                        
+        this.handleToggleOpenProgressDialog();
+
+        axios({
+            method: 'delete',
+            url: `${restfulServer}/master/file_budget`,
+            headers: {...headerAuthorization},
+            params: {no_job: itemProyekSelected.no_job, nama_file: itemProyekSelected.file_budget},
+        })
+        .then((r) => {  
+            setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${itemProyekSelected.no_job}`, headerAuthorization);
+            this.handleToggleOpenProgressDialog();    
+        })
+        .catch((r) => { 
+            console.log(r.toString());
+            this.handleToggleOpenProgressDialog();
+        });
+	}
+
     downloadFile = () => {  
 		const { 
     		restfulServer, headerAuthorization, itemProyekSelected
     	} = this.props;
 
     	let self = this;   
-        this.setState({isUploadFile: false});
+        this.handleToggleOpenProgressDialog();
 
         axios({
             method: 'GET',
             url: `${restfulServer}/master/file_budget`,
             headers: {...headerAuthorization},
-            params: {no_job: itemProyekSelected.no_job, nama_file: itemProyekSelected.file_budget},
+            params: {nama_file: itemProyekSelected.file_budget},
             responseType: 'blob'
         })
         .then((r) => {   
-        	let namaFile = r.headers['content-disposition'].split('=')[1];
-			self.setState({isUploadFile: false});              
+        	let namaFile = itemProyekSelected.nama_file_budget;
+			this.handleToggleOpenProgressDialog();              
             let url = window.URL.createObjectURL(new Blob([r.data]));
             let link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', namaFile);
             document.body.appendChild(link);
-            /*setTimeout(function() { 
-        		handleToggleOpenProgressDialog();
-            	link.click();
-            	link.remove();
-            	window.URL.revokeObjectURL(url);
-            }, 300);  */      
             
         	link.click();
         	link.remove();
         	window.URL.revokeObjectURL(url);                
         })
         .catch((r) => {
-        	// handleToggleOpenProgressDialog();
             console.log(r.toString());
+            this.handleToggleOpenProgressDialog();
         });
     }
 
@@ -152,14 +171,12 @@ class FormBudget extends React.Component {
 			this.downloadFile();
 		}
 		else {
-			// this.idFile = data[0];
-			// this.jenisDokumen = data[2];
-			// this.setState({openConfirmasiHapusDokumenPendukung: true});
+			this.deleteFile();
 		}
 	}
 
     handleUpload = async () => {
-    	const { headerAuthorization, itemProyekSelected, restfulServer } = this.props;    	
+    	const { headerAuthorization, itemProyekSelected, restfulServer, setItemProyekSelected } = this.props;    	
 	    const formData = new FormData();	    
 	    const option = {
 	        headers: { ...headerAuthorization }
@@ -177,14 +194,19 @@ class FormBudget extends React.Component {
 	        option
 	    )
 	    .then((r) => {  
-	        if(r.data.status === 200) {        
+	        if(r.data.status === 200) {       
+                setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${itemProyekSelected.no_job}`, headerAuthorization); 
 				self.setState({isUploadFile: false});
-				// handleClose();
 	        }                      
 	    })
 	    .catch((r) => {
             console.log(r.toString());
+            self.setState({isUploadFile: false});
 	    });
+    }
+
+    handleToggleOpenProgressDialog = () => {
+        this.setState({openProcessingDialog: !this.state.openProcessingDialog});
     }
 
     formatterRupiah = (value) => {        
@@ -227,7 +249,7 @@ class FormBudget extends React.Component {
 
     render() {
         const { itemProyekSelected, modeProyekBaru } = this.props;
-        const { isUploadFile, totalBudget } = this.state;
+        const { isUploadFile, openProcessingDialog, totalBudget } = this.state;
 
         let initEdit;
         let iconFile = null;
@@ -286,6 +308,7 @@ class FormBudget extends React.Component {
         }
 
         let page =
+        <>
         <Form
             name="form-budget"
             ref={this.formRef}
@@ -388,7 +411,9 @@ class FormBudget extends React.Component {
                     <TableBudget title="Data Budget" getTotalBudget={this.getTotalBudget}/>
                 </div>
             </div>
-        </Form>;
+        </Form>
+        <ProcessingDialog open={openProcessingDialog} />
+        </>;
 
         return(page);
     }
