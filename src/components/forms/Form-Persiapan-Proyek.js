@@ -8,9 +8,9 @@ import { getCustomer, getStatusProyek, setItemMenuSelected, setItemProyekSelecte
 
 const { TextArea } = Input;
 
-// const tailLayout = {
-//     wrapperCol: { offset: 8, span: 4 },
-// };
+const tailLayout = {
+    wrapperCol: { offset: 8, span: 4 },
+};
 
 const mapStateToProps = store => {
     return {      
