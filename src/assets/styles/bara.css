@@ -22,8 +22,11 @@
 } 
 
 .table-container-pengajuan-baru td:nth-child(2){
-    width: 250px;
+    width: 250;
 } 
+.table-container-proyek-baru td:nth-child(3) {
+    width: 250;
+}
 
 .table-container-cell-pengajuan-baru {
     display: flex;

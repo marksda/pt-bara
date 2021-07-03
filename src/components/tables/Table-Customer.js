@@ -181,7 +181,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
-                                    style={{width: 100}}
+                                    style={{width: 150}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -485,7 +485,7 @@ class TableCustomer extends React.Component {
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{minWidth: 100, verticalAlign: 'top'}}
+                                        style={{minWidth: 150, verticalAlign: 'top'}}
 	                                >
 	                                    { row.telepone }
 	                                </TableCell>

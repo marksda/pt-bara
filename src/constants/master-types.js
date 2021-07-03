@@ -77,3 +77,7 @@ export const STATUS_PROYEK_SELECTED = "status_proyek_selected";
 export const MODE_PROYEK_BARU = "mode_proyek_baru";
 export const ITEM_PROYEK_SELECTED = "item_proyek_selected";
 export const ITEM_MENU_SELECTED = "item_menu_selected";
+export const FILTER_STATUS_PENGAJUAN = "filter_status_pengajuan";
+export const LIST_STATUS_PENGAJUAN = "list_status_pengajuan";
+export const PAGINATION_STATUS_PENGAJUAN = "pagination_status_pengajuan";
+export const URUT_STATUS_PENGAJUAN = "urut_status_pengajuan";

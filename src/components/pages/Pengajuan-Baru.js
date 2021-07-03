@@ -1,13 +1,30 @@
 import React from 'react';
-import { DatePicker, Form, Input, InputNumber, Radio , Select } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, Radio , Select } from 'antd';
 import moment from 'moment';
 
 import { connect } from "react-redux";
-// import FormPengajuanProyek from '../forms/Form-Pengajuan-Proyek';
+import { MinusCircleOutlined, PlusOutlined, SearchOutlined  } from '@ant-design/icons';
 
+import { getStatusPengajuan } from "../../actions/master-action";
+
+
+const { TextArea } = Input;
 const mapStateToProps = store => {
     return {
+        headerAuthorization: store.credential.header_authorization,
+        restfulServer: store.general.restful_domain,
         itemPersetujuanSelected: store.master.item_proyek_selected,
+        listStatusPengajuan: store.master.list_status_pengajuan,
+        filterStatusPengajuan: store.master.filter_status_pengajuan,
+        listStatusPengajuan: store.master.list_status_pengajuan,
+        paginationStatusPengajuan: store.master.pagination_status_pengajuan,
+        urutStatusPengajuan: store.master.urut_status_pengajuan,
+    };
+};
+
+const mapDispatchToProps = dispatch => {    
+    return {
+        getStatusPengajuan: (url, headerAuthorization) => dispatch(getStatusPengajuan(url, headerAuthorization))
     };
 };
 
@@ -16,7 +33,8 @@ class PengajuanBaru extends React.Component {
 		super(props);
         this.state = {
             disabledInput: false,
-            mode: "add"
+            mode: "add",
+            jenisPengajuan: false
         };
 
         this.formRef = React.createRef();
@@ -24,7 +42,11 @@ class PengajuanBaru extends React.Component {
     }
 
     componentDidMount() {
+        const { filterStatusPengajuan, paginationStatusPengajuan, urutStatusPengajuan, listStatusPengajuan } = this.props;
         this.setState({mode: this.props.mode});
+        if(listStatusPengajuan === null) {
+            this.loadStatusPengajuan(filterStatusPengajuan, paginationStatusPengajuan, urutStatusPengajuan);
+        }
     }
 
     handleChangeNilaiNumeric = (value) => {
@@ -43,14 +65,21 @@ class PengajuanBaru extends React.Component {
                     this.itemPengajuan.no_pengajuan = e.currentTarget.value;
                 }
                 break;
+            case 'deskripsi':
+                this.itemPengajuan.deskripsi_pengajuan = e.currentTarget.value;
+                break;
 			default:
 		}
 	}
 
-    handleChangeStatus = (value) => {
-        console.log(typeof value);
+    handleChangeJenisPengajuan = (value) => {
         this.itemPengajuan.is_proyek = value;
+        this.setState({jenisPengajuan: value});
 	}
+
+    handleChangeStatusPersetujuan = (value) => {
+        this.itemPengajuan.id_status_pengajuan = value;
+    }
 
     handleChangeTanggal = (date, dateString) => {
 		if(date !== null) {
@@ -58,6 +87,14 @@ class PengajuanBaru extends React.Component {
             this.itemPengajuan.tanggal = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
 		}
 	}
+
+    handleRemoveDokumen = (idx) => {
+        // this.itemProyek.no_kontrak_addendum.splice(idx,1);
+        // if(this.itemProyek.no_kontrak_addendum === undefined) {
+        //     this.itemProyekSelected.no_kontrak_addendum = null;
+        // }
+        // console.log(this.itemProyek.no_kontrak_addendum);
+    }
 
     formatterRupiah = (value) => {        
         let tmp = value.split('.');
@@ -80,9 +117,15 @@ class PengajuanBaru extends React.Component {
         this.itemPengajuan.is_reimburse= e.target.value;
     }
 
+    loadStatusPengajuan = (filter, pagination, urut) => {
+        const { getStatusPengajuan, headerAuthorization, restfulServer } = this.props; 
+        let url = `${restfulServer}/master/statuspengajuan?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        getStatusPengajuan(url, headerAuthorization);
+    }
+
     render() {
-        const { itemPersetujuanSelected } = this.props;
-        const { disabledInput, mode } = this.state;
+        const { itemPersetujuanSelected, listStatusPengajuan } = this.props;
+        const { disabledInput, jenisPengajuan, mode } = this.state;
 
         let keyForm;
         let initEdit;
@@ -93,7 +136,8 @@ class PengajuanBaru extends React.Component {
                 ["tanggal"]: moment(itemPersetujuanSelected.tanggal),
                 ["is_Proyek"]: itemPersetujuanSelected.is_proyek,
                 ["nominal_pengajuan"]: itemPersetujuanSelected.nominal_pengajuan,
-                ["is_reimburse"]: itemPersetujuanSelected.is_reimburse
+                ["is_reimburse"]: itemPersetujuanSelected.is_reimburse,
+                ["id_status_pengajuan"]: itemPersetujuanSelected.id_status_pengajuan
             };
 
             keyForm = 'edit';
@@ -134,7 +178,6 @@ class PengajuanBaru extends React.Component {
                                         format="DD-MM-YYYY" 
                                         disabled={disabledInput}
                                         onChange={this.handleChangeTanggal}
-                                        style={{width: 120}}
                                     />
                             </Form.Item>
                         </td>
@@ -146,43 +189,90 @@ class PengajuanBaru extends React.Component {
                                 style={{marginBottom: 16}}
                             >
                                 <Select 
-                                    onChange={this.handleChangeStatus}
+                                    onChange={this.handleChangeJenisPengajuan}
                                     disabled={disabledInput}
-                                    style={{width: 150}}
+                                    style={{width: 180}}
                                 >
                                     <Select.Option value={true}>Proyek</Select.Option>
                                     <Select.Option value={false}>Non Proyek</Select.Option>
                                 </Select>
                             </Form.Item>
+                        </td> 
+                    </tr>
+                    {
+                    jenisPengajuan === true ?
+                    <tr>
+                        <td>
+                            <Form.Item
+                                label="No. Job"
+                                name="no_job"
+                                style={{marginBottom: 16}}
+                            >
+                                <Input 
+                                    data-jenis="nojob"
+                                    disabled={true}
+                                    style={{ minWidth: 150}}
+                                />
+                            </Form.Item>
                         </td>
+                        <td>
+                            <Form.Item 
+                                label="Customer"
+                                name="nama_customer"
+                                style={{marginBottom: 16}}
+                            >
+                                <Input disabled={true} />
+                            </Form.Item>
+                        </td>
+                        <td>
+                            <div style={{display: 'flex'}}>
+                            <Form.Item 
+                                label="Proyek"
+                                name="nama_customer"
+                                style={{marginBottom: 16, marginRight: 8}}
+                            >
+                                <Input disabled={true} style={{minWidth: 400}}/>
+                            </Form.Item>
+                            <Button type="dashed" icon={<SearchOutlined />} style={{marginTop: 30}} />
+                            </div>
+                        </td>
+                    </tr>
+                    :null
+                    }
+                    <tr>
+                        <td></td>
                         <td>
                             <Form.Item
                                 label="No. Pengajuan"
                                 name="no_pengajuan"
                                 rules={[{required: true, message: 'No. Pengajuan harus diisi'}]}                                    
-                                style={{ marginBottom: 16, width: 250 }}
+                                style={{ marginBottom: 16}}
                             >
                                 <Input 
                                     data-jenis="nopengajuan"
+                                    placeholder="Diisi finance"
                                     disabled={disabledInput}
                                     onChange={this.handleChangeNilaiText}
+                                    style={{width: 200}}
                                 />
                             </Form.Item>
-                        </td>                        
+                        </td>      
+                        <td></td>              
                     </tr>
                     <tr>
-                        <td colSpan="3">
-                            <div className="table-container-cell-pengajuan-baru">
+                        <td></td>
+                        <td colSpan="2">
+                            <div style={{display: 'flex'}}>
                             <Form.Item
                                 label="Nominal diajukan"
                                 name="nominal_pengajuan"
                                 rules={[{required: true, message: 'Nominal diajukan harus diisi'}]} 
-                                style={{ marginBottom: 16, marginRight: 16 }}
+                                style={{ marginBottom: 16, marginRight: 16}}
                             >
                                 <InputNumber  
                                     disabled={disabledInput}
                                     onChange={this.handleChangeNilaiNumeric}
-                                    style={{ width: 180 }}
+                                    style={{ width: 200 }}
                                     precision={2}
                                     formatter={this.formatterRupiah}
                                     parser={this.parserRupiah}
@@ -199,13 +289,127 @@ class PengajuanBaru extends React.Component {
                                 </Radio.Group>
                             </Form.Item>
                             </div>
+                        </td>               
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colSpan="2">
+                            <Form.List name="dokumen">
+                                {
+                                    (fields, { add, remove }, { errors }) => (
+                                        <>
+                                            {
+                                                fields.map(
+                                                    (field, index) => (
+                                                        <div style={{display: 'flex'}} key={field.key}>
+                                                            <Form.Item
+                                                                noStyle
+                                                            >
+                                                                <Form.Item
+                                                                    {...field}
+                                                                    label={index === 0 ? 'Jenis Dokumen' : ''}
+                                                                    name={[field.name, 'dokumen']}
+                                                                    fieldKey={[field.fieldKey, 'dokumen']}
+                                                                    rules={[{required: true, message: 'Jenis Dokumen harus diisi'}]} 
+                                                                    style={{marginBottom: 8}}
+                                                                >
+                                                                    <Input 
+                                                                        data-jenis="dokumen"
+                                                                        data-idx={index}
+                                                                        disabled={disabledInput} 
+                                                                        placeholder="Invoice/Kuitansi/dll"
+                                                                        style={{ width: 200, marginRight: 16 }} 
+                                                                        onChange={this.handleChangeNilaiText}
+                                                                    />
+                                                                </Form.Item>
+                                                                <Form.Item
+                                                                    {...field}
+                                                                    label={index === 0 ? 'No. Dokumen' : ''}
+                                                                    name={[field.name, 'no_dokumen']}
+                                                                    fieldKey={[field.fieldKey, 'no_dokumen']}    
+                                                                    rules={[{required: true, message: 'No. Dokumen harus diisi'}]}      
+                                                                    style={{marginBottom: 8}}                                                               
+                                                                >
+                                                                    <Input 
+                                                                        data-jenis="nodokumen"
+                                                                        placeholder="Nomor"
+                                                                        data-idx={index}
+                                                                        disabled={disabledInput} 
+                                                                        style={{ width: 180, marginRight: 16}} 
+                                                                        onChange={this.handleChangeNilaiText}
+                                                                    />
+                                                                </Form.Item>
+                                                                <MinusCircleOutlined
+                                                                    className="dynamic-delete-button"
+                                                                    disabled={disabledInput}
+                                                                    style={{marginTop: index===0?38:10, color: 'red'}}
+                                                                    onClick={
+                                                                        () => {
+                                                                            remove(field.name);
+                                                                            // this.handleRemoveDokumen(index);
+                                                                        } 
+                                                                    }
+                                                                />
+                                                            </Form.Item>
+                                                        </div>
+                                                    )
+                                                )
+                                            }
+                                            <Form.Item
+                                                label={fields.length === 0 ? 'Dokumen' : ''}
+                                                style={{marginBottom: 16}}
+                                            >
+                                                <Button
+                                                    icon={<PlusOutlined />}
+                                                    onClick={() => add()}
+                                                    disabled={disabledInput}
+                                                />
+                                            </Form.Item>
+                                        </>
+                                    )
+                                }
+                            </Form.List>   
                         </td>
                     </tr>
                     <tr>
                         <td colSpan="3">
-                            
+                            <Form.Item
+                                    label="Deskripsi"
+                                    name="deskripsi_pengajuan"
+                                >
+                                    <TextArea  
+                                        rows={4}
+                                        data-jenis="deskripsi"
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeNilaiText}
+                                        placeholder="Keterangan pengajuan"
+                                    />
+                                </Form.Item>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            <Form.Item 
+                                label="Status"
+                                name="id_status_pengajuan"
+                                rules={[{required: true, message: 'Status harus diisi'}]}
+                                style={{marginBottom: 16}}
+                            >
+                                <Select 
+                                    onChange={this.handleChangeStatusPersetujuan}
+                                    disabled={disabledInput}
+                                    placeholder="Pilih status"
+                                    style={{width: 150}}
+                                >
+                                {
+                                    listStatusPengajuan !== null ? listStatusPengajuan.data.map((row) => 
+                                        <Select.Option key={row.id} value={row.id}>{row.nama}</Select.Option>
+                                    ):null
+                                }	
+                                </Select>
+                            </Form.Item>
+                        </td>
+                    </tr>                                
                 </tbody>
                 </table>
             </div>
@@ -215,4 +419,4 @@ class PengajuanBaru extends React.Component {
     }
 }
 
-export default connect(mapStateToProps, null)(PengajuanBaru);
+export default connect(mapStateToProps, mapDispatchToProps)(PengajuanBaru);

@@ -322,7 +322,6 @@ class FormProfileProyek extends React.Component {
         if(this.itemProyek.no_kontrak_addendum === undefined) {
             this.itemProyekSelected.no_kontrak_addendum = null;
         }
-        console.log(this.itemProyek.no_kontrak_addendum);
     }
 
     loadCustomer = (filter, pagination, urut) => {
