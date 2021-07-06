@@ -28,11 +28,16 @@ const mapDispatchToProps = dispatch => {
     };
 };
 
+const tailLayout = {
+    wrapperCol: { offset: 8, span: 4 },
+};
+
 class PengajuanBaru extends React.Component {
     constructor(props) {
 		super(props);
         this.state = {
-            disabledInput: false,
+            disabledInputEdit: true,
+            disabledInput: true,
             mode: "add",
             jenisPengajuan: false
         };
@@ -47,10 +52,42 @@ class PengajuanBaru extends React.Component {
         if(listStatusPengajuan === null) {
             this.loadStatusPengajuan(filterStatusPengajuan, paginationStatusPengajuan, urutStatusPengajuan);
         }
+        setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
+    }
+
+    handleBaru = () => {
+        const { mode } = this.state;
+
+        if(mode === 'edit') {
+            this.setState({disabledInputEdit: true});            
+        }
+        else {
+            this.setState({disabledInput: false});
+        }
+
+        setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 100);        
+
+        this.itemPengajuan = {
+            tanggal: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
+            is_proyek: false,
+            id_reimburse: false
+        }
+    }
+
+    handleBatal = () => {
+        const { mode } = this.state;
+        this.formRef.current.resetFields();
+        if(mode === 'edit') {
+            this.setState({disabledInput: true, disabledInputEdit: false});
+        }
+        else {
+            this.setState({disabledInput: true});
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
+        }
     }
 
     handleChangeNilaiNumeric = (value) => {
-        this.itemPengajuan.perkiraan_nilai = value;
+        this.itemPengajuan.nominal_pengajuan = value;
 	}
 
     handleChangeNilaiText = (e) => {
@@ -88,6 +125,34 @@ class PengajuanBaru extends React.Component {
 		}
 	}
 
+    handleEdit = () => {
+        // const { itemProyekSelected } = this.props;
+        // this.itemProyek = {                
+        //     no_job: itemProyekSelected.no_job,
+        //     id_customer: itemProyekSelected.id_customer,
+            
+        // };
+        // if(this.itemProyek.tanggal_aktif === null) {
+        //     this.itemProyek.tanggal_aktif =  `${moment().year()}-${moment().month()+1}-${moment().date()}`;
+        // }
+
+        // console.log(this.itemProyek);
+
+        // this.setState({disabledInput: false, disabledInputEdit: true});
+        // setTimeout(() => {this.formRef.current.getFieldInstance('pemilik_proyek').focus();}, 300);
+    }
+
+    handleOnFinish = (value) => {
+		const { mode } = this.props;
+		this.setState({disabledInput: true});
+		if(mode === 'edit') {
+            // this.updatePengajuan();
+        }
+        else {
+			this.savePengajuan();
+        }
+	}
+
     handleRemoveDokumen = (idx) => {
         // this.itemProyek.no_kontrak_addendum.splice(idx,1);
         // if(this.itemProyek.no_kontrak_addendum === undefined) {
@@ -95,6 +160,16 @@ class PengajuanBaru extends React.Component {
         // }
         // console.log(this.itemProyek.no_kontrak_addendum);
     }
+
+    handleToNavDaftarPengajuan = () => {
+        // const { setItemMenuSelected } = this.props;
+        // setItemMenuSelected('Daftar Proyek');
+    }
+
+    handleReset = () => {
+		this.formRef.current.resetFields();        
+        setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 300);
+	}
 
     formatterRupiah = (value) => {        
         let tmp = value.split('.');
@@ -123,9 +198,38 @@ class PengajuanBaru extends React.Component {
         getStatusPengajuan(url, headerAuthorization);
     }
 
+    savePengajuan = () => {
+        console.log(this.itemPengajuan)
+		// const { 
+		// 	filterAkun, headerAuthorization, paginationAkun, restfulServer, urutAkun, handleToggleOpenProgressDialog
+		// } = this.props;
+	    // let self = this;
+        
+	    // handleToggleOpenProgressDialog();
+
+	    // axios({
+        //     method: 'put',
+        //     url: `${restfulServer}/master/pengajuan`,
+        //     headers: {...headerAuthorization},
+        //     data: this.itemAkun
+        // })
+	    // .then((r) => {  
+	    // 	if(r.data.status === 200) {        
+		// 		self.loadAkun(filterAkun, paginationAkun, urutAkun);
+	    // 	} 
+	    // 	self.handleReset();
+        //     self.setState({disabledInput: false});
+        //     // handleClose();
+        //     handleToggleOpenProgressDialog();
+	    // })
+	    // .catch((r) => {
+	    // 	self.setState({disabledInput: true});
+	    // });
+	}
+
     render() {
         const { itemPersetujuanSelected, listStatusPengajuan } = this.props;
-        const { disabledInput, jenisPengajuan, mode } = this.state;
+        const { disabledInput, disabledInputEdit, jenisPengajuan, mode } = this.state;
 
         let keyForm;
         let initEdit;
@@ -164,7 +268,7 @@ class PengajuanBaru extends React.Component {
             key={keyForm}
         >
             <div className="content-flex-center">
-                <table className="table-container-pengajuan-baru" style={{width: '75%'}}>
+                <table className="table-container-pengajuan-baru" style={{width: '65%'}}>
                 <tbody>
                     <tr>                        
                         <td>
@@ -207,6 +311,7 @@ class PengajuanBaru extends React.Component {
                                 label="No. Job"
                                 name="no_job"
                                 style={{marginBottom: 16}}
+                                rules={[{required: true, message: 'No. Job harus diisi'}]}
                             >
                                 <Input 
                                     data-jenis="nojob"
@@ -220,6 +325,7 @@ class PengajuanBaru extends React.Component {
                                 label="Customer"
                                 name="nama_customer"
                                 style={{marginBottom: 16}}
+                                rules={[{required: true, message: 'Customer harus diisi'}]}
                             >
                                 <Input disabled={true} />
                             </Form.Item>
@@ -228,8 +334,9 @@ class PengajuanBaru extends React.Component {
                             <div style={{display: 'flex'}}>
                             <Form.Item 
                                 label="Proyek"
-                                name="nama_customer"
+                                name="proyek"
                                 style={{marginBottom: 16, marginRight: 8}}
+                                rules={[{required: true, message: 'Proyek harus diisi'}]}
                             >
                                 <Input disabled={true} style={{minWidth: 400}}/>
                             </Form.Item>
@@ -280,12 +387,12 @@ class PengajuanBaru extends React.Component {
                             </Form.Item>
                             <Form.Item
                                 label=" "
-                                name="is_reimburse"
+                                name="is_reimburse"                                
                                 style={{ marginBottom: 16 }}
                             >
                                 <Radio.Group onChange={this.onChangeReimburse}>
-                                    <Radio value={false}>Baru</Radio>
-                                    <Radio value={true}>Reimburse</Radio>
+                                    <Radio value={false} disabled={disabledInput}>Baru</Radio>
+                                    <Radio value={true} disabled={disabledInput}>Reimburse</Radio>
                                 </Radio.Group>
                             </Form.Item>
                             </div>
@@ -412,6 +519,74 @@ class PengajuanBaru extends React.Component {
                     </tr>                                
                 </tbody>
                 </table>
+                <div style={{display: 'flex', flexDirection: 'column'}}>
+                <Form.Item {...tailLayout} style={{width: 150, marginBottom: 8}} name="btnbaru">
+                    <Button 
+                        shape="round"
+                        size="default"
+                        htmlType="button" 
+                        onClick={this.handleBaru} 
+                        style={{width: 150}}
+                        disabled={!disabledInput}
+                    >
+                        Baru
+                    </Button>
+                </Form.Item>
+                <Form.Item {...tailLayout} style={{width: 150}}>                    
+                    <Button 
+                        shape="round"
+                        size="default"
+                        htmlType="button" 
+                        onClick={this.handleEdit} 
+                        style={{marginBottom: 8, width: 150}}
+                        disabled={disabledInputEdit}
+                    >
+                        Edit
+                    </Button>
+                    <Button 
+                        danger
+                        type="primary" 
+                        shape="round"
+                        size="default"
+                        htmlType="button" 
+                        onClick={this.handleBatal} 
+                        style={{marginBottom: 8, width: 150}}
+                        disabled={disabledInput}
+                    >
+                    Batal
+                    </Button>
+                    <Button 
+                        shape="round"
+                        size="default"
+                        htmlType="button" 
+                        onClick={this.handleReset} 
+                        disabled={mode==='edit'?true:disabledInput}
+                        style={{marginBottom: 8, width: 150}}
+                    >
+                    Reset
+                    </Button>
+                    <Button 
+                        type="primary" 
+                        shape="round"
+                        size="default"
+                        htmlType="submit" 
+                        disabled={disabledInput}
+                        style={{width: 150, marginBottom: 150}}
+                    >
+                    Simpan
+                    </Button>
+                    <Button 
+                        shape="round"
+                        size="default"
+                        htmlType="button" 
+                        onClick={this.handleToNavDaftarPengajuan} 
+                        disabled={!disabledInput}
+                        style={{marginBottom: 8, width: 150}}
+                    >
+                    Daftar Pengajuan
+                    </Button>
+                </Form.Item>
+                </div>
             </div>
         </Form>;
 

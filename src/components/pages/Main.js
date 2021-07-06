@@ -29,10 +29,14 @@ import Proyek from "./Proyek";
 import ProyekBaru from "./Proyek-Baru";
 import Security from "./Security";
 
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+
 const drawerWidth = 240;
 const styles = theme => ({
     root: {
-        display: 'flex',
+        // display: 'flex',
+        flexGrow: 1,
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -88,6 +92,10 @@ const styles = theme => ({
     content: {
         flexGrow: 1,
         padding: theme.spacing(3),
+        marginLeft: 72
+    },
+    title: {
+        flexGrow: 1,
     },
 });
 
@@ -137,8 +145,10 @@ class Main extends React.Component {
     }
     
     render() {
-        const { authorizationNotify, classes, itemMenuSelected, listMenu } = this.props;
+        const { authorizationNotify, classes, itemMenuSelected, listMenu, userProfile } = this.props;
         const { open } = this.state;
+
+        console.log(userProfile);
 
         let page = null;
         let subPage = null;
@@ -190,9 +200,13 @@ class Main extends React.Component {
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" noWrap style={{color: 'white'}}>
+                        <Typography variant="h6" noWrap style={{color: 'white'}} className={classes.title}>
                             {itemMenuSelected}
                         </Typography>
+                        <Typography variant="subtitle1" style={{marginRight: 8, color: 'white'}}>
+                        {userProfile.accountRealName}
+                        </Typography>
+                        <Avatar>H</Avatar>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -243,8 +257,7 @@ class Main extends React.Component {
                             </List>
                             </React.Fragment>
                         )
-                    }
-                    
+                    }                    
                 </Drawer>
                 <main className={classes.content}>
                     <div className={classes.toolbar} />
