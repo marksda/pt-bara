@@ -10,6 +10,8 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -22,6 +24,7 @@ import { Redirect } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import { setUnauthorization } from "../../actions/notification-action";
 import { setItemMenuSelected, setModeProyekBaru } from "../../actions/master-action";
+import { resetCredential } from "../../actions/login-action";
 
 import Master from "./Master";
 import PengajuanBaru from "./Pengajuan-Baru";
@@ -30,13 +33,11 @@ import ProyekBaru from "./Proyek-Baru";
 import Security from "./Security";
 
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
 
 const drawerWidth = 240;
 const styles = theme => ({
     root: {
-        // display: 'flex',
-        flexGrow: 1,
+        display: 'flex'
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -91,8 +92,7 @@ const styles = theme => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
-        marginLeft: 72
+        padding: theme.spacing(3)
     },
     title: {
         flexGrow: 1,
@@ -115,6 +115,7 @@ const mapDispatchToProps = dispatch => {
         setUnauthorization: () => dispatch(setUnauthorization()),
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
         setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)),  
+        resetCredential: () => dispatch(resetCredential())
     };
 };
 
@@ -124,15 +125,25 @@ class Main extends React.Component {
 		super(props);
 
         this.state = {
-            open: false
+            open: false,
+            isOpenMenu: false,
+            anchorEl: null
         }
+    }
+
+    handleCloseMenuPopup = (e) => {
+        this.setState({anchorEl: null, isOpenMenu: false});
+    }
+
+    handleOpenMenuPopup = (e) => {
+        this.setState({anchorEl: e.currentTarget, isOpenMenu: true});
     }
    
     handleDrawerClose = () => {
         this.setState({open: false});
     }
 
-    handleDrawerOpen = () => {
+    handleDrawerOpen = (e) => {
         this.setState({open: true});
     }
 
@@ -143,12 +154,17 @@ class Main extends React.Component {
         }
         setItemMenuSelected(e.currentTarget.textContent);        
     }
+
+    handleLogOut = () => {
+        const { resetCredential, setUnauthorization} = this.props;        
+        this.setState({anchorEl: null, isOpenMenu: false});
+        resetCredential();
+        setUnauthorization();
+    }
     
     render() {
-        const { authorizationNotify, classes, itemMenuSelected, listMenu, userProfile } = this.props;
-        const { open } = this.state;
-
-        console.log(userProfile);
+        const { authorizationNotify, classes, itemMenuSelected, listMenu, restfulServer, userProfile } = this.props;
+        const { anchorEl, isOpenMenu, open } = this.state;
 
         let page = null;
         let subPage = null;
@@ -203,10 +219,41 @@ class Main extends React.Component {
                         <Typography variant="h6" noWrap style={{color: 'white'}} className={classes.title}>
                             {itemMenuSelected}
                         </Typography>
-                        <Typography variant="subtitle1" style={{marginRight: 8, color: 'white'}}>
-                        {userProfile.accountRealName}
-                        </Typography>
-                        <Avatar>H</Avatar>
+                        <div 
+                            style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}}
+                        >
+                            <Typography 
+                                variant="subtitle1" 
+                                style={{marginRight: 8, color: 'white'}}                                
+                                onClick={this.handleOpenMenuPopup}
+                            >
+                            {userProfile.accountRealName}
+                            </Typography>
+                            <Avatar 
+                                alt={userProfile.accountRealName} 
+                                src={`${restfulServer}/master/foto/pegawai/${userProfile.photo}`}                                
+                                onClick={this.handleOpenMenuPopup}
+                             />
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={isOpenMenu}
+                                onClose={this.handleCloseMenuPopup}
+                            >
+                                <MenuItem onClick={this.handleCloseMenuPopup}>Profile</MenuItem>
+                                <MenuItem onClick={this.handleCloseMenuPopup}>My account</MenuItem>
+                                <MenuItem onClick={this.handleLogOut}>Log Out</MenuItem>
+                            </Menu>
+                        </div>
                     </Toolbar>
                 </AppBar>
                 <Drawer

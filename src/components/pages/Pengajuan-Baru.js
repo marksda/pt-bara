@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { Button, DatePicker, Form, Input, InputNumber, Radio , Select } from 'antd';
 import moment from 'moment';
 
@@ -200,31 +201,29 @@ class PengajuanBaru extends React.Component {
 
     savePengajuan = () => {
         console.log(this.itemPengajuan)
-		// const { 
-		// 	filterAkun, headerAuthorization, paginationAkun, restfulServer, urutAkun, handleToggleOpenProgressDialog
-		// } = this.props;
-	    // let self = this;
+		const { headerAuthorization, restfulServer } = this.props;
+	    let self = this;
         
 	    // handleToggleOpenProgressDialog();
 
-	    // axios({
-        //     method: 'put',
-        //     url: `${restfulServer}/master/pengajuan`,
-        //     headers: {...headerAuthorization},
-        //     data: this.itemAkun
-        // })
-	    // .then((r) => {  
-	    // 	if(r.data.status === 200) {        
-		// 		self.loadAkun(filterAkun, paginationAkun, urutAkun);
-	    // 	} 
-	    // 	self.handleReset();
-        //     self.setState({disabledInput: false});
-        //     // handleClose();
-        //     handleToggleOpenProgressDialog();
-	    // })
-	    // .catch((r) => {
-	    // 	self.setState({disabledInput: true});
-	    // });
+	    axios({
+            method: 'put',
+            url: `${restfulServer}/master/pengajuan`,
+            headers: {...headerAuthorization},
+            data: this.itemPengajuan
+        })
+	    .then((r) => {  
+	    	// if(r.data.status === 200) {        
+			// 	self.loadAkun(filterAkun, paginationAkun, urutAkun);
+	    	// } 
+	    	// self.handleReset();
+            // self.setState({disabledInput: false});
+            // handleClose();
+            // handleToggleOpenProgressDialog();
+	    })
+	    .catch((r) => {
+	    	self.setState({disabledInput: true});
+	    });
 	}
 
     render() {

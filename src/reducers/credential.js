@@ -45,7 +45,8 @@ export default function credential(state = initialState, action) {
         case USER_LOADED:
             let userProfile = {
                 accountId: action.payload.nip,
-                accountRealName: action.payload.nama
+                accountRealName: action.payload.nama,
+                photo: action.payload.url_photo
             }
             let ciphertextprofile = CryptoJS.AES.encrypt(JSON.stringify(userProfile), '79cec0fc8a27bb1d1e99e5661e42f842');
             window.localStorage.setItem('{$2a$04$LEBKjg.jyXK7IJzEBHBe/erI/fRXwEiLdoWTB0Lva64GGCFXn51aG}', ciphertextprofile);

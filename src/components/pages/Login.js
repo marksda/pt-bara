@@ -146,7 +146,7 @@ class Login extends React.Component {
             this.setState({step: 1});
         }
         else if(step === 2) {            
-            document.getElementById("judul").textContent = "SELAMAT DATANG DI SIK BARA";
+            document.getElementById("judul").textContent = "SELAMAT DATANG DI SIKBARA";
             let elsubjudul = document.getElementById("subjudul");
             elsubjudul.textContent = this.userProfile.nama;
             elsubjudul.style.marginTop = 0;
@@ -201,7 +201,6 @@ class Login extends React.Component {
             }
         })
         .then((r) => {
-            
             if(r.data.status === 200) {
                 self.setState({isProgress: false, isDisabled: false});
                 self.userProfile = {...r.data.user};
