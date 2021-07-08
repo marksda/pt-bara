@@ -231,3 +231,14 @@ const styles = theme => ({
     },
 });
 
+const mapStateToProps = store => {
+    return {
+        filterProyek: store.master.filter_proyek,
+        headerAuthorization: store.credential.header_authorization,
+        listProyek: store.master.list_proyek,
+        paginationProyek: store.master.pagination_proyek,
+        restfulServer: store.general.restful_domain,
+        urutProyek: store.master.urut_proyek
+    };
+};
+
