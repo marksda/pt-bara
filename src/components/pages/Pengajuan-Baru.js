@@ -44,7 +44,8 @@ class PengajuanBaru extends React.Component {
             disabledInput: true,
             mode: "add",
             jenisPengajuan: false,
-            anchorEl: null
+            anchorEl: null,
+            keyForm: 'none'
         };
 
         this.formRef = React.createRef();
@@ -64,10 +65,10 @@ class PengajuanBaru extends React.Component {
         const { mode } = this.state;
 
         if(mode === 'edit') {
-            this.setState({disabledInputEdit: true});            
+            this.setState({disabledInputEdit: true, keyForm: 'add'});            
         }
         else {
-            this.setState({disabledInput: false});
+            this.setState({disabledInput: false, keyForm: 'add'});
         }
 
         setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 100);        
@@ -83,10 +84,10 @@ class PengajuanBaru extends React.Component {
         const { mode } = this.state;
         this.formRef.current.resetFields();
         if(mode === 'edit') {
-            this.setState({disabledInput: true, disabledInputEdit: false});
+            this.setState({jenisPengajuan: false, disabledInput: true, disabledInputEdit: false, keyForm: 'batal'});
         }
         else {
-            this.setState({disabledInput: true});
+            this.setState({jenisPengajuan: false, disabledInput: true, keyForm: 'batal'});
             setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
         }
     }
@@ -180,7 +181,8 @@ class PengajuanBaru extends React.Component {
     }
 
     handleReset = () => {
-		this.formRef.current.resetFields();        
+		this.formRef.current.resetFields();    
+        this.setState({keyForm: 'reset'});    
         setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 300);
 	}
 
@@ -240,9 +242,8 @@ class PengajuanBaru extends React.Component {
 
     render() {
         const { itemPersetujuanSelected, listStatusPengajuan } = this.props;
-        const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, mode } = this.state;
+        const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, keyForm, mode } = this.state;
 
-        let keyForm;
         let initEdit;
         if(mode === 'edit' && itemPersetujuanSelected !== null ) {
             initEdit = {
@@ -254,19 +255,15 @@ class PengajuanBaru extends React.Component {
                 ["is_reimburse"]: itemPersetujuanSelected.is_reimburse,
                 ["id_status_pengajuan"]: itemPersetujuanSelected.id_status_pengajuan
             };
-
-            keyForm = 'edit';
         }
         else {
             initEdit = {
                 layout: 'vertical',
                 remember: true,
                 ["tanggal"]: moment(),
-                ["is_Proyek"]: false,
+                ["is_Proyek"]: jenisPengajuan,
                 ["is_reimburse"]: false
             };
-
-            keyForm = 'add';
         }
 
         let page = 
@@ -540,11 +537,11 @@ class PengajuanBaru extends React.Component {
                     onClose={this.handleCloseWindowProyekSearch}
                     anchorOrigin={{
                         vertical: 'bottom',
-                        horizontal: 'center',
+                        horizontal: 'right',
                     }}
                     transformOrigin={{
                         vertical: 'top',
-                        horizontal: 'center',
+                        horizontal: 'right',
                     }}
                 >
                     <FormPencarianProyek />

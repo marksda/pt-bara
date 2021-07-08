@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import TablePencarianProyek from '../tables/Table-Pencarian-Proyek';
 
 class FormPencarianProyek extends Component {
 
@@ -7,8 +7,8 @@ class FormPencarianProyek extends Component {
         let page = null;
 
         page =
-        <div style={{width: 1000, height: 600}}>
-            dfgdfgdf
+        <div className="content-flex-center" style={{width: 600, height: 300}}>
+            <TablePencarianProyek title="Data Proyek"/>
         </div>
 
         return(page);
