@@ -1,6 +1,6 @@
 import React from "react";
 
-
+import { getProyek, setItemMenuSelected, setItemProyekSelected } from "../../actions/master-action";
 
 const useToolbarStyles = makeStyles(theme => ({
     actions: {
@@ -233,7 +233,6 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
-        filterProyek: store.master.filter_proyek,
         headerAuthorization: store.credential.header_authorization,
         listProyek: store.master.list_proyek,
         paginationProyek: store.master.pagination_proyek,
@@ -242,3 +241,45 @@ const mapStateToProps = store => {
     };
 };
 
+const mapDispatchToProps = dispatch => {    
+    return {
+        setItemProyekSelected: (url, headerAuthorization) => dispatch(setItemProyekSelected(url, headerAuthorization)),
+        getProyek: (url, headerAuthorization) => dispatch(getProyek(url, headerAuthorization)),
+        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+    };
+};
+
+class TablePencarianProyek extends React.Component {
+    constructor(props) {
+        super(props); 
+    }
+
+    componentDidMount() {
+        const { listProyek, paginationProyek, urutProyek } = this.props;
+
+        if(listProyek === null) {
+            let filter = [
+                {field: 'rentan_tanggal_aktif', rentan: ['2021-01-01', '2021-05-24']},
+                {field: 'm.no_job', nojob: itemProyekSelected.no_job}
+            ];
+
+            // this.loadProyek(filter, paginationProyek, urutProyek);
+        }
+    }
+
+    loadProyek = (filter, pagination, urut) => {
+        const { getProyek, headerAuthorization, restfulServer } = this.props; 
+        let url;
+        if(filter === null) {
+            url = `${restfulServer}/master/proyek?pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;        
+        }
+        else {
+            url = `${restfulServer}/master/proyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;
+        } 
+        getProyek(url, headerAuthorization);
+    }
+
+    
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(TablePencarianProyek));

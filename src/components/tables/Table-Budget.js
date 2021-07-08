@@ -360,7 +360,7 @@ class TableBudget extends React.Component {
     }
 
     render() {
-        const { classes, getTotalBudget, listBudget, paginationBudget, title, urutBudget } = this.props;
+        const { classes, listBudget, paginationBudget, title, urutBudget } = this.props;
 		const { mode, openConfirmasiHapusBudget, openFormAddBudget, openProcessingDialog } = this.state;
 
         let pageRender = null;
