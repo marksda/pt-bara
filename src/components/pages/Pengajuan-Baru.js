@@ -1,10 +1,13 @@
 import React from 'react';
 import axios from 'axios';
 import { Button, DatePicker, Form, Input, InputNumber, Radio , Select } from 'antd';
+import Popover from '@material-ui/core/Popover';
 import moment from 'moment';
 
+import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
+
 import { connect } from "react-redux";
-import { MinusCircleOutlined, PlusOutlined, SearchOutlined  } from '@ant-design/icons';
+import { FilterOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined  } from '@ant-design/icons';
 
 import { getStatusPengajuan } from "../../actions/master-action";
 
@@ -40,7 +43,8 @@ class PengajuanBaru extends React.Component {
             disabledInputEdit: true,
             disabledInput: true,
             mode: "add",
-            jenisPengajuan: false
+            jenisPengajuan: false,
+            anchorEl: null
         };
 
         this.formRef = React.createRef();
@@ -71,7 +75,7 @@ class PengajuanBaru extends React.Component {
         this.itemPengajuan = {
             tanggal: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
             is_proyek: false,
-            id_reimburse: false
+            is_reimburse: false
         }
     }
 
@@ -154,6 +158,14 @@ class PengajuanBaru extends React.Component {
         }
 	}
 
+    handleCloseWindowProyekSearch = () => {
+        this.setState({anchorEl: null});
+    }
+
+    handleOpenWindowProyekSearch = (e) => {
+        this.setState({anchorEl: e.currentTarget});
+    }
+
     handleRemoveDokumen = (idx) => {
         // this.itemProyek.no_kontrak_addendum.splice(idx,1);
         // if(this.itemProyek.no_kontrak_addendum === undefined) {
@@ -228,7 +240,7 @@ class PengajuanBaru extends React.Component {
 
     render() {
         const { itemPersetujuanSelected, listStatusPengajuan } = this.props;
-        const { disabledInput, disabledInputEdit, jenisPengajuan, mode } = this.state;
+        const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, mode } = this.state;
 
         let keyForm;
         let initEdit;
@@ -339,7 +351,11 @@ class PengajuanBaru extends React.Component {
                             >
                                 <Input disabled={true} style={{minWidth: 400}}/>
                             </Form.Item>
-                            <Button type="dashed" icon={<SearchOutlined />} style={{marginTop: 30}} />
+                            <Button 
+                                type="dashed" 
+                                icon={<FilterOutlined />} 
+                                style={{marginTop: 30}}
+                                onClick={this.handleOpenWindowProyekSearch} />
                             </div>
                         </td>
                     </tr>
@@ -518,6 +534,21 @@ class PengajuanBaru extends React.Component {
                     </tr>                                
                 </tbody>
                 </table>
+                <Popover
+                    open={anchorEl===null?false:true}
+                    anchorEl={anchorEl}
+                    onClose={this.handleCloseWindowProyekSearch}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                    }}
+                >
+                    <FormPencarianProyek />
+                </Popover>
                 <div style={{display: 'flex', flexDirection: 'column'}}>
                 <Form.Item {...tailLayout} style={{width: 150, marginBottom: 8}} name="btnbaru">
                     <Button 
