@@ -7,7 +7,7 @@ class FormPencarianProyek extends Component {
         let page = null;
 
         page =
-        <div className="content-flex-center" style={{width: 600, height: 300}}>
+        <div className="content-flex-center" style={{height: 300}}>
             <TablePencarianProyek title="Data Proyek"/>
         </div>
 
