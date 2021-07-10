@@ -1,13 +1,6 @@
 import React, { Component } from "react";
 import TablePencarianProyek from '../tables/Table-Pencarian-Proyek';
-import { connect } from "react-redux";
 
-
-const mapDispatchToProps = dispatch => {    
-    return {   
-        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
-    };
-};
 
 class FormPencarianProyek extends Component {
 
@@ -15,7 +8,7 @@ class FormPencarianProyek extends Component {
         let page = null;
 
         page =
-        <div className="content-flex-center" style={{height: 300}}>
+        <div className="content-flex-center" style={{padding: 16}}>
             <TablePencarianProyek title="Data Proyek"/>
         </div>
 
@@ -23,4 +16,4 @@ class FormPencarianProyek extends Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(FormPencarianProyek);
+export default FormPencarianProyek;

@@ -1,6 +1,24 @@
 import React from "react";
+import { connect } from "react-redux";
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import Toolbar from '@material-ui/core/Toolbar';
+import _ from 'lodash';
 
-import { getProyek, setItemMenuSelected, setItemProyekSelected } from "../../actions/master-action";
+
+import { Input, DatePicker } from 'antd';
+import { getProyek, setFilterProyek, setItemMenuSelected, setItemProyekSelected, setPaginationProyek, setUrutProyek } from "../../actions/master-action";
+
+
+const { RangePicker } = DatePicker;
+const { Search } = Input;
 
 const useToolbarStyles = makeStyles(theme => ({
     actions: {
@@ -19,27 +37,33 @@ const useToolbarStyles = makeStyles(theme => ({
         flex: '1 1 100%',
     },
     root: {
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(1),   
+        padding: 0
     },
     title: {
         flex: '0 0 auto',
-        marginTop: 16
+        // marginTop: 16
     },
 }));
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { title, handleCari } = props;
+    const { handleCari } = props;
+    const dateFormat = 'DD-MM-YYYY';
+    const customFormat = value => `${value.format(dateFormat)}`;
 
     return(
         <Toolbar
             className={classes.root}
         >           
             <div className={classes.title}>
-                <Title level={4}>
-                    {title}
-                </Title>
+                <RangePicker 
+                    format={customFormat}
+                    style={{width: 220}}
+                    popupStyle={{
+                        zIndex: 2000
+                    }}
+                    placeholder={["tgl. awal", "tgl. akhir"]}
+                />
             </div>
             <div className={classes.spacer} />
             <div className={classes.actions}>
@@ -54,12 +78,10 @@ const EnhancedTableToolbar = (props) => {
 };
 
 const headRows = [
-	{id: 'm.no', numerik: false, label: 'No.'},
-    {id: 'm.tanggal_persiapan', numerik: false, label: 'Tgl. persiapan'},
+    {id: 'm.tanggal_persiapan', numerik: false, label: 'Tgl. aktif'},
     {id: 'm.no_job', numerik: false, label: 'No. job'},
-    {id: 'm.nama_customer', numerik: false, label: 'Customer'},
-    {id: 'm.nama_proyek', numerik: false, label: 'Proyek'},
-    {id: 'm.status', numerik: false, label: 'Status'}
+    {id: 'c.nama', numerik: false, label: 'Customer'},
+    {id: 'm.nama_proyek', numerik: false, label: 'Proyek'}
 ];
 
 const EnhancedTableHead = (props) => {
@@ -75,17 +97,7 @@ const EnhancedTableHead = (props) => {
                     headRows.map((headCell, index) => {
                         let page = null;
                         switch(index) {
-                        	case 0:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'right'}
-                                    style={{width: 40}}
-                                >
-                                    {headCell.label}
-                                </TableCell>;
-                                break;
-                            case 1:
+                            case 0:
                                     page = 
                                     <TableCell
                                         key={headCell.id}
@@ -106,7 +118,7 @@ const EnhancedTableHead = (props) => {
                                         </TableSortLabel>
                                     </TableCell>;
                                     break;
-                            case 2:
+                            case 1:
                                 page = 
                                 <TableCell
                                     key={headCell.id}
@@ -127,11 +139,32 @@ const EnhancedTableHead = (props) => {
                                     </TableSortLabel>
                                 </TableCell>;
                                 break;
+                            case 2:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}
+                                >
+                                    <TableSortLabel
+                                        active={orderBy === headCell.id}
+                                        direction={orderBy === headCell.id ? order : 'desc'}
+                                        onClick={createSortHandler(headCell.id)}
+                                    >
+                                        {headCell.label}
+                                        {orderBy === headCell.id ? (
+                                            <span className={classes.visuallyHidden}>
+                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                                            </span>
+                                        ) : null}
+                                    </TableSortLabel>
+                                </TableCell>;
+                                break;
                             case 3:
                                 page = 
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
+                                    style={{width: 280}}
                                 >
                                     <TableSortLabel
                                         active={orderBy === headCell.id}
@@ -146,49 +179,7 @@ const EnhancedTableHead = (props) => {
                                         ) : null}
                                     </TableSortLabel>
                                 </TableCell>;
-                                break;
-                            case 4:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'left'}
-                                    style={{width: 300}}
-                                >
-                                    <TableSortLabel
-                                        active={orderBy === headCell.id}
-                                        direction={orderBy === headCell.id ? order : 'desc'}
-                                        onClick={createSortHandler(headCell.id)}
-                                    >
-                                        {headCell.label}
-                                        {orderBy === headCell.id ? (
-                                            <span className={classes.visuallyHidden}>
-                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                            </span>
-                                        ) : null}
-                                    </TableSortLabel>
-                                </TableCell>;
-                                break;
-                            case 5:
-                                page = 
-                                <TableCell
-                                    key={headCell.id}
-                                    align={'left'}
-                                    style={{width: 150}}
-                                >
-                                    <TableSortLabel
-                                        active={orderBy === headCell.id}
-                                        direction={orderBy === headCell.id ? order : 'desc'}
-                                        onClick={createSortHandler(headCell.id)}
-                                    >
-                                        {headCell.label}
-                                        {orderBy === headCell.id ? (
-                                            <span className={classes.visuallyHidden}>
-                                                {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                            </span>
-                                        ) : null}
-                                    </TableSortLabel>
-                                </TableCell>;
-                                break;                                
+                                break;                         
                             default:
                                 page =
                                 <TableCell
@@ -211,8 +202,8 @@ const EnhancedTableHead = (props) => {
 const styles = theme => ({
     root: {
         width: '100%',
-        minWidth: 600,
-        marginTop: -20
+        minWidth: 900,
+        marginTop: -15
     },
     tableWrapper: {
         overflowX: 'auto',
@@ -233,6 +224,7 @@ const styles = theme => ({
 
 const mapStateToProps = store => {
     return {
+        filterProyek: store.master.filter_proyek,
         headerAuthorization: store.credential.header_authorization,
         listProyek: store.master.list_proyek,
         paginationProyek: store.master.pagination_proyek,
@@ -246,6 +238,9 @@ const mapDispatchToProps = dispatch => {
         setItemProyekSelected: (url, headerAuthorization) => dispatch(setItemProyekSelected(url, headerAuthorization)),
         getProyek: (url, headerAuthorization) => dispatch(getProyek(url, headerAuthorization)),
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+        setPaginationProyek: (value) => dispatch(setPaginationProyek(value)),
+        setFilterProyek: (value) => dispatch(setFilterProyek(value)),
+        setUrutProyek: (value) => dispatch(setUrutProyek(value)),
     };
 };
 
@@ -255,16 +250,77 @@ class TablePencarianProyek extends React.Component {
     }
 
     componentDidMount() {
-        const { listProyek, paginationProyek, urutProyek } = this.props;
+        const { paginationProyek, setFilterProyek, urutProyek } = this.props;
+        let filter = [
+            {field: 'rentan_tanggal_aktif', rentan: ['2021-01-01', '2021-07-25']}
+        ];
 
-        if(listProyek === null) {
-            let filter = [
-                {field: 'rentan_tanggal_aktif', rentan: ['2021-01-01', '2021-05-24']},
-                {field: 'm.no_job', nojob: itemProyekSelected.no_job}
-            ];
+        setFilterProyek(filter);
+        this.loadProyek(filter, paginationProyek, urutProyek);
+    }
 
-            // this.loadProyek(filter, paginationProyek, urutProyek);
+    flipDate = (tgl) => {
+        let tmptgl = tgl.split('-');
+        return `${tmptgl[2]}-${tmptgl[1]}-${tmptgl[0]}`
+    }
+
+    handleChangeFilter = (v) => {
+        console.log(v);
+        const { filterProyek, paginationProyek, setFilterProyek, urutProyek, setPaginationProyek } = this.props;
+        let tmpPagination = {...paginationProyek};
+        tmpPagination.current = 1;        
+        setPaginationProyek(tmpPagination);
+
+        let tmpFilter = [...filterProyek];
+
+        let idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama'});
+
+        if(idx < 0) {
+            tmpFilter.push(
+                {
+                    field: "m.nama",
+                    search: v
+                }
+            );
         }
+        else {
+            tmpFilter[idx].search = v;
+        }                
+
+        setFilterProyek(tmpFilter);
+        this.loadProyek(tmpFilter, tmpPagination, urutProyek);
+    }
+
+    handleChangeRowsPerPage = (event) => {
+        const { filterProyek, setPaginationProyek, urutProyek } = this.props;
+        let tmpPagination = {
+            current: 1,
+            pageSize: parseInt(event.target.value, 10),
+        };
+        
+        setPaginationProyek(tmpPagination);
+        this.loadProyek(filterProyek, tmpPagination, urutProyek);
+    }
+
+    handleChangePage = (event, newPage) => {
+        const { filterProyek, paginationProyek, setPaginationProyek, urutProyek } = this.props;
+        let tmpPagination = {
+            current: newPage+1,
+            pageSize: paginationProyek.pageSize,
+        };
+        setPaginationProyek(tmpPagination);
+        this.loadProyek(filterProyek, tmpPagination, urutProyek);
+    }
+
+    handleRequestSort = (event, property) => {   
+        const { filterProyek, paginationProyek, setUrutProyek, urutProyek } = this.props;
+        let isAsc = urutProyek.field === property && urutProyek.order === 'asc';
+        let tmpUrut = {
+            field: property,
+            order: isAsc ? 'desc' : 'asc'
+        };
+        setUrutProyek(tmpUrut);
+        this.loadProyek(filterProyek, paginationProyek, tmpUrut);
     }
 
     loadProyek = (filter, pagination, urut) => {
@@ -279,7 +335,80 @@ class TablePencarianProyek extends React.Component {
         getProyek(url, headerAuthorization);
     }
 
-    
+    render() {
+        const { classes, listProyek, paginationProyek, title, urutProyek } = this.props;
+
+        let pageRender = null;
+
+        pageRender =
+		<div className={classes.root}>
+            <EnhancedTableToolbar 
+                title={title}
+                handleCari={this.handleChangeFilter}
+            />
+            <TableContainer className={classes.tableWrapper}>
+                <Table aria-labelledby="table-pencarian-proyek">
+                    <EnhancedTableHead 
+                        classes={classes}
+                        order={urutProyek.order}
+                        orderBy={urutProyek.field}
+                        onRequestSort={this.handleRequestSort}
+                    />
+                    <TableBody style={{cursor: 'pointer'}}>
+                    {
+                    	listProyek !== null ? listProyek.data.map((row, index) => {
+                    		return(
+                    			<TableRow 
+	                                hover
+	                                tabIndex={-1}
+	                                key={row.no_job}      
+	                            >
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 150, verticalAlign: 'top'}}
+	                                >
+	                                    { 
+                                            this.flipDate(row.tanggal_persiapan)                                      
+                                        }
+	                                </TableCell>
+	                                <TableCell 
+	                                    align={'left'}
+                                        style={{width: 150, verticalAlign: 'top'}}
+	                                >
+	                                    { row.no_job }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{verticalAlign: 'top'}}
+	                                >
+	                                    { row.nama_customer }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 250, verticalAlign: 'top'}}
+	                                >
+	                                    { row.nama_proyek }
+	                                </TableCell>
+	                            </TableRow>
+                    		);
+                    	}):null
+                    }
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[10,15,25,50,100,250,500,1000,10000]}
+                component="div"
+                count={listProyek !== null ? listProyek.total:0}
+                rowsPerPage={paginationProyek.pageSize}
+                page={paginationProyek.current-1}
+                onChangePage={this.handleChangePage}
+                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+            />
+        </div>;
+
+        return(pageRender);
+    }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(TablePencarianProyek));

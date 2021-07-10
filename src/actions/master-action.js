@@ -14,7 +14,6 @@ export const getStatusPengajuan = (url='', authorization) => {
         )
         .then(
             json => {          
-                console.log(json);
                 if(json.status === 200 ) {
                     dispatch({ type: LIST_STATUS_PENGAJUAN_LOADED, payload: json.keterangan });
                 }

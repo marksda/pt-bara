@@ -123,10 +123,7 @@ const initialState = {
         order: "asc"
     },
     list_proyek: null,
-    filter_proyek:  {
-        field: null,
-        search: null
-    },
+    filter_proyek: null,
     pagination_proyek: {
         current: 1,
         pageSize: 100,
@@ -746,6 +743,7 @@ export default function master(state = initialState, action) {
             };   
             break;
         case FILTER_PROYEK_LOADED:
+            console.log(action.payload);
             return {
                 ...state,
                 [FILTER_PROYEK]: action.payload
