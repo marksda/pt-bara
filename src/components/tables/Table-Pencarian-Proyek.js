@@ -13,13 +13,13 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import _ from 'lodash';
 
-
-import { Input, DatePicker } from 'antd';
+import { Form, Input, DatePicker, Select  } from 'antd';
 import { getProyek, setFilterProyek, setItemMenuSelected, setItemProyekSelected, setPaginationProyek, setUrutProyek } from "../../actions/master-action";
 
 
 const { RangePicker } = DatePicker;
 const { Search } = Input;
+const { Option } = Select;
 
 const useToolbarStyles = makeStyles(theme => ({
     actions: {
@@ -48,11 +48,21 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { handleCari, rangeDate, changeRangeDate } = props;
+    const { handleCari, handleChangePrefixSearch, rangeDate, changeRangeDate, prefixSearch, acuan } = props;
     const dateFormat = 'DD-MM-YYYY';
     const customFormat = value => `${value.format(dateFormat)}`;
 
-    console.log(rangeDate);
+    const selectBefore = (
+        <Select 
+            defaultValue={prefixSearch!==null?prefixSearch:'m.no_job'} 
+            dropdownStyle={{zIndex: 2000}}
+            onChange={handleChangePrefixSearch}
+        >
+          <Option value="m.no_job">No. Job</Option>
+          <Option value="c.nama">Customer</Option>
+          <Option value="m.nama_proyek">Proyek</Option>
+        </Select>
+      );
 
     return(
         <Toolbar
@@ -60,7 +70,7 @@ const EnhancedTableToolbar = (props) => {
         >           
             <div className={classes.title}>
                 <RangePicker 
-                    defaultValue={[moment(rangeDate[0]), moment(rangeDate[1])]}
+                    defaultValue={rangeDate!==null?[moment(rangeDate[0]), moment(rangeDate[1])]:[null,null]}
                     format={customFormat}
                     style={{width: 220}}
                     popupStyle={{
@@ -72,11 +82,16 @@ const EnhancedTableToolbar = (props) => {
             </div>
             <div className={classes.spacer} />
             <div className={classes.actions}>
-                <Search
-                  placeholder="pencarian"
-                  onSearch={handleCari}
-                  style={{ width: 250 }}
-                />
+            <Form ref={acuan} style={{marginTop: 24}}>
+                <Form.Item name="cari">
+                    <Search
+                    placeholder="pencarian"
+                    onSearch={handleCari}
+                    style={{ width: 350 }}
+                    addonBefore={selectBefore}
+                    />
+                </Form.Item>
+            </Form>
             </div>            
         </Toolbar>
     );
@@ -253,37 +268,46 @@ class TablePencarianProyek extends React.Component {
     constructor(props) {
         super(props); 
         this.state = {
-            rentanDate: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]
+            rentanDate: null,
+            prefixSearch: null
         }
+        this.formRef = React.createRef();
     }
 
     componentDidMount() {
         const { filterProyek, paginationProyek, setFilterProyek, urutProyek } = this.props;
-        const { rentanDate } = this.state;
 
         let tmpFilter = null;
-        if(filterProyek === null) {
+        if(filterProyek === null) {     
+            this.setState({rentanDate: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`], prefixSearch: 'm.no_job'});      
             tmpFilter = [
-                {field: 'rentan_tanggal_aktif', rentan: [...rentanDate]}
+                {field: 'rentan_tanggal_aktif', rentan: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]}
             ];
         }
-        else {
-            let idx = _.findIndex(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
+        else {                        
             tmpFilter = [...filterProyek];
+            let idx = _.findIndex(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
             if(idx < 0) {
+                this.setState({rentanDate: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`], prefixSearch: filterProyek[0].field});      
+                tmpFilter = [];
                 tmpFilter.push(
                     {
                         field: "rentan_tanggal_aktif",
-                        rentan: rentanDate
+                        rentan: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]
                     }
                 );
             }
             else {
-                tmpFilter[idx].rentan = rentanDate;
+                let tmpRentan = tmpFilter[idx];
+                tmpFilter = [];
+                tmpFilter.push(tmpRentan);
+                this.setState({rentanDate: filterProyek[idx].rentan, prefixSearch: idx!==0?filterProyek[0].field:'m.no_job'});
             }
-        } 
+        }         
+
         
         setFilterProyek(tmpFilter);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
         this.loadProyek(tmpFilter, paginationProyek, urutProyek);
     }
 
@@ -323,28 +347,88 @@ class TablePencarianProyek extends React.Component {
 
     handleChangeFilter = (v) => {
         const { filterProyek, paginationProyek, setFilterProyek, urutProyek, setPaginationProyek } = this.props;
+        const { prefixSearch } = this.state;
+
+        let tmpPagination = {...paginationProyek};
+        tmpPagination.current = 1;        
+        setPaginationProyek(tmpPagination);
+        let tmpFilter = [];
+        let idx = null;
+
+        switch (prefixSearch) {
+            case 'm.no_job':
+                tmpFilter = [...filterProyek];
+                idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.no_job'});
+
+                if(idx < 0) {
+                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
+                    tmpFilter = [];
+                    tmpFilter.push(                        
+                        { field: "m.no_job", search: v },
+                        tmpRangeDate
+                    );
+                }
+                else {
+                    tmpFilter[idx].search = v;
+                } 
+                break;
+            case 'c.nama':
+                tmpFilter = [...filterProyek];
+                idx = _.findIndex(tmpFilter, function(o){return o.field === 'c.nama'});
+
+                if(idx < 0) {
+                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
+                    tmpFilter = [];
+                    tmpFilter.push(                        
+                        { field: "c.nama", search: v },
+                        tmpRangeDate
+                    );
+                }
+                else {
+                    tmpFilter[idx].search = v;
+                }  
+                break;
+            default:
+                tmpFilter = [...filterProyek];
+                idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama_proyek'});
+
+                if(idx < 0) {
+                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
+                    tmpFilter = [];
+                    tmpFilter.push(
+                        { field: "m.nama_proyek", search: v },
+                        tmpRangeDate
+                    );
+                }
+                else {
+                    tmpFilter[idx].search = v;
+                }  
+                
+                break;
+        }    
+
+        setFilterProyek(tmpFilter);
+        this.loadProyek(tmpFilter, tmpPagination, urutProyek);
+    }
+
+    handleChangePrefixSearch = (value) => {
+        const { filterProyek, paginationProyek, setFilterProyek, urutProyek, setPaginationProyek } = this.props;
         let tmpPagination = {...paginationProyek};
         tmpPagination.current = 1;        
         setPaginationProyek(tmpPagination);
 
-        let tmpFilter = [...filterProyek];
+        setTimeout(() => {
+            this.formRef.current.resetFields();
+            this.formRef.current.getFieldInstance('cari').focus();
+        }, 100);
+        this.setState({prefixSearch: value});     
 
-        let idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama_proyek'});
-
-        if(idx < 0) {
-            tmpFilter.push(
-                {
-                    field: "m.nama_proyek",
-                    search: v
-                }
-            );
-        }
-        else {
-            tmpFilter[idx].search = v;
-        }                
+        let tmpFilter = [];
+        let tmpRentan = _.find(filterProyek, function(o){return o.field === 'rentan_tanggal_aktif'});
+        tmpFilter.push(tmpRentan);
 
         setFilterProyek(tmpFilter);
-        this.loadProyek(tmpFilter, tmpPagination, urutProyek);
+        this.loadProyek(tmpFilter, tmpPagination, urutProyek);   
     }
 
     handleChangeRowsPerPage = (event) => {
@@ -393,7 +477,7 @@ class TablePencarianProyek extends React.Component {
 
     render() {
         const { classes, listProyek, paginationProyek, title, urutProyek } = this.props;
-        const { rentanDate } = this.state;
+        const { rentanDate, prefixSearch } = this.state;
 
         let pageRender = null;
 
@@ -404,6 +488,10 @@ class TablePencarianProyek extends React.Component {
                 handleCari={this.handleChangeFilter}
                 rangeDate={rentanDate}
                 changeRangeDate={this.changeRangeDate}
+                prefixSearch={prefixSearch}
+                handleChangePrefixSearch={this.handleChangePrefixSearch}
+                acuan={this.formRef}
+                key={rentanDate}
             />
             <TableContainer className={classes.tableWrapper}>
                 <Table aria-labelledby="table-pencarian-proyek">

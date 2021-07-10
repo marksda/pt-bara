@@ -313,6 +313,11 @@ class TableProyek extends React.Component {
         this.loadProyek(null, paginationProyek, urutProyek);
     }
 
+    componentWillUnmount() {
+        const { setFilterProyek } = this.props;
+        setFilterProyek(null);
+    }
+
     deleteProyek = (dataProyek) => {
         const { 
             filterProyek, headerAuthorization, paginationProyek, restfulServer, urutProyek         
