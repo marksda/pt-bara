@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import moment from 'moment';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -47,9 +48,11 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { handleCari } = props;
+    const { handleCari, rangeDate, changeRangeDate } = props;
     const dateFormat = 'DD-MM-YYYY';
     const customFormat = value => `${value.format(dateFormat)}`;
+
+    console.log(rangeDate);
 
     return(
         <Toolbar
@@ -57,12 +60,14 @@ const EnhancedTableToolbar = (props) => {
         >           
             <div className={classes.title}>
                 <RangePicker 
+                    defaultValue={[moment(rangeDate[0]), moment(rangeDate[1])]}
                     format={customFormat}
                     style={{width: 220}}
                     popupStyle={{
                         zIndex: 2000
                     }}
                     placeholder={["tgl. awal", "tgl. akhir"]}
+                    onChange={changeRangeDate}
                 />
             </div>
             <div className={classes.spacer} />
@@ -247,16 +252,68 @@ const mapDispatchToProps = dispatch => {
 class TablePencarianProyek extends React.Component {
     constructor(props) {
         super(props); 
+        this.state = {
+            rentanDate: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]
+        }
     }
 
     componentDidMount() {
-        const { paginationProyek, setFilterProyek, urutProyek } = this.props;
-        let filter = [
-            {field: 'rentan_tanggal_aktif', rentan: ['2021-01-01', '2021-07-25']}
-        ];
+        const { filterProyek, paginationProyek, setFilterProyek, urutProyek } = this.props;
+        const { rentanDate } = this.state;
 
-        setFilterProyek(filter);
-        this.loadProyek(filter, paginationProyek, urutProyek);
+        let tmpFilter = null;
+        if(filterProyek === null) {
+            tmpFilter = [
+                {field: 'rentan_tanggal_aktif', rentan: [...rentanDate]}
+            ];
+        }
+        else {
+            let idx = _.findIndex(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
+            tmpFilter = [...filterProyek];
+            if(idx < 0) {
+                tmpFilter.push(
+                    {
+                        field: "rentan_tanggal_aktif",
+                        rentan: rentanDate
+                    }
+                );
+            }
+            else {
+                tmpFilter[idx].rentan = rentanDate;
+            }
+        } 
+        
+        setFilterProyek(tmpFilter);
+        this.loadProyek(tmpFilter, paginationProyek, urutProyek);
+    }
+
+    changeRangeDate = (dates, datesString) => {
+        const { filterProyek, paginationProyek, setFilterProyek, urutProyek, setPaginationProyek } = this.props;
+        let tmpPagination = {...paginationProyek};
+        tmpPagination.current = 1;        
+        setPaginationProyek(tmpPagination);
+
+        let tmpRangeDate = [this.flipDate(datesString[0]), this.flipDate(datesString[1])];
+        this.setState({rentanDate: tmpRangeDate});
+
+        let tmpFilter = [...filterProyek];
+
+        let idx = _.findIndex(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
+
+        if(idx < 0) {
+            tmpFilter.push(
+                {
+                    field: "rentan_tanggal_aktif",
+                    rentan: tmpRangeDate
+                }
+            );
+        }
+        else {
+            tmpFilter[idx].rentan = tmpRangeDate;
+        }       
+
+        setFilterProyek(tmpFilter);
+        this.loadProyek(tmpFilter, tmpPagination, urutProyek);
     }
 
     flipDate = (tgl) => {
@@ -265,7 +322,6 @@ class TablePencarianProyek extends React.Component {
     }
 
     handleChangeFilter = (v) => {
-        console.log(v);
         const { filterProyek, paginationProyek, setFilterProyek, urutProyek, setPaginationProyek } = this.props;
         let tmpPagination = {...paginationProyek};
         tmpPagination.current = 1;        
@@ -273,12 +329,12 @@ class TablePencarianProyek extends React.Component {
 
         let tmpFilter = [...filterProyek];
 
-        let idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama'});
+        let idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama_proyek'});
 
         if(idx < 0) {
             tmpFilter.push(
                 {
-                    field: "m.nama",
+                    field: "m.nama_proyek",
                     search: v
                 }
             );
@@ -337,6 +393,7 @@ class TablePencarianProyek extends React.Component {
 
     render() {
         const { classes, listProyek, paginationProyek, title, urutProyek } = this.props;
+        const { rentanDate } = this.state;
 
         let pageRender = null;
 
@@ -345,6 +402,8 @@ class TablePencarianProyek extends React.Component {
             <EnhancedTableToolbar 
                 title={title}
                 handleCari={this.handleChangeFilter}
+                rangeDate={rentanDate}
+                changeRangeDate={this.changeRangeDate}
             />
             <TableContainer className={classes.tableWrapper}>
                 <Table aria-labelledby="table-pencarian-proyek">

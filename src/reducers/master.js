@@ -743,7 +743,6 @@ export default function master(state = initialState, action) {
             };   
             break;
         case FILTER_PROYEK_LOADED:
-            console.log(action.payload);
             return {
                 ...state,
                 [FILTER_PROYEK]: action.payload

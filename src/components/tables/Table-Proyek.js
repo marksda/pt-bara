@@ -308,8 +308,9 @@ class TableProyek extends React.Component {
     }
 
     componentDidMount() {
-    	const { filterProyek, paginationProyek, urutProyek } = this.props;
-        this.loadProyek(filterProyek, paginationProyek, urutProyek);
+    	const { setFilterProyek, paginationProyek, urutProyek } = this.props;
+        setFilterProyek(null);
+        this.loadProyek(null, paginationProyek, urutProyek);
     }
 
     deleteProyek = (dataProyek) => {
@@ -442,7 +443,13 @@ class TableProyek extends React.Component {
 
     loadProyek = (filter, pagination, urut) => {
         const { getProyek, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/proyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        let url;
+        if(filter === null) {
+            url = `${restfulServer}/master/proyek?pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;        
+        }
+        else {
+            url = `${restfulServer}/master/proyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;
+        } 
         getProyek(url, headerAuthorization);
     }
 
