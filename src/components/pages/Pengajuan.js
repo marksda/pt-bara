@@ -3,7 +3,7 @@ import React from 'react';
 import TableProyek from '../tables/Table-Proyek';
 
 
-class Proyek extends React.Component {
+class Pengajuan extends React.Component {
     render() {
         let page =
         <div className="content-flex-center">
@@ -13,4 +13,4 @@ class Proyek extends React.Component {
     }
 }
 
-export default Proyek;
+export default Pengajuan;
