@@ -9,7 +9,7 @@ class FormPencarianProyek extends Component {
 
         page =
         <div className="content-flex-center" style={{padding: 16}}>
-            <TablePencarianProyek title="Data Proyek"/>
+            <TablePencarianProyek title="Data Proyek" handleCloseWindowProyekSearch={this.props.handleCloseWindowProyekSearch}/>
         </div>
 
         return(page);

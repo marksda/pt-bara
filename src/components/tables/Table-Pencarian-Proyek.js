@@ -452,6 +452,12 @@ class TablePencarianProyek extends React.Component {
         this.loadProyek(filterProyek, tmpPagination, urutProyek);
     }
 
+    handleOnClickRow = (e) => {
+        const { headerAuthorization, listProyek, setItemProyekSelected, restfulServer, handleCloseWindowProyekSearch  } = this.props;
+        setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${listProyek.data[Number(e.target.parentElement.dataset.id)].no_job}`, headerAuthorization);
+        handleCloseWindowProyekSearch();
+    }
+
     handleRequestSort = (event, property) => {   
         const { filterProyek, paginationProyek, setUrutProyek, urutProyek } = this.props;
         let isAsc = urutProyek.field === property && urutProyek.order === 'asc';
@@ -509,6 +515,8 @@ class TablePencarianProyek extends React.Component {
 	                                hover
 	                                tabIndex={-1}
 	                                key={row.no_job}      
+                                    data-id={index}
+                                    onClick={this.handleOnClickRow}
 	                            >
                                     <TableCell 
 	                                    align={'left'}

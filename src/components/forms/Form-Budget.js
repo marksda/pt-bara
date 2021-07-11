@@ -329,7 +329,7 @@ class FormBudget extends React.Component {
                                 >
                                     <Input 
                                         disabled={true}
-                                        style={{ minWidth: 150, color: 'red' }}
+                                        style={{ minWidth: 150, color: 'blue' }}
                                     />
                                 </Form.Item>
                             </td>
@@ -341,7 +341,7 @@ class FormBudget extends React.Component {
                                 >
                                     <Input 
                                         disabled={true}
-                                        style={{color: 'red'}}
+                                        style={{color: 'blue'}}
                                     />
                                 </Form.Item>
                             </td>
@@ -354,7 +354,7 @@ class FormBudget extends React.Component {
                                     <Input 
                                         data-jenis="namaproyek"
                                         disabled={true}
-                                        style={{minWidth: 250, color: 'red'}}
+                                        style={{minWidth: 250, color: 'blue'}}
                                     />
                                 </Form.Item>
                             </td>
@@ -369,7 +369,7 @@ class FormBudget extends React.Component {
                                     <InputNumber
                                         data-jenis="nilaikontrak"
                                         disabled={true}
-                                        style={{minWidth: 250, color: 'red'}}
+                                        style={{minWidth: 250, color: 'blue'}}
                                         formatter={this.formatterRupiah}
                                         parser={this.parserRupiah}
                                     />
@@ -383,7 +383,7 @@ class FormBudget extends React.Component {
                                 >
                                     <InputNumber
                                         disabled={true}
-                                        style={{minWidth: 250, color: 'red'}}
+                                        style={{minWidth: 250, color: 'blue'}}
                                         formatter={this.formatterRupiah}
                                         parser={this.parserRupiah}
                                     />

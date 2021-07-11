@@ -9,7 +9,7 @@ import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
 import { connect } from "react-redux";
 import { FilterOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined  } from '@ant-design/icons';
 
-import { getStatusPengajuan } from "../../actions/master-action";
+import { getStatusPengajuan, resetItemProyekSelected } from "../../actions/master-action";
 
 
 const { TextArea } = Input;
@@ -17,7 +17,7 @@ const mapStateToProps = store => {
     return {
         headerAuthorization: store.credential.header_authorization,
         restfulServer: store.general.restful_domain,
-        itemPersetujuanSelected: store.master.item_proyek_selected,
+        itemProyekSelected: store.master.item_proyek_selected,
         listStatusPengajuan: store.master.list_status_pengajuan,
         filterStatusPengajuan: store.master.filter_status_pengajuan,
         listStatusPengajuan: store.master.list_status_pengajuan,
@@ -28,7 +28,8 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
-        getStatusPengajuan: (url, headerAuthorization) => dispatch(getStatusPengajuan(url, headerAuthorization))
+        getStatusPengajuan: (url, headerAuthorization) => dispatch(getStatusPengajuan(url, headerAuthorization)),
+        resetItemProyekSelected: () => dispatch(resetItemProyekSelected()),
     };
 };
 
@@ -61,6 +62,11 @@ class PengajuanBaru extends React.Component {
         setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
     }
 
+    componentWillUnmount() {
+        const { resetItemProyekSelected } = this.props;
+        resetItemProyekSelected();
+    }
+
     handleBaru = () => {
         const { mode } = this.state;
 
@@ -81,8 +87,11 @@ class PengajuanBaru extends React.Component {
     }
 
     handleBatal = () => {
+        const { resetItemProyekSelected } = this.props;
         const { mode } = this.state;
-        this.formRef.current.resetFields();
+
+        this.formRef.current.resetFields();        
+        resetItemProyekSelected();
         if(mode === 'edit') {
             this.setState({jenisPengajuan: false, disabledInput: true, disabledInputEdit: false, keyForm: 'batal'});
         }
@@ -181,8 +190,10 @@ class PengajuanBaru extends React.Component {
     }
 
     handleReset = () => {
+        const { resetItemProyekSelected } = this.props;
 		this.formRef.current.resetFields();    
         this.setState({keyForm: 'reset'});    
+        resetItemProyekSelected();
         setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 300);
 	}
 
@@ -214,11 +225,13 @@ class PengajuanBaru extends React.Component {
     }
 
     savePengajuan = () => {
-        console.log(this.itemPengajuan)
-		const { headerAuthorization, restfulServer } = this.props;
+		const { headerAuthorization, itemProyekSelected, restfulServer } = this.props;
 	    let self = this;
         
 	    // handleToggleOpenProgressDialog();
+        if(this.itemPengajuan.is_proyek === true) {
+            this.itemPengajuan.no_job = itemProyekSelected.no_job;
+        }
 
 	    axios({
             method: 'put',
@@ -241,19 +254,22 @@ class PengajuanBaru extends React.Component {
 	}
 
     render() {
-        const { itemPersetujuanSelected, listStatusPengajuan } = this.props;
+        const { itemProyekSelected, listStatusPengajuan } = this.props;
         const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, keyForm, mode } = this.state;
 
         let initEdit;
-        if(mode === 'edit' && itemPersetujuanSelected !== null ) {
+        if(mode === 'edit' && itemProyekSelected !== null ) {
             initEdit = {
                 layout: 'vertical',
                 remember: true,
-                ["tanggal"]: moment(itemPersetujuanSelected.tanggal),
-                ["is_Proyek"]: itemPersetujuanSelected.is_proyek,
-                ["nominal_pengajuan"]: itemPersetujuanSelected.nominal_pengajuan,
-                ["is_reimburse"]: itemPersetujuanSelected.is_reimburse,
-                ["id_status_pengajuan"]: itemPersetujuanSelected.id_status_pengajuan
+                ["tanggal"]: moment(itemProyekSelected.tanggal),
+                ["is_Proyek"]: itemProyekSelected.is_proyek,
+                ["nominal_pengajuan"]: itemProyekSelected.nominal_pengajuan,
+                ["is_reimburse"]: itemProyekSelected.is_reimburse,
+                ["id_status_pengajuan"]: itemProyekSelected.id_status_pengajuan,
+                ["no_job"]: itemProyekSelected.no_job,
+                ["nama_customer"]: itemProyekSelected.nama_customer,
+                ["nama_proyek"]:  itemProyekSelected.nama_proyek,
             };
         }
         else {
@@ -262,7 +278,10 @@ class PengajuanBaru extends React.Component {
                 remember: true,
                 ["tanggal"]: moment(),
                 ["is_Proyek"]: jenisPengajuan,
-                ["is_reimburse"]: false
+                ["is_reimburse"]: false,
+                ["no_job"]: itemProyekSelected !== null?itemProyekSelected.no_job:null,
+                ["nama_customer"]: itemProyekSelected !== null?itemProyekSelected.nama_customer:null,
+                ["nama_proyek"]: itemProyekSelected !== null?itemProyekSelected.nama_proyek:null,
             };
         }
 
@@ -273,7 +292,7 @@ class PengajuanBaru extends React.Component {
             ref={this.formRef}
             layout='vertical'
             initialValues={initEdit}
-            key={keyForm}
+            key={itemProyekSelected === null ? keyForm : `${keyForm}${itemProyekSelected.no_job}`}
         >
             <div className="content-flex-center">
                 <table className="table-container-pengajuan-baru" style={{width: '65%'}}>
@@ -324,7 +343,7 @@ class PengajuanBaru extends React.Component {
                                 <Input 
                                     data-jenis="nojob"
                                     disabled={true}
-                                    style={{ minWidth: 150}}
+                                    style={{ minWidth: 150, color: 'blue'}}
                                 />
                             </Form.Item>
                         </td>
@@ -335,18 +354,18 @@ class PengajuanBaru extends React.Component {
                                 style={{marginBottom: 16}}
                                 rules={[{required: true, message: 'Customer harus diisi'}]}
                             >
-                                <Input disabled={true} />
+                                <Input disabled={true} style={{color: 'blue'}}/>
                             </Form.Item>
                         </td>
                         <td>
                             <div style={{display: 'flex'}}>
                             <Form.Item 
                                 label="Proyek"
-                                name="proyek"
+                                name="nama_proyek"
                                 style={{marginBottom: 16, marginRight: 8}}
                                 rules={[{required: true, message: 'Proyek harus diisi'}]}
                             >
-                                <Input disabled={true} style={{minWidth: 400}}/>
+                                <Input disabled={true} style={{minWidth: 400, color: 'blue'}}/>
                             </Form.Item>
                             <Button 
                                 type="dashed" 
@@ -544,7 +563,7 @@ class PengajuanBaru extends React.Component {
                         horizontal: 'right',
                     }}
                 >
-                    <FormPencarianProyek />
+                    <FormPencarianProyek handleCloseWindowProyekSearch={this.handleCloseWindowProyekSearch}/>
                 </Popover>
                 <div style={{display: 'flex', flexDirection: 'column'}}>
                 <Form.Item {...tailLayout} style={{width: 150, marginBottom: 8}} name="btnbaru">
