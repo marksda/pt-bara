@@ -62,7 +62,7 @@ const EnhancedTableToolbar = (props) => {
           <Option value="c.nama">Customer</Option>
           <Option value="m.nama_proyek">Proyek</Option>
         </Select>
-      );
+    );
 
     return(
         <Toolbar
