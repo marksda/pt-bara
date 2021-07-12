@@ -7,9 +7,9 @@ import moment from 'moment';
 import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
 
 import { connect } from "react-redux";
-import { FilterOutlined, MinusCircleOutlined, PlusOutlined, SearchOutlined  } from '@ant-design/icons';
+import { FilterOutlined, MinusCircleOutlined, PlusOutlined  } from '@ant-design/icons';
 
-import { getStatusPengajuan, resetItemProyekSelected } from "../../actions/master-action";
+import { getStatusPengajuan, resetItemPengajuanSelected, setItemMenuSelected, setModePengajuanBaru } from "../../actions/master-action";
 
 
 const { TextArea } = Input;
@@ -17,19 +17,22 @@ const mapStateToProps = store => {
     return {
         headerAuthorization: store.credential.header_authorization,
         restfulServer: store.general.restful_domain,
-        itemProyekSelected: store.master.item_proyek_selected,
+        itemPengajuanSelected: store.master.item_pengajuan_selected,
         listStatusPengajuan: store.master.list_status_pengajuan,
         filterStatusPengajuan: store.master.filter_status_pengajuan,
         listStatusPengajuan: store.master.list_status_pengajuan,
         paginationStatusPengajuan: store.master.pagination_status_pengajuan,
         urutStatusPengajuan: store.master.urut_status_pengajuan,
+        modePengajuanBaru: store.master.mode_pengajuan_baru,
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
         getStatusPengajuan: (url, headerAuthorization) => dispatch(getStatusPengajuan(url, headerAuthorization)),
-        resetItemProyekSelected: () => dispatch(resetItemProyekSelected()),
+        resetItemPengajuanSelected: () => dispatch(resetItemPengajuanSelected()),
+        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+        setModePengajuanBaru: (nilai) => dispatch(setModePengajuanBaru(nilai)), 
     };
 };
 
@@ -54,8 +57,11 @@ class PengajuanBaru extends React.Component {
     }
 
     componentDidMount() {
-        const { filterStatusPengajuan, paginationStatusPengajuan, urutStatusPengajuan, listStatusPengajuan } = this.props;
-        this.setState({mode: this.props.mode});
+        const { filterStatusPengajuan, modePengajuanBaru, paginationStatusPengajuan, urutStatusPengajuan, listStatusPengajuan } = this.props;
+        if(modePengajuanBaru === 'edit') {
+            this.setState({disabledInputEdit: false});
+        }
+
         if(listStatusPengajuan === null) {
             this.loadStatusPengajuan(filterStatusPengajuan, paginationStatusPengajuan, urutStatusPengajuan);
         }
@@ -63,18 +69,16 @@ class PengajuanBaru extends React.Component {
     }
 
     componentWillUnmount() {
-        const { resetItemProyekSelected } = this.props;
-        resetItemProyekSelected();
+        const { resetItemPengajuanSelected } = this.props;
+        resetItemPengajuanSelected();
     }
 
     handleBaru = () => {
-        const { mode } = this.state;
+        const { modePengajuanBaru, setModePengajuanBaru } = this.props;
 
-        if(mode === 'edit') {
-            this.setState({disabledInputEdit: true, keyForm: 'add'});            
-        }
-        else {
-            this.setState({disabledInput: false, keyForm: 'add'});
+        if(modePengajuanBaru === 'edit') {
+            this.setState({disabledInputEdit: true, keyForm: 'add'});  
+            setModePengajuanBaru('add');          
         }
 
         setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 100);        
@@ -87,12 +91,11 @@ class PengajuanBaru extends React.Component {
     }
 
     handleBatal = () => {
-        const { resetItemProyekSelected } = this.props;
-        const { mode } = this.state;
+        const { modePengajuanBaru, resetItemPengajuanSelected } = this.props;
 
         this.formRef.current.resetFields();        
-        resetItemProyekSelected();
-        if(mode === 'edit') {
+        resetItemPengajuanSelected();
+        if(modePengajuanBaru === 'edit') {
             this.setState({jenisPengajuan: false, disabledInput: true, disabledInputEdit: false, keyForm: 'batal'});
         }
         else {
@@ -106,11 +109,11 @@ class PengajuanBaru extends React.Component {
 	}
 
     handleChangeNilaiText = (e) => {
-        const { mode } = this.state;
+        const { modePengajuanBaru } = this.props;
 
 		switch(e.currentTarget.dataset.jenis) {
             case 'nopengajuan':
-                if( mode === 'edit' ) {
+                if( modePengajuanBaru === 'edit' ) {
                     this.itemPengajuan.no_pengajuan_baru = e.currentTarget.value;
                 }
                 else {
@@ -141,12 +144,12 @@ class PengajuanBaru extends React.Component {
 	}
 
     handleEdit = () => {
-        // const { itemProyekSelected } = this.props;
-        // this.itemProyek = {                
-        //     no_job: itemProyekSelected.no_job,
-        //     id_customer: itemProyekSelected.id_customer,
+        const { itemPengajuanSelected } = this.props;
+        this.itemPengajuan = {                
+            no_job: itemPengajuanSelected.no_job,
+            id_customer: itemPengajuanSelected.id_customer,
             
-        // };
+        };
         // if(this.itemProyek.tanggal_aktif === null) {
         //     this.itemProyek.tanggal_aktif =  `${moment().year()}-${moment().month()+1}-${moment().date()}`;
         // }
@@ -158,9 +161,9 @@ class PengajuanBaru extends React.Component {
     }
 
     handleOnFinish = (value) => {
-		const { mode } = this.props;
+		const { modePengajuanBaru } = this.props;
 		this.setState({disabledInput: true});
-		if(mode === 'edit') {
+		if(modePengajuanBaru === 'edit') {
             // this.updatePengajuan();
         }
         else {
@@ -185,15 +188,15 @@ class PengajuanBaru extends React.Component {
     }
 
     handleToNavDaftarPengajuan = () => {
-        // const { setItemMenuSelected } = this.props;
-        // setItemMenuSelected('Daftar Proyek');
+        const { setItemMenuSelected } = this.props;
+        setItemMenuSelected('Daftar Pengajuan');
     }
 
     handleReset = () => {
-        const { resetItemProyekSelected } = this.props;
+        const { resetItemPengajuanSelected } = this.props;
 		this.formRef.current.resetFields();    
         this.setState({keyForm: 'reset'});    
-        resetItemProyekSelected();
+        resetItemPengajuanSelected();
         setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 300);
 	}
 

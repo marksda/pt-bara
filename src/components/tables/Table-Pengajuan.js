@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
 
 import { 
-    getPengajuan, setFilterPengajuan, setItemMenuSelected,   
+    getPengajuan, setFilterPengajuan, setItemMenuSelected, setItemPengajuanSelected, setModePengajuanBaru,
     setPaginationPengajuan, setUrutPengajuan 
 } from "../../actions/master-action";
 
@@ -349,12 +349,13 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {
-        // setItemPengajuanSelected: (url, headerAuthorization) => dispatch(setItemPengajuanSelected(url, headerAuthorization)),
+        setItemPengajuanSelected: (nilai) => dispatch(setItemPengajuanSelected(nilai)),
         getPengajuan: (url, headerAuthorization) => dispatch(getPengajuan(url, headerAuthorization)),
         setFilterPengajuan: (value) => dispatch(setFilterPengajuan(value)),
         setPaginationPengajuan: (value) => dispatch(setPaginationPengajuan(value)),
         setUrutPengajuan: (value) => dispatch(setUrutPengajuan(value)),  
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+        setModePengajuanBaru: (nilai) => dispatch(setModePengajuanBaru(nilai)),
     };
 };
 
@@ -418,6 +419,12 @@ class TablePengajuan extends React.Component {
         return `${tmptgl[2]}-${tmptgl[1]}-${tmptgl[0]}`
     }
 
+    handleAddPengajuanBaru = () => {
+        const { setItemMenuSelected, setModePengajuanBaru } = this.props;
+        setModePengajuanBaru('add');
+        setItemMenuSelected('Pengajuan Baru');
+    }
+
     handleChangeFilter = () => {
 
     }
@@ -443,15 +450,23 @@ class TablePengajuan extends React.Component {
         // this.loadProyek(filterProyek, tmpPagination, urutProyek);
     }
 
+    handleEditPengajuanBaru = (e) => {
+        const { listPengajuan, setItemMenuSelected, setItemProyekSelected, setModePengajuanBaru } = this.props;
+        let tmp = listPengajuan.data[Number(e.currentTarget.dataset.id)];
+        setItemProyekSelected(tmp);        
+        setModePengajuanBaru('edit');
+        setItemMenuSelected('Pengajuan Baru');
+    }
+
     handleRequestSort = (event, property) => {   
-        // const { filterProyek, paginationProyek, setUrutProyek, urutProyek } = this.props;
-        // let isAsc = urutProyek.field === property && urutProyek.order === 'asc';
-        // let tmpUrut = {
-        //     field: property,
-        //     order: isAsc ? 'desc' : 'asc'
-        // };
-        // setUrutProyek(tmpUrut);
-        // this.loadProyek(filterProyek, paginationProyek, tmpUrut);
+        const { filterPengajuan, paginationPengajuan, setUrutPengajuan, urutPengajuan } = this.props;
+        let isAsc = urutPengajuan.field === property && urutPengajuan.order === 'asc';
+        let tmpUrut = {
+            field: property,
+            order: isAsc ? 'desc' : 'asc'
+        };
+        setUrutPengajuan(tmpUrut);
+        this.loadPengajuan(filterPengajuan, paginationPengajuan, tmpUrut);
     }
 
     loadPengajuan = (filter, pagination, urut) => {
@@ -477,6 +492,7 @@ class TablePengajuan extends React.Component {
             <EnhancedTableToolbar 
                 title={title}
                 handleCari={this.handleChangeFilter}
+                handleOpen={this.handleAddPengajuanBaru}
                 rangeDate={rentanDate}
                 changeRangeDate={this.changeRangeDate}
                 acuan={this.formRef}
@@ -497,7 +513,7 @@ class TablePengajuan extends React.Component {
                     			<TableRow 
 	                                hover
 	                                tabIndex={-1}
-	                                key={row.no_job}      
+	                                key={row.no_pengajuan}      
 	                            >
 	                            	<TableCell 
 	                                    align={'right'}
@@ -554,7 +570,7 @@ class TablePengajuan extends React.Component {
                                         align={'center'}
                                     >
                                         <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddProyekBaru}/>
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_pengajuan} onClick={this.handleEditProyekBaru} data-status={row.id_status_proyek} />
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={index} onClick={this.handleEditPengajuanBaru} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.no_pengajuan} onClick={this.handleBtnDelete}/>
                                     </TableCell>
 	                            </TableRow>

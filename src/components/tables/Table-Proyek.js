@@ -424,8 +424,7 @@ class TableProyek extends React.Component {
 
     handleEditProyekBaru = (e) => {
         const { headerAuthorization, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, restfulServer, setStatusProyekSelected } = this.props;
-        setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${e.currentTarget.dataset.id}`, headerAuthorization);
-        
+        setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${e.currentTarget.dataset.id}`, headerAuthorization);        
         setStatusProyekSelected(e.currentTarget.dataset.status);
         setModeProyekBaru('edit');
         setItemMenuSelected('Proyek Baru');
