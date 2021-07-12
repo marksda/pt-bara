@@ -277,7 +277,7 @@ const EnhancedTableHead = (props) => {
                                 page = 
                                 <TableCell
                                     key={headCell.id}
-                                    align={'right'}
+                                    align={'left'}
                                     style={{width: 150}}
                                 >
                                     <TableSortLabel
@@ -413,6 +413,11 @@ class TablePengajuan extends React.Component {
 
     }
 
+    flipDate = (tgl) => {
+        let tmptgl = tgl.split('-');
+        return `${tmptgl[2]}-${tmptgl[1]}-${tmptgl[0]}`
+    }
+
     handleChangeFilter = () => {
 
     }
@@ -465,7 +470,6 @@ class TablePengajuan extends React.Component {
         const { classes, listPengajuan, paginationPengajuan, title, urutPengajuan } = this.props;
 		const { openConfirmasiHapusPengajuan, openProcessingDialog, rentanDate } = this.state;
 
-        console.log(listPengajuan);
         let pageRender = null;
 
         pageRender =
@@ -487,7 +491,76 @@ class TablePengajuan extends React.Component {
                         onRequestSort={this.handleRequestSort}
                     />
                     <TableBody>
-
+                    {
+                        listPengajuan !== null ? listPengajuan.data.map((row, index) => {
+                    		return(
+                    			<TableRow 
+	                                hover
+	                                tabIndex={-1}
+	                                key={row.no_job}      
+	                            >
+	                            	<TableCell 
+	                                    align={'right'}
+	                                    style={{minWidth: 40, verticalAlign: 'top'}}
+	                                >
+	                                    {(paginationPengajuan.current-1)*paginationPengajuan.pageSize+index+1}.
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 100, verticalAlign: 'top'}}
+	                                >
+	                                    { 
+                                            this.flipDate(row.tanggal)                                      
+                                        }
+	                                </TableCell>
+	                                <TableCell 
+	                                    align={'left'}
+                                        style={{width: 160, verticalAlign: 'top'}}
+	                                >
+	                                    { row.no_pengajuan }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 130, verticalAlign: 'top'}}
+	                                >
+	                                    { row.no_job !== null ? row.no_job : '-' }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 250, verticalAlign: 'top'}}
+	                                >
+	                                    { row.nama }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'right'}
+                                        style={{width: 200, verticalAlign: 'top'}}
+	                                >
+	                                    {new Intl.NumberFormat('id').format(row.nominal_pengajuan)}
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{verticalAlign: 'top'}}
+	                                >
+	                                    { row.deskripsi_pengajuan }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{width: 150, verticalAlign: 'top'}}
+	                                >
+	                                    { row.status }
+	                                </TableCell>
+	                                <TableCell 
+                                        style={{width: 100, verticalAlign: 'top'}}
+                                        align={'center'}
+                                    >
+                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddProyekBaru}/>
+                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_pengajuan} onClick={this.handleEditProyekBaru} data-status={row.id_status_proyek} />
+                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.no_pengajuan} onClick={this.handleBtnDelete}/>
+                                    </TableCell>
+	                            </TableRow>
+                    		);
+                    	}):null
+                    }
                     </TableBody>
                 </Table>
             </TableContainer>
