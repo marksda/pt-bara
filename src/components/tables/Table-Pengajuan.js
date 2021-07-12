@@ -380,7 +380,7 @@ class TablePengajuan extends React.Component {
         if(filterPengajuan === null) {     
             this.setState({rentanDate: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]});      
             tmpFilter = [
-                {field: 'rentan_tanggal_aktif', rentan: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]}
+                {field: 'rentan_tanggal', rentan: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]}
             ];
         }
         else {                        
@@ -464,6 +464,8 @@ class TablePengajuan extends React.Component {
     render() {
         const { classes, listPengajuan, paginationPengajuan, title, urutPengajuan } = this.props;
 		const { openConfirmasiHapusPengajuan, openProcessingDialog, rentanDate } = this.state;
+
+        console.log(listPengajuan);
         let pageRender = null;
 
         pageRender =

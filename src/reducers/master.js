@@ -246,7 +246,7 @@ const initialState = {
         pageSize: 50,
     },
     urut_pengajuan: {
-        field: "m.id",
+        field: "m.tanggal",
         order: "asc"
     },
 }
