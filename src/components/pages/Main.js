@@ -10,6 +10,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -201,7 +202,7 @@ class Main extends React.Component {
 	    }
         else{
             page = 
-            <div className={classes.root}>
+            <div className={classes.root}>           
                 <AppBar
                     position="fixed"
                     className={clsx(classes.appBar, {
@@ -257,8 +258,9 @@ class Main extends React.Component {
                                 <MenuItem onClick={this.handleCloseMenuPopup}>My account</MenuItem>
                                 <MenuItem onClick={this.handleLogOut}>Log Out</MenuItem>
                             </Menu>
-                        </div>
+                        </div>                        
                     </Toolbar>
+                    <LinearProgress color="secondary"/>
                 </AppBar>
                 <Drawer
                     variant="permanent"
@@ -272,7 +274,7 @@ class Main extends React.Component {
                         [classes.drawerClose]: !open,
                     }),
                     }}
-                >
+                >                         
                     <div className={classes.toolbar}>
                         <IconButton onClick={this.handleDrawerClose}>
                         <ChevronLeftIcon />

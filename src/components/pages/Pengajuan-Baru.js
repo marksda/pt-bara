@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, DatePicker, Form, Input, InputNumber, Radio , Select } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, notification, Radio , Select } from 'antd';
 import Popover from '@material-ui/core/Popover';
 import moment from 'moment';
 
@@ -49,7 +49,8 @@ class PengajuanBaru extends React.Component {
             disabledInput: true,
             jenisPengajuan: false,
             anchorEl: null,
-            keyForm: 'none'
+            keyForm: 'none',
+            openProcessingDialog: false,
         };
 
         this.formRef = React.createRef();
@@ -77,6 +78,18 @@ class PengajuanBaru extends React.Component {
         const { resetItemPengajuanSelected, setModePengajuanBaru } = this.props;
         resetItemPengajuanSelected();
         setModePengajuanBaru('add'); 
+    }
+
+    formatterRupiah = (value) => {        
+        let tmp = value.split('.');
+        if(tmp.length>1){
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]},${tmp[1]}`;
+        }
+        else {
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]}`;
+        }
     }
 
     handleBaru = () => {
@@ -199,7 +212,7 @@ class PengajuanBaru extends React.Component {
 		const { modePengajuanBaru } = this.props;
 		this.setState({disabledInput: true});
 		if(modePengajuanBaru === 'edit') {
-            // this.updatePengajuan();
+            this.updatePengajuan();
         }
         else {
 			this.savePengajuan();
@@ -235,16 +248,8 @@ class PengajuanBaru extends React.Component {
         setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 300);
 	}
 
-    formatterRupiah = (value) => {        
-        let tmp = value.split('.');
-        if(tmp.length>1){
-            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
-            return `Rp ${tmp[0]},${tmp[1]}`;
-        }
-        else {
-            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
-            return `Rp ${tmp[0]}`;
-        }
+    handleToggleOpenProgressDialog = () => {
+        this.setState({openProcessingDialog: !this.state.openProcessingDialog});
     }
 
     parserRupiah = (value) => {
@@ -260,6 +265,43 @@ class PengajuanBaru extends React.Component {
         const { getStatusPengajuan, headerAuthorization, restfulServer } = this.props; 
         let url = `${restfulServer}/master/statuspengajuan?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
         getStatusPengajuan(url, headerAuthorization);
+    }
+
+    updatePengajuan = () => {
+        const { headerAuthorization, restfulServer } = this.props;
+
+        let self = this;    
+                
+        // this.handleToggleOpenProgressDialog();
+
+        // axios({
+        //     method: 'post',
+        //     url: `${restfulServer}/master/pengajuan`,
+        //     headers: {...headerAuthorization},
+        //     data: this.itemPengajuan
+        // })
+        // .then((r) => { 
+        //     self.handleToggleOpenProgressDialog();
+        //     self.setState({disabledInput: true, disabledInputEdit: false}); 
+        //     notification.open({
+        //         message: 'Pemberitahuan',
+        //         description:
+        //           'Pengajuan berhasil diupdate.',
+        //         duration: 4,
+        //         placement: 'bottomRight'
+        //     });
+        // })
+        // .catch((r) => {         
+        //     self.handleToggleOpenProgressDialog();
+        //     self.setState({disabledInput: true, disabledInputEdit: false}); 
+        //     notification.open({
+        //         message: 'Pemberitahuan',
+        //         description:
+        //           'Proyek baru gagal diupdate.',
+        //         duration: 4,
+        //         placement: 'bottomRight'
+        //     });
+        // });        
     }
 
     savePengajuan = () => {
@@ -333,6 +375,8 @@ class PengajuanBaru extends React.Component {
             initialValues={initEdit}
             key={itemProyekSelected === null ? keyForm : `${keyForm}${itemProyekSelected.no_job}`}
         >
+            
+            
             <div className="content-flex-center">
                 <table className="table-container-pengajuan-baru" style={{width: '65%'}}>
                 <tbody>

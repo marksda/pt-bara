@@ -435,69 +435,36 @@ class TablePengajuan extends React.Component {
     }
 
     handleChangeFilter = (v) => {
-        const { filterPengajuan, paginationPengajuan, setFilterPengajuan, urutPengajuan, setPaginationPengajuan } = this.props;
+        const { filterPengajuan, paginationPengajuan, setFilterPengajuan, urutPengajuan, setPaginationPengajuan } = this.props;    
         
-
-        let tmpPagination = {...paginationPengajuan};
-        tmpPagination.current = 1;        
-        setPaginationPengajuan(tmpPagination);
         let tmpFilter = [];
-        let idx = null;
+        let idx = _.findIndex(filterPengajuan, function(o){return o.field === 'm.no_pengajuan'});
 
-        switch (prefixSearch) {
-            case 'm.no_job':
-                tmpFilter = [...filterProyek];
-                idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.no_job'});
+        if(idx < 0) {
+            let tmpRangeDate = _.find(filterPengajuan, function(o){return o.field === 'rentan_tanggal'});
+            tmpFilter.push(                        
+                { field: "m.no_pengajuan", search: v },
+                tmpRangeDate
+            );
+        }
+        else {
+            tmpFilter = [...filterPengajuan];
+            tmpFilter[idx].search = v;
+        } 
 
-                if(idx < 0) {
-                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
-                    tmpFilter = [];
-                    tmpFilter.push(                        
-                        { field: "m.no_job", search: v },
-                        tmpRangeDate
-                    );
-                }
-                else {
-                    tmpFilter[idx].search = v;
-                } 
-                break;
-            case 'c.nama':
-                tmpFilter = [...filterProyek];
-                idx = _.findIndex(tmpFilter, function(o){return o.field === 'c.nama'});
-
-                if(idx < 0) {
-                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
-                    tmpFilter = [];
-                    tmpFilter.push(                        
-                        { field: "c.nama", search: v },
-                        tmpRangeDate
-                    );
-                }
-                else {
-                    tmpFilter[idx].search = v;
-                }  
-                break;
-            default:
-                tmpFilter = [...filterProyek];
-                idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama_proyek'});
-
-                if(idx < 0) {
-                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
-                    tmpFilter = [];
-                    tmpFilter.push(
-                        { field: "m.nama_proyek", search: v },
-                        tmpRangeDate
-                    );
-                }
-                else {
-                    tmpFilter[idx].search = v;
-                }  
-                
-                break;
-        }    
-
-        setFilterProyek(tmpFilter);
-        this.loadProyek(tmpFilter, tmpPagination, urutProyek);
+        if(paginationPengajuan.current !== 1) {
+            let tmpPagination = {...paginationPengajuan};
+            tmpPagination.current = 1;   
+            setPaginationPengajuan(tmpPagination);
+            setFilterPengajuan(tmpFilter);
+            this.loadPengajuan(tmpFilter, tmpPagination, urutPengajuan);
+        }
+        else {
+            setFilterPengajuan(tmpFilter);
+            this.loadPengajuan(tmpFilter, paginationPengajuan, urutPengajuan);
+        }
+        
+        
     }
 
     handleChangeRowsPerPage = (event) => {
