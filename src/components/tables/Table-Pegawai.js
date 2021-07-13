@@ -202,7 +202,7 @@ const EnhancedTableHead = (props) => {
                                 page = 
                                 <TableCell
                                     key={headCell.id}
-                                    align={'left'}
+                                    align={'center'}
                                     style={{width: 100}}
                                 >
                                     {headCell.label}
@@ -504,10 +504,10 @@ class TablePegawai extends React.Component {
 	                                    { row.email }
 	                                </TableCell>
                                     <TableCell 
-	                                    align={'left'}
+	                                    align={'center'}
                                         style={{width: 100, verticalAlign: 'top'}}
 	                                >
-	                                    { row.url_photo !== null?<img alt='foto' style={{width:85, height:100}} src={`${restfulServer}/master/foto/pegawai/${row.url_photo}`} />: '-'}
+	                                    { row.url_photo !== null?<img alt='foto' style={{width:60, height:85}} src={`${restfulServer}/master/foto/pegawai/${row.url_photo}`} />: '-'}
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}

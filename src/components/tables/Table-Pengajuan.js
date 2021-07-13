@@ -17,7 +17,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
 import _ from 'lodash';
 
-import { DatePicker, Form, Input, Select, Typography } from 'antd';
+import { DatePicker, Form, Input } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
@@ -32,9 +32,7 @@ import {
 
 import { connect } from "react-redux";
 
-const { Title } = Typography;
 const { Search } = Input;
-const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const useToolbarStyles = makeStyles(theme => ({
@@ -59,7 +57,7 @@ const useToolbarStyles = makeStyles(theme => ({
     },
     title: {
         flex: '0 0 auto',
-        marginTop: 16
+        // marginTop: 16
     },
 }));
 
@@ -68,38 +66,13 @@ const EnhancedTableToolbar = (props) => {
     const { acuan, changeRangeDate, handleOpen, title, handleCari, rangeDate } = props;
     const dateFormat = 'DD-MM-YYYY';
     const customFormat = value => `${value.format(dateFormat)}`;
-
-    // const selectBefore = (
-    //     <Select 
-    //         defaultValue={prefixSearch!==null?prefixSearch:'m.no_job'} 
-    //         dropdownStyle={{zIndex: 2000}}
-    //         onChange={handleChangePrefixSearch}
-    //     >
-    //       <Option value="m.no_job">No. Job</Option>
-    //       <Option value="c.nama">Customer</Option>
-    //       <Option value="m.nama_proyek">Proyek</Option>
-    //     </Select>
-    // );
-
+    
     return(
         <Toolbar
             className={classes.root}
         >           
             <div className={classes.title}>
-                <Title level={4}>
-                    {title}
-                </Title>
-            </div>
-            <div className={classes.spacer} />
-            <div className={classes.actions}>
-                <Tooltip title="tambah" className={classes.showIconTambah}>
-                    <IconButton 
-                        aria-label="add" 
-                        onClick={handleOpen}
-                    >
-                        <AddBoxOutlineIcon />
-                    </IconButton>                             
-                </Tooltip>
+                <label>Periode :&nbsp;&nbsp;&nbsp;</label>
                 <RangePicker 
                     defaultValue={rangeDate!==null?[moment(rangeDate[0]), moment(rangeDate[1])]:[null,null]}
                     format={customFormat}
@@ -110,6 +83,17 @@ const EnhancedTableToolbar = (props) => {
                     placeholder={["tgl. awal", "tgl. akhir"]}
                     onChange={changeRangeDate}
                 />
+            </div>
+            <div className={classes.spacer} />
+            <div className={classes.actions}>
+                <Tooltip title="tambah" className={classes.showIconTambah}>
+                    <IconButton 
+                        aria-label="add" 
+                        onClick={handleOpen}
+                    >
+                        <AddBoxOutlineIcon />
+                    </IconButton>                             
+                </Tooltip>                
                 <Form ref={acuan} style={{marginTop: 24, marginLeft: 8}}>
                     <Form.Item name="cari">
                         <Search
@@ -119,7 +103,7 @@ const EnhancedTableToolbar = (props) => {
                         />
                     </Form.Item>
                 </Form>                
-            </div>            
+            </div>          
         </Toolbar>
     );
 };
@@ -366,7 +350,6 @@ class TablePengajuan extends React.Component {
         	openConfirmasiHapusPengajuan: false,
         	openFormAddPengajuan: false,
         	openProcessingDialog: false, 
-        	mode: '',
             rentanDate: null
         };
 
@@ -410,7 +393,33 @@ class TablePengajuan extends React.Component {
         this.loadPengajuan(tmpFilter, paginationPengajuan, urutPengajuan);
     }
 
-    changeRangeDate = () => {
+    changeRangeDate = (dates, datesString) => {
+        const { filterPengajuan, paginationPengajuan, setFilterPengajuan, setPaginationPengajuan, urutPengajuan } = this.props;
+        let tmpPagination = {...paginationPengajuan};
+        tmpPagination.current = 1;        
+        setPaginationPengajuan(tmpPagination);
+
+        let tmpRangeDate = [this.flipDate(datesString[0]), this.flipDate(datesString[1])];
+        this.setState({rentanDate: tmpRangeDate});
+
+        let tmpFilter = [...filterPengajuan];
+
+        let idx = _.findIndex(tmpFilter, function(o){return o.field === 'rentan_tanggal'});
+
+        if(idx < 0) {
+            tmpFilter.push(
+                {
+                    field: "rentan_tanggal",
+                    rentan: tmpRangeDate
+                }
+            );
+        }
+        else {
+            tmpFilter[idx].rentan = tmpRangeDate;
+        }       
+
+        setFilterPengajuan(tmpFilter);
+        this.loadPengajuan(tmpFilter, tmpPagination, urutPengajuan);
 
     }
 
@@ -425,8 +434,70 @@ class TablePengajuan extends React.Component {
         setItemMenuSelected('Pengajuan Baru');
     }
 
-    handleChangeFilter = () => {
+    handleChangeFilter = (v) => {
+        const { filterPengajuan, paginationPengajuan, setFilterPengajuan, urutPengajuan, setPaginationPengajuan } = this.props;
+        
 
+        let tmpPagination = {...paginationPengajuan};
+        tmpPagination.current = 1;        
+        setPaginationPengajuan(tmpPagination);
+        let tmpFilter = [];
+        let idx = null;
+
+        switch (prefixSearch) {
+            case 'm.no_job':
+                tmpFilter = [...filterProyek];
+                idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.no_job'});
+
+                if(idx < 0) {
+                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
+                    tmpFilter = [];
+                    tmpFilter.push(                        
+                        { field: "m.no_job", search: v },
+                        tmpRangeDate
+                    );
+                }
+                else {
+                    tmpFilter[idx].search = v;
+                } 
+                break;
+            case 'c.nama':
+                tmpFilter = [...filterProyek];
+                idx = _.findIndex(tmpFilter, function(o){return o.field === 'c.nama'});
+
+                if(idx < 0) {
+                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
+                    tmpFilter = [];
+                    tmpFilter.push(                        
+                        { field: "c.nama", search: v },
+                        tmpRangeDate
+                    );
+                }
+                else {
+                    tmpFilter[idx].search = v;
+                }  
+                break;
+            default:
+                tmpFilter = [...filterProyek];
+                idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama_proyek'});
+
+                if(idx < 0) {
+                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_aktif'});
+                    tmpFilter = [];
+                    tmpFilter.push(
+                        { field: "m.nama_proyek", search: v },
+                        tmpRangeDate
+                    );
+                }
+                else {
+                    tmpFilter[idx].search = v;
+                }  
+                
+                break;
+        }    
+
+        setFilterProyek(tmpFilter);
+        this.loadProyek(tmpFilter, tmpPagination, urutProyek);
     }
 
     handleChangeRowsPerPage = (event) => {
@@ -451,9 +522,9 @@ class TablePengajuan extends React.Component {
     }
 
     handleEditPengajuanBaru = (e) => {
-        const { listPengajuan, setItemMenuSelected, setItemProyekSelected, setModePengajuanBaru } = this.props;
+        const { listPengajuan, setItemMenuSelected, setItemPengajuanSelected, setModePengajuanBaru } = this.props;
         let tmp = listPengajuan.data[Number(e.currentTarget.dataset.id)];
-        setItemProyekSelected(tmp);        
+        setItemPengajuanSelected(tmp);        
         setModePengajuanBaru('edit');
         setItemMenuSelected('Pengajuan Baru');
     }
@@ -488,7 +559,7 @@ class TablePengajuan extends React.Component {
         let pageRender = null;
 
         pageRender =
-		<div className={classes.root}>
+		<div className={classes.root}>    
             <EnhancedTableToolbar 
                 title={title}
                 handleCari={this.handleChangeFilter}
@@ -497,7 +568,7 @@ class TablePengajuan extends React.Component {
                 changeRangeDate={this.changeRangeDate}
                 acuan={this.formRef}
                 key={rentanDate}
-            />
+            />        
             <TableContainer className={classes.tableWrapper}>
                 <Table aria-labelledby="table-pengajuan">
                     <EnhancedTableHead 
@@ -569,7 +640,7 @@ class TablePengajuan extends React.Component {
                                         style={{width: 100, verticalAlign: 'top'}}
                                         align={'center'}
                                     >
-                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddProyekBaru}/>
+                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddPengajuanBaru}/>
                                         <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={index} onClick={this.handleEditPengajuanBaru} />
                                         <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.no_pengajuan} onClick={this.handleBtnDelete}/>
                                     </TableCell>

@@ -24,6 +24,7 @@ const mapStateToProps = store => {
         paginationStatusPengajuan: store.master.pagination_status_pengajuan,
         urutStatusPengajuan: store.master.urut_status_pengajuan,
         modePengajuanBaru: store.master.mode_pengajuan_baru,
+        itemProyekSelected: store.master.item_proyek_selected,
     };
 };
 
@@ -46,7 +47,6 @@ class PengajuanBaru extends React.Component {
         this.state = {
             disabledInputEdit: true,
             disabledInput: true,
-            mode: "add",
             jenisPengajuan: false,
             anchorEl: null,
             keyForm: 'none'
@@ -57,31 +57,44 @@ class PengajuanBaru extends React.Component {
     }
 
     componentDidMount() {
-        const { filterStatusPengajuan, modePengajuanBaru, paginationStatusPengajuan, urutStatusPengajuan, listStatusPengajuan } = this.props;
-        if(modePengajuanBaru === 'edit') {
-            this.setState({disabledInputEdit: false});
-        }
-
+        const { filterStatusPengajuan, itemPengajuanSelected, modePengajuanBaru, paginationStatusPengajuan, urutStatusPengajuan, listStatusPengajuan } = this.props;
+        
         if(listStatusPengajuan === null) {
             this.loadStatusPengajuan(filterStatusPengajuan, paginationStatusPengajuan, urutStatusPengajuan);
         }
-        setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
+
+        if(modePengajuanBaru === 'edit') {
+            this.setState({disabledInputEdit: false, jenisPengajuan: itemPengajuanSelected.is_proyek});
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnedit').focus();}, 100);
+        }
+        else {
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
+        }
+        
     }
 
     componentWillUnmount() {
-        const { resetItemPengajuanSelected } = this.props;
+        const { resetItemPengajuanSelected, setModePengajuanBaru } = this.props;
         resetItemPengajuanSelected();
+        setModePengajuanBaru('add'); 
     }
 
     handleBaru = () => {
-        const { modePengajuanBaru, setModePengajuanBaru } = this.props;
-
+        const { modePengajuanBaru, setModePengajuanBaru, resetItemPengajuanSelected } = this.props;
+        
         if(modePengajuanBaru === 'edit') {
-            this.setState({disabledInputEdit: true, keyForm: 'add'});  
+            resetItemPengajuanSelected();
+            this.setState({disabledInput: false, disabledInputEdit: true, jenisPengajuan: false,  keyForm: 'add'});  
             setModePengajuanBaru('add');          
         }
+        else {
+            this.setState({disabledInput: false, keyForm: 'add'});  
+        }
 
-        setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 100);        
+        setTimeout(() => {
+            this.formRef.current.resetFields();
+            this.formRef.current.getFieldInstance('no_pengajuan').focus();
+        }, 100);        
 
         this.itemPengajuan = {
             tanggal: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
@@ -91,12 +104,11 @@ class PengajuanBaru extends React.Component {
     }
 
     handleBatal = () => {
-        const { modePengajuanBaru, resetItemPengajuanSelected } = this.props;
+        const { itemPengajuanSelected, modePengajuanBaru } = this.props;
 
-        this.formRef.current.resetFields();        
-        resetItemPengajuanSelected();
+        // this.formRef.current.resetFields();
         if(modePengajuanBaru === 'edit') {
-            this.setState({jenisPengajuan: false, disabledInput: true, disabledInputEdit: false, keyForm: 'batal'});
+            this.setState({jenisPengajuan: itemPengajuanSelected.is_proyek, disabledInput: true, disabledInputEdit: false, keyForm: 'batal'});
         }
         else {
             this.setState({jenisPengajuan: false, disabledInput: true, keyForm: 'batal'});
@@ -145,19 +157,42 @@ class PengajuanBaru extends React.Component {
 
     handleEdit = () => {
         const { itemPengajuanSelected } = this.props;
-        this.itemPengajuan = {                
-            no_job: itemPengajuanSelected.no_job,
-            id_customer: itemPengajuanSelected.id_customer,
-            
-        };
-        // if(this.itemProyek.tanggal_aktif === null) {
-        //     this.itemProyek.tanggal_aktif =  `${moment().year()}-${moment().month()+1}-${moment().date()}`;
-        // }
-
-        // console.log(this.itemProyek);
-
-        // this.setState({disabledInput: false, disabledInputEdit: true});
-        // setTimeout(() => {this.formRef.current.getFieldInstance('pemilik_proyek').focus();}, 300);
+        if(itemPengajuanSelected.is_proyek === true){
+            this.itemPengajuan = {                
+                tanggal: itemPengajuanSelected.tanggal,
+                no_pengajuan: itemPengajuanSelected.no_pengajuan,
+                tanggal: itemPengajuanSelected.tanggal,
+                no_pengajuan: itemPengajuanSelected.no_pengajuan,
+                nominal_pengajuan: itemPengajuanSelected.nominal_pengajuan,
+                is_reimburse: itemPengajuanSelected.is_reimburse,
+                is_proyek: itemPengajuanSelected.is_proyek,
+                no_job: itemPengajuanSelected.no_job,
+                nama_customer: itemPengajuanSelected.nama_customer,
+                nama_proyek: itemPengajuanSelected.nama_proyek,
+                dokumen: itemPengajuanSelected.dokumen,
+                deskripsi_pengajuan: itemPengajuanSelected.deskripsi_pengajuan,
+                catatan_persetujuan: itemPengajuanSelected.catatan_persetujuan,
+                id_status_pengajuan: itemPengajuanSelected.id_status_pengajuan
+            };
+        }
+        else {
+            this.itemPengajuan = { 
+                tanggal: itemPengajuanSelected.tanggal,
+                no_pengajuan: itemPengajuanSelected.no_pengajuan,
+                tanggal: itemPengajuanSelected.tanggal,
+                no_pengajuan: itemPengajuanSelected.no_pengajuan,
+                nominal_pengajuan: itemPengajuanSelected.nominal_pengajuan,
+                is_reimburse: itemPengajuanSelected.is_reimburse,
+                is_proyek: itemPengajuanSelected.is_proyek,
+                dokumen: itemPengajuanSelected.dokumen,
+                deskripsi_pengajuan: itemPengajuanSelected.deskripsi_pengajuan,
+                catatan_persetujuan: itemPengajuanSelected.catatan_persetujuan,
+                id_status_pengajuan: itemPengajuanSelected.id_status_pengajuan
+            };
+        }
+        
+        this.setState({disabledInput: false, disabledInputEdit: true, jenisPengajuan: itemPengajuanSelected.is_proyek});
+        setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 300);
     }
 
     handleOnFinish = (value) => {
@@ -257,22 +292,23 @@ class PengajuanBaru extends React.Component {
 	}
 
     render() {
-        const { itemProyekSelected, listStatusPengajuan } = this.props;
-        const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, keyForm, mode } = this.state;
+        const { itemProyekSelected, itemPengajuanSelected, listStatusPengajuan, modePengajuanBaru } = this.props;
+        const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, keyForm } = this.state;
 
         let initEdit;
-        if(mode === 'edit' && itemProyekSelected !== null ) {
+        if(modePengajuanBaru === 'edit' && itemPengajuanSelected !== null ) {
             initEdit = {
                 layout: 'vertical',
                 remember: true,
-                ["tanggal"]: moment(itemProyekSelected.tanggal),
-                ["is_Proyek"]: itemProyekSelected.is_proyek,
-                ["nominal_pengajuan"]: itemProyekSelected.nominal_pengajuan,
-                ["is_reimburse"]: itemProyekSelected.is_reimburse,
-                ["id_status_pengajuan"]: itemProyekSelected.id_status_pengajuan,
-                ["no_job"]: itemProyekSelected.no_job,
-                ["nama_customer"]: itemProyekSelected.nama_customer,
-                ["nama_proyek"]:  itemProyekSelected.nama_proyek,
+                ["tanggal"]: moment(itemPengajuanSelected.tanggal),
+                ["is_Proyek"]: itemPengajuanSelected.is_proyek,
+                ["nominal_pengajuan"]: itemPengajuanSelected.nominal_pengajuan,
+                ["is_reimburse"]: itemPengajuanSelected.is_reimburse,
+                ["id_status_pengajuan"]: itemPengajuanSelected.id_status_pengajuan,
+                ["no_pengajuan"]: itemPengajuanSelected.no_pengajuan,
+                ["no_job"]: itemPengajuanSelected.no_job,
+                ["nama_customer"]: itemPengajuanSelected.nama_customer,
+                ["nama_proyek"]:  itemPengajuanSelected.nama_proyek,
             };
         }
         else {
@@ -283,8 +319,8 @@ class PengajuanBaru extends React.Component {
                 ["is_Proyek"]: jenisPengajuan,
                 ["is_reimburse"]: false,
                 ["no_job"]: itemProyekSelected !== null?itemProyekSelected.no_job:null,
-                ["nama_customer"]: itemProyekSelected !== null?itemProyekSelected.nama_customer:null,
-                ["nama_proyek"]: itemProyekSelected !== null?itemProyekSelected.nama_proyek:null,
+                ["nama_customer"]: itemProyekSelected !== null ? itemProyekSelected.nama_customer:null,
+                ["nama_proyek"]:  itemProyekSelected !== null ? itemProyekSelected.nama_proyek:null
             };
         }
 
@@ -324,7 +360,7 @@ class PengajuanBaru extends React.Component {
                             >
                                 <Select 
                                     onChange={this.handleChangeJenisPengajuan}
-                                    disabled={disabledInput}
+                                    disabled={modePengajuanBaru==='edit'?true:disabledInput}
                                     style={{width: 180}}
                                 >
                                     <Select.Option value={true}>Proyek</Select.Option>
@@ -374,6 +410,7 @@ class PengajuanBaru extends React.Component {
                                 type="dashed" 
                                 icon={<FilterOutlined />} 
                                 style={{marginTop: 30}}
+                                disabled={modePengajuanBaru==='edit'?true:disabledInput}
                                 onClick={this.handleOpenWindowProyekSearch} />
                             </div>
                         </td>
@@ -581,7 +618,7 @@ class PengajuanBaru extends React.Component {
                         Baru
                     </Button>
                 </Form.Item>
-                <Form.Item {...tailLayout} style={{width: 150}}>                    
+                <Form.Item {...tailLayout} style={{width: 150, marginBottom: 8}} name="btnedit">                    
                     <Button 
                         shape="round"
                         size="default"
@@ -592,6 +629,8 @@ class PengajuanBaru extends React.Component {
                     >
                         Edit
                     </Button>
+                </Form.Item>
+                <Form.Item {...tailLayout} style={{width: 150}}>  
                     <Button 
                         danger
                         type="primary" 
@@ -609,7 +648,7 @@ class PengajuanBaru extends React.Component {
                         size="default"
                         htmlType="button" 
                         onClick={this.handleReset} 
-                        disabled={mode==='edit'?true:disabledInput}
+                        disabled={modePengajuanBaru==='edit'?true:disabledInput}
                         style={{marginBottom: 8, width: 150}}
                     >
                     Reset
