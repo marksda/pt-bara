@@ -9,7 +9,7 @@ import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
 import { connect } from "react-redux";
 import { FilterOutlined, MinusCircleOutlined, PlusOutlined  } from '@ant-design/icons';
 
-import { getStatusPengajuan, resetItemPengajuanSelected, setItemMenuSelected, setModePengajuanBaru } from "../../actions/master-action";
+import { getStatusPengajuan, resetItemPengajuanSelected, setIsProgress, setItemMenuSelected, setModePengajuanBaru } from "../../actions/master-action";
 
 
 const { TextArea } = Input;
@@ -34,6 +34,7 @@ const mapDispatchToProps = dispatch => {
         resetItemPengajuanSelected: () => dispatch(resetItemPengajuanSelected()),
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
         setModePengajuanBaru: (nilai) => dispatch(setModePengajuanBaru(nilai)), 
+        setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
     };
 };
 
@@ -268,7 +269,9 @@ class PengajuanBaru extends React.Component {
     }
 
     updatePengajuan = () => {
-        const { headerAuthorization, restfulServer } = this.props;
+        const { headerAuthorization, restfulServer, setIsProgress } = this.props;
+
+        setIsProgress(true);
 
         let self = this;    
                 

@@ -109,6 +109,7 @@ const mapStateToProps = store => {
         restfulServer: store.general.restful_domain,
         userProfile: store.credential.user_profile,
         itemMenuSelected: store.master.item_menu_selected,
+        isProgress: store.master.is_progress,
     };
 };
 
@@ -165,8 +166,10 @@ class Main extends React.Component {
     }
     
     render() {
-        const { authorizationNotify, classes, itemMenuSelected, listMenu, restfulServer, userProfile } = this.props;
+        const { authorizationNotify, classes, itemMenuSelected, isProgress, listMenu, restfulServer, userProfile } = this.props;
         const { anchorEl, isOpenMenu, open } = this.state;
+
+        console.log(isProgress);
 
         let page = null;
         let subPage = null;
@@ -225,7 +228,7 @@ class Main extends React.Component {
                             {itemMenuSelected}
                         </Typography>
                         <div 
-                            style={{display: 'flex', alignItems: 'center', cursor: 'pointer'}}
+                            style={{display: 'flex', alignItems: 'center', cursor: isProgress===false?'pointer':'default'}}
                         >
                             <Typography 
                                 variant="subtitle1" 
@@ -251,7 +254,7 @@ class Main extends React.Component {
                                     vertical: 'top',
                                     horizontal: 'right',
                                 }}
-                                open={isOpenMenu}
+                                open={isOpenMenu && !isProgress}
                                 onClose={this.handleCloseMenuPopup}
                             >
                                 <MenuItem onClick={this.handleCloseMenuPopup}>Profile</MenuItem>
@@ -260,7 +263,7 @@ class Main extends React.Component {
                             </Menu>
                         </div>                        
                     </Toolbar>
-                    <LinearProgress color="secondary"/>
+                    {isProgress===true?<LinearProgress color="secondary"/>:null}
                 </AppBar>
                 <Drawer
                     variant="permanent"
@@ -299,6 +302,7 @@ class Main extends React.Component {
                                             button key={itemMenu.id} 
                                             onClick={this.handleItemMenuClick}
                                             selected={itemMenuSelected === itemMenu.nama ? true : false}
+                                            disabled={isProgress}
                                         >
                                             <ListItemIcon>
                                                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}

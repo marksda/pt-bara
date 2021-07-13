@@ -87,3 +87,4 @@ export const FILTER_PENGAJUAN = "filter_pengajuan";
 export const LIST_PENGAJUAN = "list_pengajuan";
 export const PAGINATION_PENGAJUAN = "pagination_pengajuan";
 export const URUT_PENGAJUAN = "urut_pengajuan";
+export const IS_PROGRESS = "is_progress";
