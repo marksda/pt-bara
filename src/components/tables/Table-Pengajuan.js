@@ -17,7 +17,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
 import _ from 'lodash';
 
-import { DatePicker, Form, Input } from 'antd';
+import { DatePicker, Form, Input, notification } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
@@ -26,7 +26,7 @@ import {
 } from '@ant-design/icons';
 
 import { 
-    getPengajuan, setFilterPengajuan, setItemMenuSelected, setItemPengajuanSelected, setModePengajuanBaru,
+    getPengajuan, setFilterPengajuan, setIsProgress, setItemMenuSelected, setItemPengajuanSelected, setModePengajuanBaru,
     setPaginationPengajuan, setUrutPengajuan 
 } from "../../actions/master-action";
 
@@ -340,6 +340,7 @@ const mapDispatchToProps = dispatch => {
         setUrutPengajuan: (value) => dispatch(setUrutPengajuan(value)),  
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
         setModePengajuanBaru: (nilai) => dispatch(setModePengajuanBaru(nilai)),
+        setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
     };
 };
 
@@ -423,6 +424,62 @@ class TablePengajuan extends React.Component {
 
     }
 
+    deletePengajuan = (dataPengajuan) => {
+        const { 
+            filterPengajuan, headerAuthorization, paginationPengajuan, restfulServer, setIsProgress, urutPengajuan         
+        } = this.props;
+
+        setIsProgress(true);
+
+        let self = this;    
+         
+        axios({
+            method: 'delete',
+            url: `${restfulServer}/master/pengajuan`,
+            headers: {...headerAuthorization},
+            params: dataPengajuan
+        })
+        .then((r) => {  
+            setIsProgress(false);
+            if(r.data.status === 200) {
+                self.itemPengajuan = {};
+                self.loadPengajuan(
+                    filterPengajuan,
+                    paginationPengajuan,
+                    urutPengajuan
+                );
+                notification.open({
+                    message: 'Pemberitahuan',
+                    description:
+                      'Berhasil hapus pengajuan',
+                    duration: 4,
+                    placement: 'bottomRight'
+                });
+            }
+            else {
+                self.itemPengajuan = {};
+                notification.open({
+                    message: 'Pemberitahuan',
+                    description:
+                      'Gagal hapus pengajuan',
+                    duration: 4,
+                    placement: 'bottomRight'
+                });
+            }
+        })
+        .catch((r) => { 
+            setIsProgress(false);
+            self.itemPengajuan = {};
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Gagal hapus pengajuan',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+        });
+    }
+
     flipDate = (tgl) => {
         let tmptgl = tgl.split('-');
         return `${tmptgl[2]}-${tmptgl[1]}-${tmptgl[0]}`
@@ -432,6 +489,12 @@ class TablePengajuan extends React.Component {
         const { setItemMenuSelected, setModePengajuanBaru } = this.props;
         setModePengajuanBaru('add');
         setItemMenuSelected('Pengajuan Baru');
+    }
+
+    handleBtnDelete = (e) => {
+        const { listPengajuan } = this.props;
+        this.itemPengajuan = {..._.find(listPengajuan.data, function(o) { return o.no_pengajuan === e.currentTarget.dataset.id; })};
+        this.setState({openConfirmasiHapusProyek: true});
     }
 
     handleChangeFilter = (v) => {
@@ -486,6 +549,16 @@ class TablePengajuan extends React.Component {
         // };
         // setPaginationProyek(tmpPagination);
         // this.loadProyek(filterProyek, tmpPagination, urutProyek);
+    }
+
+    handleDeletePengajuan = (status) => {        
+        if(status === true) {
+            this.setState({openConfirmasiHapusPengajuan: false});
+            this.deletePengajuan(this.itemPengajuan);
+        }
+        else {
+            this.setState({openConfirmasiHapusPengajuan: false});
+        }
     }
 
     handleEditPengajuanBaru = (e) => {
@@ -626,6 +699,11 @@ class TablePengajuan extends React.Component {
                 page={paginationPengajuan.current-1}
                 onChangePage={this.handleChangePage}
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
+            />
+            <KonfirmasiDialog 
+                open={openConfirmasiHapusPengajuan} 
+                aksi={this.handleDeletePengajuan} 
+                message={`Hapus item No. pengajuan: ${this.itemPengajuan.no_pengajuan}`}
             />
         </div>;
 

@@ -50,8 +50,7 @@ class PengajuanBaru extends React.Component {
             disabledInput: true,
             jenisPengajuan: false,
             anchorEl: null,
-            keyForm: 'none',
-            openProcessingDialog: false,
+            keyForm: 'none'
         };
 
         this.formRef = React.createRef();
@@ -249,10 +248,6 @@ class PengajuanBaru extends React.Component {
         setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 300);
 	}
 
-    handleToggleOpenProgressDialog = () => {
-        this.setState({openProcessingDialog: !this.state.openProcessingDialog});
-    }
-
     parserRupiah = (value) => {
         value = value.replace(/Rp\s?|(\.*)/g, '')
         return value.replace(/\,/g, '.');
@@ -274,37 +269,35 @@ class PengajuanBaru extends React.Component {
         setIsProgress(true);
 
         let self = this;    
-                
-        // this.handleToggleOpenProgressDialog();
 
-        // axios({
-        //     method: 'post',
-        //     url: `${restfulServer}/master/pengajuan`,
-        //     headers: {...headerAuthorization},
-        //     data: this.itemPengajuan
-        // })
-        // .then((r) => { 
-        //     self.handleToggleOpenProgressDialog();
-        //     self.setState({disabledInput: true, disabledInputEdit: false}); 
-        //     notification.open({
-        //         message: 'Pemberitahuan',
-        //         description:
-        //           'Pengajuan berhasil diupdate.',
-        //         duration: 4,
-        //         placement: 'bottomRight'
-        //     });
-        // })
-        // .catch((r) => {         
-        //     self.handleToggleOpenProgressDialog();
-        //     self.setState({disabledInput: true, disabledInputEdit: false}); 
-        //     notification.open({
-        //         message: 'Pemberitahuan',
-        //         description:
-        //           'Proyek baru gagal diupdate.',
-        //         duration: 4,
-        //         placement: 'bottomRight'
-        //     });
-        // });        
+        axios({
+            method: 'post',
+            url: `${restfulServer}/master/pengajuan`,
+            headers: {...headerAuthorization},
+            data: this.itemPengajuan
+        })
+        .then((r) => {             
+            self.setState({disabledInput: true, disabledInputEdit: false}); 
+            setIsProgress(false);
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Pengajuan berhasil diupdate.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+        })
+        .catch((r) => {    
+            setIsProgress(false);     
+            self.setState({disabledInput: true, disabledInputEdit: false}); 
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Pengajuan baru gagal diupdate.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+        });        
     }
 
     savePengajuan = () => {
@@ -337,7 +330,7 @@ class PengajuanBaru extends React.Component {
 	}
 
     render() {
-        const { itemProyekSelected, itemPengajuanSelected, listStatusPengajuan, modePengajuanBaru } = this.props;
+        const { isProgress, itemProyekSelected, itemPengajuanSelected, listStatusPengajuan, modePengajuanBaru } = this.props;
         const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, keyForm } = this.state;
 
         let initEdit;
@@ -354,6 +347,7 @@ class PengajuanBaru extends React.Component {
                 ["no_job"]: itemPengajuanSelected.no_job,
                 ["nama_customer"]: itemPengajuanSelected.nama_customer,
                 ["nama_proyek"]:  itemPengajuanSelected.nama_proyek,
+                ["deskripsi_pengajuan"]: itemPengajuanSelected.deskripsi_pengajuan,
             };
         }
         else {
@@ -660,7 +654,7 @@ class PengajuanBaru extends React.Component {
                         htmlType="button" 
                         onClick={this.handleBaru} 
                         style={{width: 150}}
-                        disabled={!disabledInput}
+                        disabled={isProgress===true?true:!disabledInput}
                     >
                         Baru
                     </Button>
@@ -715,7 +709,7 @@ class PengajuanBaru extends React.Component {
                         size="default"
                         htmlType="button" 
                         onClick={this.handleToNavDaftarPengajuan} 
-                        disabled={!disabledInput}
+                        disabled={isProgress===true?true:!disabledInput}
                         style={{marginBottom: 8, width: 150}}
                     >
                     Daftar Pengajuan
