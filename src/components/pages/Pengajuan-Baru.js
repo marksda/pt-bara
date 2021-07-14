@@ -72,7 +72,6 @@ class PengajuanBaru extends React.Component {
         else {
             setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
         }
-        
     }
 
     componentWillUnmount() {
@@ -93,8 +92,8 @@ class PengajuanBaru extends React.Component {
         }
     }
 
-    generateNoPengajuan = (isProyek) => {
-        const { headerAuthorization, restfulServer, setIsProgress } = this.props;
+    generateNoPengajuan = (isProyek, thn) => {
+        const { headerAuthorization, modePengajuanBaru, restfulServer, setIsProgress } = this.props;
         setIsProgress(true);
 
         let self = this;
@@ -103,12 +102,18 @@ class PengajuanBaru extends React.Component {
             method: 'get',
             url: `${restfulServer}/master/generate_no_pengajuan`,
             headers: {...headerAuthorization},
-            params: {isproyek: isProyek}
+            params: {isproyek: isProyek, tahun: thn}
         })
 	    .then((r) => {              
             setIsProgress(false);
             if(r.data.status === 200) {
-               self.setState({noPengajuan: r.data.keterangan});
+                self.setState({noPengajuan: r.data.keterangan});
+                if( modePengajuanBaru === 'edit' ) {
+                    self.itemPengajuan.no_pengajuan_baru = r.data.keterangan;
+                }
+                else {
+                    self.itemPengajuan.no_pengajuan = r.data.keterangan;
+                }
             }
 	    })
 	    .catch((r) => {
@@ -127,7 +132,7 @@ class PengajuanBaru extends React.Component {
         const { modePengajuanBaru, setModePengajuanBaru, resetItemPengajuanSelected } = this.props;
         const { jenisPengajuan } = this.state;
 
-        this.generateNoPengajuan(jenisPengajuan);
+        this.generateNoPengajuan(jenisPengajuan, moment().year());
         
         if(modePengajuanBaru === 'edit') {
             resetItemPengajuanSelected();
@@ -182,6 +187,18 @@ class PengajuanBaru extends React.Component {
             case 'deskripsi':
                 this.itemPengajuan.deskripsi_pengajuan = e.currentTarget.value;
                 break;
+            case 'jenisdokumen':
+                if(this.itemPengajuan.dokumen === null) {
+                    this.itemPengajuan.dokumen = [];
+                }
+                this.itemPengajuan.dokumen[Number(e.currentTarget.dataset.idx)].jenis_dokumen = e.currentTarget.value;
+                break;
+            case 'nodokumen':
+                if(this.itemPengajuan.dokumen === null) {
+                    this.itemPengajuan.dokumen = [];
+                }
+                this.itemPengajuan.dokumen[Number(e.currentTarget.dataset.idx)].no_dokumen = e.currentTarget.value;
+                break;
 			default:
 		}
 	}
@@ -189,7 +206,7 @@ class PengajuanBaru extends React.Component {
     handleChangeJenisPengajuan = (value) => {
         this.itemPengajuan.is_proyek = value;
         this.setState({jenisPengajuan: value});
-        this.generateNoPengajuan(value);
+        this.generateNoPengajuan(value, this.itemPengajuan.tanggal.split('-')[0]);
         setTimeout(() => {this.formRef.current.getFieldInstance('nominal_pengajuan').focus();}, 300);
 	}
 
@@ -198,9 +215,11 @@ class PengajuanBaru extends React.Component {
     }
 
     handleChangeTanggal = (date, dateString) => {
+        const { jenisPengajuan } = this.state;
 		if(date !== null) {
 			let tmp = dateString.split('-');
             this.itemPengajuan.tanggal = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
+            this.generateNoPengajuan(jenisPengajuan, Number(tmp[2]));
 		}
 	}
 
@@ -236,7 +255,7 @@ class PengajuanBaru extends React.Component {
                 dokumen: itemPengajuanSelected.dokumen,
                 deskripsi_pengajuan: itemPengajuanSelected.deskripsi_pengajuan,
                 catatan_persetujuan: itemPengajuanSelected.catatan_persetujuan,
-                id_status_pengajuan: itemPengajuanSelected.id_status_pengajuan
+                id_status_pengajuan: itemPengajuanSelected.id_status_pengajuan,
             };
         }
         
@@ -391,8 +410,6 @@ class PengajuanBaru extends React.Component {
         const { isProgress, itemProyekSelected, itemPengajuanSelected, listStatusPengajuan, modePengajuanBaru } = this.props;
         const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, keyForm, noPengajuan } = this.state;
 
-        console.log(noPengajuan);
-
         let initEdit;
         if(modePengajuanBaru === 'edit' && itemPengajuanSelected !== null ) {
             initEdit = {
@@ -408,13 +425,14 @@ class PengajuanBaru extends React.Component {
                 ["nama_customer"]: itemPengajuanSelected.nama_customer,
                 ["nama_proyek"]:  itemPengajuanSelected.nama_proyek,
                 ["deskripsi_pengajuan"]: itemPengajuanSelected.deskripsi_pengajuan,
+                ["dokumen"]: itemPengajuanSelected.dokumen,
             };
         }
         else {
             initEdit = {
                 layout: 'vertical',
                 remember: true,
-                ["tanggal"]: moment(),
+                ["tanggal"]: this.itemPengajuan.tanggal===undefined?moment():moment(this.itemPengajuan.tanggal),
                 ["is_Proyek"]: jenisPengajuan,
                 ["is_reimburse"]: false,
                 ["no_job"]: itemProyekSelected !== null?itemProyekSelected.no_job:null,
@@ -586,13 +604,13 @@ class PengajuanBaru extends React.Component {
                                                                 <Form.Item
                                                                     {...field}
                                                                     label={index === 0 ? 'Jenis Dokumen' : ''}
-                                                                    name={[field.name, 'dokumen']}
-                                                                    fieldKey={[field.fieldKey, 'dokumen']}
+                                                                    name={[field.name, 'jenis_dokumen']}
+                                                                    fieldKey={[field.fieldKey, 'jenis_dokumen']}
                                                                     rules={[{required: true, message: 'Jenis Dokumen harus diisi'}]} 
                                                                     style={{marginBottom: 8}}
                                                                 >
                                                                     <Input 
-                                                                        data-jenis="dokumen"
+                                                                        data-jenis="jenisdokumen"
                                                                         data-idx={index}
                                                                         disabled={disabledInput} 
                                                                         placeholder="Invoice/Kuitansi/dll"
@@ -703,7 +721,7 @@ class PengajuanBaru extends React.Component {
                         horizontal: 'right',
                     }}
                 >
-                    <FormPencarianProyek handleCloseWindowProyekSearch={this.handleCloseWindowProyekSearch}/>
+                    <FormPencarianProyek formRef={this.formRef} handleCloseWindowProyekSearch={this.handleCloseWindowProyekSearch} />
                 </Popover>
                 <div style={{display: 'flex', flexDirection: 'column'}}>
                 <Form.Item {...tailLayout} style={{width: 150, marginBottom: 8}} name="btnbaru">

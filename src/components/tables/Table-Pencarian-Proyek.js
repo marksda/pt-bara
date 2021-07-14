@@ -453,8 +453,12 @@ class TablePencarianProyek extends React.Component {
     }
 
     handleOnClickRow = (e) => {
-        const { headerAuthorization, listProyek, setItemProyekSelected, restfulServer, handleCloseWindowProyekSearch  } = this.props;
+        const { formRef, headerAuthorization, listProyek, setItemProyekSelected, restfulServer, handleCloseWindowProyekSearch  } = this.props;
         setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${listProyek.data[Number(e.target.parentElement.dataset.id)].no_job}`, headerAuthorization);
+        setTimeout(() => {
+            formRef.current.getFieldInstance('nominal_pengajuan').focus();
+        }, 100);    
+        
         handleCloseWindowProyekSearch();
     }
 
