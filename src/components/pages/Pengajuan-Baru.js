@@ -151,7 +151,8 @@ class PengajuanBaru extends React.Component {
         this.itemPengajuan = {
             tanggal: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
             is_proyek: false,
-            is_reimburse: false
+            is_reimburse: false,
+            dokumen: null
         }
     }
 
@@ -190,14 +191,38 @@ class PengajuanBaru extends React.Component {
             case 'jenisdokumen':
                 if(this.itemPengajuan.dokumen === null) {
                     this.itemPengajuan.dokumen = [];
+                    this.itemPengajuan.dokumen.push({
+                        jenis_dokumen: e.currentTarget.value
+                    });                  
                 }
-                this.itemPengajuan.dokumen[Number(e.currentTarget.dataset.idx)].jenis_dokumen = e.currentTarget.value;
+                else {
+                    if(Number(e.currentTarget.dataset.idx) < this.itemPengajuan.dokumen.length) {
+                        this.itemPengajuan.dokumen[Number(e.currentTarget.dataset.idx)].jenis_dokumen = e.currentTarget.value;
+                    } 
+                    else {
+                        this.itemPengajuan.dokumen.push({
+                            jenis_dokumen: e.currentTarget.value
+                        });  
+                    }                   
+                }
                 break;
             case 'nodokumen':
                 if(this.itemPengajuan.dokumen === null) {
                     this.itemPengajuan.dokumen = [];
+                    this.itemPengajuan.dokumen.push({
+                        no_dokumen: e.currentTarget.value
+                    });
                 }
-                this.itemPengajuan.dokumen[Number(e.currentTarget.dataset.idx)].no_dokumen = e.currentTarget.value;
+                else {
+                    if(Number(e.currentTarget.dataset.idx) < this.itemPengajuan.dokumen.length) {
+                        this.itemPengajuan.dokumen[Number(e.currentTarget.dataset.idx)].no_dokumen = e.currentTarget.value;
+                    } 
+                    else {
+                        this.itemPengajuan.dokumen.push({
+                            no_dokumen: e.currentTarget.value
+                        });
+                    }      
+                }                
                 break;
 			default:
 		}
@@ -283,11 +308,10 @@ class PengajuanBaru extends React.Component {
     }
 
     handleRemoveDokumen = (idx) => {
-        // this.itemProyek.no_kontrak_addendum.splice(idx,1);
-        // if(this.itemProyek.no_kontrak_addendum === undefined) {
-        //     this.itemProyekSelected.no_kontrak_addendum = null;
-        // }
-        // console.log(this.itemProyek.no_kontrak_addendum);
+        this.itemPengajuan.dokumen.splice(idx,1);
+        if(this.itemPengajuan.dokumen.length === 0) {
+            this.itemPengajuan.dokumen = null;
+        }
     }
 
     handleToNavDaftarPengajuan = () => {
@@ -635,17 +659,19 @@ class PengajuanBaru extends React.Component {
                                                                         onChange={this.handleChangeNilaiText}
                                                                     />
                                                                 </Form.Item>
-                                                                <MinusCircleOutlined
-                                                                    className="dynamic-delete-button"
-                                                                    disabled={disabledInput}
-                                                                    style={{marginTop: index===0?38:10, color: 'red'}}
-                                                                    onClick={
-                                                                        () => {
-                                                                            remove(field.name);
-                                                                            // this.handleRemoveDokumen(index);
-                                                                        } 
-                                                                    }
-                                                                />
+                                                                {
+                                                                    disabledInputEdit===true?<MinusCircleOutlined
+                                                                        className="dynamic-delete-button"
+                                                                        disabled={disabledInput}
+                                                                        style={{marginTop: index===0?38:10, color: 'red'}}
+                                                                        onClick={
+                                                                            () => {
+                                                                                remove(field.name);
+                                                                                this.handleRemoveDokumen(index);
+                                                                            } 
+                                                                        }
+                                                                    />:null
+                                                                }
                                                             </Form.Item>
                                                         </div>
                                                     )
