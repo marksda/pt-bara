@@ -50,7 +50,8 @@ class PengajuanBaru extends React.Component {
             disabledInput: true,
             jenisPengajuan: false,
             anchorEl: null,
-            keyForm: 'none'
+            keyForm: 'none',
+            noPengajuan: `NP-${moment().year()}/0000`
         };
 
         this.formRef = React.createRef();
@@ -92,8 +93,41 @@ class PengajuanBaru extends React.Component {
         }
     }
 
+    generateNoPengajuan = (isProyek) => {
+        const { headerAuthorization, restfulServer, setIsProgress } = this.props;
+        setIsProgress(true);
+
+        let self = this;
+
+        axios({
+            method: 'get',
+            url: `${restfulServer}/master/generate_no_pengajuan`,
+            headers: {...headerAuthorization},
+            params: {isproyek: isProyek}
+        })
+	    .then((r) => {              
+            setIsProgress(false);
+            if(r.data.status === 200) {
+               self.setState({noPengajuan: r.data.keterangan});
+            }
+	    })
+	    .catch((r) => {
+	    	self.setState({disabledInput: true});
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Gagal generate nomor pengajuan',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+	    });
+    }
+
     handleBaru = () => {
         const { modePengajuanBaru, setModePengajuanBaru, resetItemPengajuanSelected } = this.props;
+        const { jenisPengajuan } = this.state;
+
+        this.generateNoPengajuan(jenisPengajuan);
         
         if(modePengajuanBaru === 'edit') {
             resetItemPengajuanSelected();
@@ -106,7 +140,7 @@ class PengajuanBaru extends React.Component {
 
         setTimeout(() => {
             this.formRef.current.resetFields();
-            this.formRef.current.getFieldInstance('no_pengajuan').focus();
+            this.formRef.current.getFieldInstance('nominal_pengajuan').focus();
         }, 100);        
 
         this.itemPengajuan = {
@@ -155,6 +189,8 @@ class PengajuanBaru extends React.Component {
     handleChangeJenisPengajuan = (value) => {
         this.itemPengajuan.is_proyek = value;
         this.setState({jenisPengajuan: value});
+        this.generateNoPengajuan(value);
+        setTimeout(() => {this.formRef.current.getFieldInstance('nominal_pengajuan').focus();}, 300);
 	}
 
     handleChangeStatusPersetujuan = (value) => {
@@ -205,7 +241,7 @@ class PengajuanBaru extends React.Component {
         }
         
         this.setState({disabledInput: false, disabledInputEdit: true, jenisPengajuan: itemPengajuanSelected.is_proyek});
-        setTimeout(() => {this.formRef.current.getFieldInstance('no_pengajuan').focus();}, 300);
+        setTimeout(() => {this.formRef.current.getFieldInstance('nominal_pengajuan').focus();}, 300);
     }
 
     handleOnFinish = (value) => {
@@ -301,10 +337,10 @@ class PengajuanBaru extends React.Component {
     }
 
     savePengajuan = () => {
-		const { headerAuthorization, itemProyekSelected, restfulServer } = this.props;
+		const { headerAuthorization, itemProyekSelected, restfulServer, setIsProgress } = this.props;
 	    let self = this;
-        
-	    // handleToggleOpenProgressDialog();
+        setIsProgress(true);
+	    
         if(this.itemPengajuan.is_proyek === true) {
             this.itemPengajuan.no_job = itemProyekSelected.no_job;
         }
@@ -315,23 +351,47 @@ class PengajuanBaru extends React.Component {
             headers: {...headerAuthorization},
             data: this.itemPengajuan
         })
-	    .then((r) => {  
-	    	// if(r.data.status === 200) {        
-			// 	self.loadAkun(filterAkun, paginationAkun, urutAkun);
-	    	// } 
-	    	// self.handleReset();
-            // self.setState({disabledInput: false});
-            // handleClose();
-            // handleToggleOpenProgressDialog();
+	    .then((r) => {              
+            setIsProgress(false);
+            if(r.data.status === 200) {
+                notification.open({
+                    message: 'Pemberitahuan',
+                    description:
+                    'Pengajuan baru berhasil ditambahkan.',
+                    duration: 4,
+                    placement: 'bottomRight'
+                });
+            }
+            else {
+                notification.open({
+                    message: 'Pemberitahuan',
+                    description:
+                      'Pengajuan baru gagal ditambahkan.',
+                    duration: 4,
+                    placement: 'bottomRight'
+                });
+            }
+
+	    	self.handleReset();
+            self.setState({disabledInput: true, disabledInputEdit: false}); 
 	    })
 	    .catch((r) => {
 	    	self.setState({disabledInput: true});
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Pengajuan baru gagal ditambahkan.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
 	    });
 	}
 
     render() {
         const { isProgress, itemProyekSelected, itemPengajuanSelected, listStatusPengajuan, modePengajuanBaru } = this.props;
-        const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, keyForm } = this.state;
+        const { anchorEl, disabledInput, disabledInputEdit, jenisPengajuan, keyForm, noPengajuan } = this.state;
+
+        console.log(noPengajuan);
 
         let initEdit;
         if(modePengajuanBaru === 'edit' && itemPengajuanSelected !== null ) {
@@ -359,7 +419,8 @@ class PengajuanBaru extends React.Component {
                 ["is_reimburse"]: false,
                 ["no_job"]: itemProyekSelected !== null?itemProyekSelected.no_job:null,
                 ["nama_customer"]: itemProyekSelected !== null ? itemProyekSelected.nama_customer:null,
-                ["nama_proyek"]:  itemProyekSelected !== null ? itemProyekSelected.nama_proyek:null
+                ["nama_proyek"]:  itemProyekSelected !== null ? itemProyekSelected.nama_proyek:null,
+                ["no_pengajuan"]: noPengajuan,
             };
         }
 
@@ -370,10 +431,8 @@ class PengajuanBaru extends React.Component {
             ref={this.formRef}
             layout='vertical'
             initialValues={initEdit}
-            key={itemProyekSelected === null ? keyForm : `${keyForm}${itemProyekSelected.no_job}`}
+            key={itemProyekSelected === null ? `${keyForm}-${noPengajuan}` : `${keyForm}-${itemProyekSelected.no_job}-${noPengajuan}`}
         >
-            
-            
             <div className="content-flex-center">
                 <table className="table-container-pengajuan-baru" style={{width: '65%'}}>
                 <tbody>

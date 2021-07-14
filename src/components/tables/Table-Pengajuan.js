@@ -4,7 +4,6 @@ import axios from 'axios';
 import IconButton from '@material-ui/core/IconButton';
 import KonfirmasiDialog from "../dialogs/Konfirmasi-Dialog";
 import moment from 'moment';
-import ProcessingDialog from '../dialogs/Processing-Dialog';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -63,7 +62,7 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { acuan, changeRangeDate, handleOpen, title, handleCari, rangeDate } = props;
+    const { acuan, changeRangeDate, handleOpen, isProgress, title, handleCari, rangeDate } = props;
     const dateFormat = 'DD-MM-YYYY';
     const customFormat = value => `${value.format(dateFormat)}`;
     
@@ -82,6 +81,7 @@ const EnhancedTableToolbar = (props) => {
                     }}
                     placeholder={["tgl. awal", "tgl. akhir"]}
                     onChange={changeRangeDate}
+                    disabled={isProgress}
                 />
             </div>
             <div className={classes.spacer} />
@@ -89,7 +89,8 @@ const EnhancedTableToolbar = (props) => {
                 <Tooltip title="tambah" className={classes.showIconTambah}>
                     <IconButton 
                         aria-label="add" 
-                        onClick={handleOpen}
+                        onClick={isProgress===false?handleOpen:null}
+                        disabled={isProgress}
                     >
                         <AddBoxOutlineIcon />
                     </IconButton>                             
@@ -97,9 +98,10 @@ const EnhancedTableToolbar = (props) => {
                 <Form ref={acuan} style={{marginTop: 24, marginLeft: 8}}>
                     <Form.Item name="cari">
                         <Search
-                        placeholder="cari no. pengajuan"
-                        onSearch={handleCari}
-                        style={{ width: 250 }}
+                            placeholder="cari no. pengajuan"
+                            disabled={isProgress}
+                            onSearch={handleCari}
+                            style={{ width: 250 }}
                         />
                     </Form.Item>
                 </Form>                
@@ -327,7 +329,8 @@ const mapStateToProps = store => {
         listPengajuan: store.master.list_pengajuan,
         paginationPengajuan: store.master.pagination_pengajuan,
         restfulServer: store.general.restful_domain,
-        urutPengajuan: store.master.urut_pengajuan
+        urutPengajuan: store.master.urut_pengajuan,
+        isProgress: store.master.is_progress,
     };
 };
 
@@ -494,7 +497,7 @@ class TablePengajuan extends React.Component {
     handleBtnDelete = (e) => {
         const { listPengajuan } = this.props;
         this.itemPengajuan = {..._.find(listPengajuan.data, function(o) { return o.no_pengajuan === e.currentTarget.dataset.id; })};
-        this.setState({openConfirmasiHapusProyek: true});
+        this.setState({openConfirmasiHapusPengajuan: true});
     }
 
     handleChangeFilter = (v) => {
@@ -593,8 +596,8 @@ class TablePengajuan extends React.Component {
     }
 
     render() {
-        const { classes, listPengajuan, paginationPengajuan, title, urutPengajuan } = this.props;
-		const { openConfirmasiHapusPengajuan, openProcessingDialog, rentanDate } = this.state;
+        const { classes, isProgress, listPengajuan, paginationPengajuan, title, urutPengajuan } = this.props;
+		const { openConfirmasiHapusPengajuan, rentanDate } = this.state;
 
         let pageRender = null;
 
@@ -606,7 +609,8 @@ class TablePengajuan extends React.Component {
                 handleOpen={this.handleAddPengajuanBaru}
                 rangeDate={rentanDate}
                 changeRangeDate={this.changeRangeDate}
-                acuan={this.formRef}
+                acuan={this.formRef}                
+                isProgress={isProgress}
                 key={rentanDate}
             />        
             <TableContainer className={classes.tableWrapper}>
@@ -677,12 +681,23 @@ class TablePengajuan extends React.Component {
 	                                    { row.status }
 	                                </TableCell>
 	                                <TableCell 
-                                        style={{width: 100, verticalAlign: 'top'}}
+                                        style={{width: 100, verticalAlign: 'top', cursor: isProgress===false?'pointer':'default'}}
                                         align={'center'}
                                     >
-                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddPengajuanBaru}/>
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={index} onClick={this.handleEditPengajuanBaru} />
-                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.no_pengajuan} onClick={this.handleBtnDelete}/>
+                                        <PlusOutlined 
+                                            style={{ fontSize: '18px', marginRight: 4}} 
+                                            onClick={isProgress===false?this.handleAddPengajuanBaru:null}
+                                        />
+                                        <EditOutlined 
+                                            style={{ fontSize: '18px', marginRight: 4}} 
+                                            data-id={index} 
+                                            onClick={isProgress===false?this.handleEditPengajuanBaru:null} 
+                                        />
+                                        <DeleteOutlined 
+                                            style={{ fontSize: '18px'}} 
+                                            data-id={row.no_pengajuan} 
+                                            onClick={isProgress===false?this.handleBtnDelete:null}
+                                        />
                                     </TableCell>
 	                            </TableRow>
                     		);
@@ -703,7 +718,7 @@ class TablePengajuan extends React.Component {
             <KonfirmasiDialog 
                 open={openConfirmasiHapusPengajuan} 
                 aksi={this.handleDeletePengajuan} 
-                message={`Hapus item No. pengajuan: ${this.itemPengajuan.no_pengajuan}`}
+                message={`Hapus item no. pengajuan: ${this.itemPengajuan.no_pengajuan}`}
             />
         </div>;
 
