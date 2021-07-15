@@ -78,6 +78,7 @@ const EnhancedTableToolbar = (props) => {
                     }}
                     placeholder={["tgl. awal", "tgl. akhir"]}
                     onChange={changeRangeDate}
+                    allowClear={false}
                 />
             </div>
             <div className={classes.spacer} />
@@ -409,6 +410,7 @@ class TablePencarianProyek extends React.Component {
 
         setFilterProyek(tmpFilter);
         this.loadProyek(tmpFilter, tmpPagination, urutProyek);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
     }
 
     handleChangePrefixSearch = (value) => {
@@ -440,6 +442,7 @@ class TablePencarianProyek extends React.Component {
         
         setPaginationProyek(tmpPagination);
         this.loadProyek(filterProyek, tmpPagination, urutProyek);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
     }
 
     handleChangePage = (event, newPage) => {
@@ -450,6 +453,7 @@ class TablePencarianProyek extends React.Component {
         };
         setPaginationProyek(tmpPagination);
         this.loadProyek(filterProyek, tmpPagination, urutProyek);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
     }
 
     handleOnClickRow = (e) => {

@@ -9,7 +9,7 @@ import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
 import { connect } from "react-redux";
 import { FilterOutlined, MinusCircleOutlined, PlusOutlined  } from '@ant-design/icons';
 
-import { getStatusPengajuan, resetItemPengajuanSelected, setIsProgress, setItemMenuSelected, setModePengajuanBaru } from "../../actions/master-action";
+import { getStatusPengajuan, resetItemPengajuanSelected, setFilterProyek, setIsProgress, setItemMenuSelected, setModePengajuanBaru } from "../../actions/master-action";
 
 
 const { TextArea } = Input;
@@ -25,6 +25,7 @@ const mapStateToProps = store => {
         urutStatusPengajuan: store.master.urut_status_pengajuan,
         modePengajuanBaru: store.master.mode_pengajuan_baru,
         itemProyekSelected: store.master.item_proyek_selected,
+        isProgress: store.master.is_progress,
     };
 };
 
@@ -35,6 +36,7 @@ const mapDispatchToProps = dispatch => {
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
         setModePengajuanBaru: (nilai) => dispatch(setModePengajuanBaru(nilai)), 
         setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
+        setFilterProyek: (value) => dispatch(setFilterProyek(value)),
     };
 };
 
@@ -75,9 +77,10 @@ class PengajuanBaru extends React.Component {
     }
 
     componentWillUnmount() {
-        const { resetItemPengajuanSelected, setModePengajuanBaru } = this.props;
+        const { resetItemPengajuanSelected, setModePengajuanBaru, setFilterProyek } = this.props;
         resetItemPengajuanSelected();
         setModePengajuanBaru('add'); 
+        setFilterProyek(null);
     }
 
     formatterRupiah = (value) => {        

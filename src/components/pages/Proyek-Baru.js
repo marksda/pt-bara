@@ -26,7 +26,7 @@ class ProyekBaru extends React.Component {
 		super(props);
 
         this.state = {
-            itemTabSelected: 'Persiapan',
+            itemTabSelected: null,
             disabledRadioPersiapan: false,
             disabledRadioProfile: false,
             disabledRadioBudget: false,
@@ -152,7 +152,10 @@ class ProyekBaru extends React.Component {
     }
 
     render() {
-        const { itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, disabledRadioMonitoring, openProcessingDialog  } = this.state;
+        const { 
+            itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, 
+            disabledRadioMonitoring, openProcessingDialog  
+        } = this.state;
 
         let subPage = null;
 

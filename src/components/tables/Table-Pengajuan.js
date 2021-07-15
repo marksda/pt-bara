@@ -62,7 +62,7 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { acuan, changeRangeDate, handleOpen, isProgress, title, handleCari, rangeDate } = props;
+    const { acuan, changeRangeDate, handleOpen, isProgress, handleCari, rangeDate } = props;
     const dateFormat = 'DD-MM-YYYY';
     const customFormat = value => `${value.format(dateFormat)}`;
     
@@ -82,6 +82,7 @@ const EnhancedTableToolbar = (props) => {
                     placeholder={["tgl. awal", "tgl. akhir"]}
                     onChange={changeRangeDate}
                     disabled={isProgress}
+                    allowClear={false}
                 />
             </div>
             <div className={classes.spacer} />

@@ -27,6 +27,7 @@ const mapStateToProps = store => {
         modeProyekBaru: store.master.mode_proyek_baru,
         itemProyekSelected: store.master.item_proyek_selected,
         statusProyekSelected: store.master.status_proyek_selected,
+        isProgress: store.master.is_progress,
     };
 };
 
@@ -58,6 +59,10 @@ class FormPersiapanProyek extends React.Component {
 
         if(modeProyekBaru === 'edit') {
             this.setState({disabledInputEdit: false});
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnedit').focus();}, 100);
+        }
+        else {
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
         }
 
         if(listStatusProyek === null) {
@@ -98,9 +103,11 @@ class FormPersiapanProyek extends React.Component {
         this.formRef.current.resetFields();
         if(modeProyekBaru === 'edit') {
             this.setState({disabledInput: true, disabledInputEdit: false});
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnedit').focus();}, 100);
         }
         else {
             this.setState({disabledInput: true});
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
         }
     }
 
@@ -339,7 +346,7 @@ class FormPersiapanProyek extends React.Component {
     }
 
     render() {
-        const { itemProyekSelected, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
+        const { isProgress, itemProyekSelected, listCustomer, modeProyekBaru, listStatusProyek } = this.props;
         const { disabledInput, disabledInputEdit } = this.state;
 
         let keyForm;
@@ -544,70 +551,76 @@ class FormPersiapanProyek extends React.Component {
                         </tr>
                     </tbody>
                 </table>                
-                <Form.Item {...tailLayout} style={{width:100}}>
-                    <Button 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleBaru} 
-                        style={{marginBottom: 8, width: 120}}
-                        disabled={!disabledInput}
-                    >
-                        Baru
-                    </Button>
-                    <Button 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleEdit} 
-                        style={{marginBottom: 8, width: 120}}
-                        disabled={disabledInputEdit}
-                    >
-                        Edit
-                    </Button>
-                    <Button 
-                        danger
-                        type="primary" 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleBatal} 
-                        style={{marginBottom: 8, width: 120}}
-                        disabled={disabledInput}
-                    >
-                    Batal
-                    </Button>
-                    <Button 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleReset} 
-                        disabled={modeProyekBaru==='edit'?true:disabledInput}
-                        style={{marginBottom: 8, width: 120}}
-                    >
-                    Reset
-                    </Button>
-                    <Button 
-                        type="primary" 
-                        shape="round"
-                        size="default"
-                        htmlType="submit" 
-                        disabled={disabledInput}
-                        style={{width: 120, marginBottom: 100}}
-                    >
-                    Simpan
-                    </Button>
-                    <Button 
-                        shape="round"
-                        size="default"
-                        htmlType="button" 
-                        onClick={this.handleToNavDaftarProyek} 
-                        disabled={!disabledInput}
-                        style={{marginBottom: 8, width: 120}}
-                    >
-                    Daftar Proyek
-                    </Button>
-                </Form.Item>
+                <div style={{display: 'flex', flexDirection: 'column'}}>
+                    <Form.Item {...tailLayout} style={{width:100, marginBottom: 0}} name="btnbaru">
+                        <Button 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleBaru} 
+                            style={{marginBottom: 8, width: 120}}
+                            disabled={isProgress===true?true:!disabledInput}
+                        >
+                            Baru
+                        </Button>
+                    </Form.Item>
+                    <Form.Item {...tailLayout} style={{width:100, marginBottom: 0}} name="btnedit">
+                        <Button 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleEdit} 
+                            style={{marginBottom: 8, width: 120}}
+                            disabled={disabledInputEdit}
+                        >
+                            Edit
+                        </Button>
+                    </Form.Item>
+                    <Form.Item {...tailLayout} style={{width:100}}>
+                        <Button 
+                            danger
+                            type="primary" 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleBatal} 
+                            style={{marginBottom: 8, width: 120}}
+                            disabled={disabledInput}
+                        >
+                        Batal
+                        </Button>
+                        <Button 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleReset} 
+                            disabled={modeProyekBaru==='edit'?true:disabledInput}
+                            style={{marginBottom: 8, width: 120}}
+                        >
+                        Reset
+                        </Button>
+                        <Button 
+                            type="primary" 
+                            shape="round"
+                            size="default"
+                            htmlType="submit" 
+                            disabled={disabledInput}
+                            style={{width: 120, marginBottom: 100}}
+                        >
+                        Simpan
+                        </Button>
+                        <Button 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleToNavDaftarProyek} 
+                            disabled={!disabledInput}
+                            style={{marginBottom: 8, width: 120}}
+                        >
+                        Daftar Proyek
+                        </Button>
+                    </Form.Item>
+                </div>
             </div>
         </Form>;
 

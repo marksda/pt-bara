@@ -3,7 +3,7 @@ import AddBoxOutlineIcon from '@material-ui/icons/AddOutlined';
 import axios from 'axios';
 import IconButton from '@material-ui/core/IconButton';
 import KonfirmasiDialog from "../dialogs/Konfirmasi-Dialog";
-import ProcessingDialog from '../dialogs/Processing-Dialog';
+import moment from 'moment';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -16,7 +16,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
 import _ from 'lodash';
 
-import { Input, Typography } from 'antd';
+import { Input, DatePicker, Form, notification, Select } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
@@ -25,12 +25,13 @@ import {
 } from '@ant-design/icons';
   
 
-import { getProyek, setFilterProyek, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, setPaginationProyek, setUrutProyek, setStatusProyekSelected } from "../../actions/master-action";
+import { getProyek, setFilterProyek, setIsProgress, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, setPaginationProyek, setUrutProyek, setStatusProyekSelected } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
-const { Title } = Typography;
 const { Search } = Input;
+const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 const useToolbarStyles = makeStyles(theme => ({
     actions: {
@@ -54,38 +55,71 @@ const useToolbarStyles = makeStyles(theme => ({
     },
     title: {
         flex: '0 0 auto',
-        marginTop: 16
+        // marginTop: 16
     },
 }));
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { handleOpen, title, handleCari } = props;
+    const { acuan, changeRangeDate, handleChangePrefixSearch, handleOpen, handleCari, isProgress, prefixSearch, rangeDate } = props;
+
+    const dateFormat = 'DD-MM-YYYY';
+    const customFormat = value => `${value.format(dateFormat)}`;
+
+    const selectBefore = (
+        <Select 
+            defaultValue={prefixSearch!==null?prefixSearch:'m.no_job'} 
+            dropdownStyle={{zIndex: 2000}}
+            onChange={handleChangePrefixSearch}
+            disabled={isProgress}
+        >
+          <Option value="m.no_job">No. Job</Option>
+          <Option value="c.nama">Customer</Option>
+          <Option value="m.nama_proyek">Proyek</Option>
+        </Select>
+    );
 
     return(
         <Toolbar
             className={classes.root}
         >           
             <div className={classes.title}>
-                <Title level={4}>
-                    {title}
-                </Title>
+                <label>Periode :&nbsp;&nbsp;&nbsp;</label>
+                <RangePicker 
+                    defaultValue={rangeDate!==null?[moment(rangeDate[0]), moment(rangeDate[1])]:[null,null]}
+                    format={customFormat}
+                    style={{width: 220}}
+                    popupStyle={{
+                        zIndex: 2000
+                    }}
+                    placeholder={["tgl. awal", "tgl. akhir"]}
+                    onChange={changeRangeDate}
+                    disabled={isProgress}
+                    allowClear={false}
+                />
             </div>
             <div className={classes.spacer} />
             <div className={classes.actions}>
                 <Tooltip title="tambah" className={classes.showIconTambah}>
                     <IconButton 
                         aria-label="add" 
-                        onClick={handleOpen}
+                        onClick={isProgress===false?handleOpen:null}
+                        disabled={isProgress}
                     >
                         <AddBoxOutlineIcon />
                     </IconButton>                             
                 </Tooltip>
-                <Search
-                  placeholder="pencarian"
-                  onSearch={handleCari}
-                  style={{ width: 250 }}
-                />
+                <Form ref={acuan} style={{marginTop: 24, marginLeft: 8}}>
+                    <Form.Item name="cari">
+                        <Search
+                            placeholder="pencarian"
+                            onSearch={handleCari}
+                            style={{ width: 450 }}
+                            disabled={isProgress}
+                            addonBefore={selectBefore}
+                        />
+                    </Form.Item>
+                </Form>                
             </div>            
         </Toolbar>
     );
@@ -95,9 +129,9 @@ const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
     {id: 'm.tanggal_persiapan', numerik: false, label: 'Tgl. persiapan'},
     {id: 'm.no_job', numerik: false, label: 'No. job'},
-    {id: 'm.nama_customer', numerik: false, label: 'Customer'},
+    {id: 'c.nama', numerik: false, label: 'Customer'},
     {id: 'm.nama_proyek', numerik: false, label: 'Proyek'},
-    {id: 'm.status', numerik: false, label: 'Status'},
+    {id: 'm.id_status_proyek', numerik: false, label: 'Status'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
@@ -277,7 +311,8 @@ const mapStateToProps = store => {
         listProyek: store.master.list_proyek,
         paginationProyek: store.master.pagination_proyek,
         restfulServer: store.general.restful_domain,
-        urutProyek: store.master.urut_proyek
+        urutProyek: store.master.urut_proyek,
+        isProgress: store.master.is_progress,
     };
 };
 
@@ -291,6 +326,7 @@ const mapDispatchToProps = dispatch => {
         setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)),    
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
         setStatusProyekSelected: (nilai) => dispatch(setStatusProyekSelected(nilai)), 
+        setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
     };
 };
 
@@ -300,17 +336,50 @@ class TableProyek extends React.Component {
         this.state = {
         	openConfirmasiHapusProyek: false,
         	openFormAddProyek: false,
-        	openProcessingDialog: false, 
-        	mode: ''
+        	mode: '',
+            rentanDate: null,
+            prefixSearch: null
         };
 
         this.itemProyek = {};
+        this.formRef = React.createRef();
     }
 
     componentDidMount() {
-    	const { setFilterProyek, paginationProyek, urutProyek } = this.props;
-        setFilterProyek(null);
-        this.loadProyek(null, paginationProyek, urutProyek);
+    	const { filterProyek, setFilterProyek, paginationProyek, urutProyek } = this.props;
+
+        let tmpFilter = null;
+        if(filterProyek === null) {     
+            this.setState({rentanDate: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`], prefixSearch: 'm.no_job'});      
+            tmpFilter = [
+                {field: 'rentan_tanggal_persiapan', rentan: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]}
+            ];
+        }
+        else {                        
+            tmpFilter = [...filterProyek];
+            let idx = _.findIndex(tmpFilter, function(o){return o.field === 'rentan_tanggal_persiapan'});
+            if(idx < 0) {
+                this.setState({rentanDate: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`], prefixSearch: filterProyek[0].field});      
+                tmpFilter = [];
+                tmpFilter.push(
+                    {
+                        field: "rentan_tanggal_persiapan",
+                        rentan: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]
+                    }
+                );
+            }
+            else {
+                let tmpRentan = tmpFilter[idx];
+                tmpFilter = [];
+                tmpFilter.push(tmpRentan);
+                this.setState({rentanDate: filterProyek[idx].rentan, prefixSearch: idx!==0?filterProyek[0].field:'m.no_job'});
+            }
+        }         
+
+        
+        setFilterProyek(tmpFilter);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
+        this.loadProyek(tmpFilter, paginationProyek, urutProyek);
     }
 
     componentWillUnmount() {
@@ -318,10 +387,43 @@ class TableProyek extends React.Component {
         setFilterProyek(null);
     }
 
+    changeRangeDate = (dates, datesString) => {
+        const { filterProyek, paginationProyek, setFilterProyek, setPaginationProyek, urutProyek } = this.props;
+        let tmpPagination = {...paginationProyek};
+        tmpPagination.current = 1;        
+        setPaginationProyek(tmpPagination);
+
+        let tmpRangeDate = [this.flipDate(datesString[0]), this.flipDate(datesString[1])];
+        
+        this.setState({rentanDate: tmpRangeDate});
+
+        let tmpFilter = [...filterProyek];
+
+        let idx = _.findIndex(tmpFilter, function(o){return o.field === 'rentan_tanggal_persiapan'});
+
+        if(idx < 0) {
+            tmpFilter.push(
+                {
+                    field: "rentan_tanggal_persiapan",
+                    rentan: tmpRangeDate
+                }
+            );
+        }
+        else {
+            tmpFilter[idx].rentan = tmpRangeDate;
+        }       
+
+        setFilterProyek(tmpFilter);
+        this.loadProyek(tmpFilter, tmpPagination, urutProyek);
+    }
+
     deleteProyek = (dataProyek) => {
         const { 
-            filterProyek, headerAuthorization, paginationProyek, restfulServer, urutProyek         
+            filterProyek, headerAuthorization, paginationProyek, restfulServer, setIsProgress, urutProyek         
         } = this.props;
+
+        setIsProgress(true);
+
         let self = this;    
          
         axios({
@@ -331,25 +433,43 @@ class TableProyek extends React.Component {
             params: dataProyek
         })
         .then((r) => {  
-            self.setState({openProcessingDialog: false});  
+            setIsProgress(false);
             if(r.data.status === 200) {
-                self.itemProyek.id = null;
-                self.itemProyek.nama = null;
+                self.itemProyek = {};
                 self.loadProyek(
                     filterProyek,
                     paginationProyek,
                     urutProyek
                 );
+                notification.open({
+                    message: 'Pemberitahuan',
+                    description:
+                      'Berhasil hapus proyek',
+                    duration: 4,
+                    placement: 'bottomRight'
+                });
             }
             else {
-                self.itemProyek.id = null;
-                self.itemProyek.nama = null;
+                self.itemProyek.id = {};
+                notification.open({
+                    message: 'Pemberitahuan',
+                    description:
+                      'Gagal hapus proyek',
+                    duration: 4,
+                    placement: 'bottomRight'
+                });
             }
         })
         .catch((r) => { 
-            self.itemProyek.id = null;
-            self.itemProyek.nama = null;
-            self.setState({openProcessingDialog: false});
+            setIsProgress(false);
+            self.itemProyek = {};
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Gagal hapus proyek',
+                duration: 4,
+                placement: 'bottomRight'
+            });
         });
     }
 
@@ -365,16 +485,70 @@ class TableProyek extends React.Component {
     }
 
     handleChangeFilter = (v) => {
-        const { paginationProyek, setFilterProyek, urutProyek, setPaginationProyek } = this.props;
+        const { filterProyek, paginationProyek, setFilterProyek, urutProyek, setPaginationProyek } = this.props;
+        const { prefixSearch } = this.state;
+
         let tmpPagination = {...paginationProyek};
         tmpPagination.current = 1;        
         setPaginationProyek(tmpPagination);
-        let tmpFilter = {
-            field: "m.nama",
-            search: v
-        };        
+        let tmpFilter = [];
+        let idx = null;
+
+        switch (prefixSearch) {
+            case 'm.no_job':
+                tmpFilter = [...filterProyek];
+                idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.no_job'});
+
+                if(idx < 0) {
+                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_persiapan'});
+                    tmpFilter = [];
+                    tmpFilter.push(                        
+                        { field: "m.no_job", search: v },
+                        tmpRangeDate
+                    );
+                }
+                else {
+                    tmpFilter[idx].search = v;
+                } 
+                break;
+            case 'c.nama':
+                tmpFilter = [...filterProyek];
+                idx = _.findIndex(tmpFilter, function(o){return o.field === 'c.nama'});
+
+                if(idx < 0) {
+                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_persiapan'});
+                    tmpFilter = [];
+                    tmpFilter.push(                        
+                        { field: "c.nama", search: v },
+                        tmpRangeDate
+                    );
+                }
+                else {
+                    tmpFilter[idx].search = v;
+                }  
+                break;
+            default:
+                tmpFilter = [...filterProyek];
+                idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama_proyek'});
+
+                if(idx < 0) {
+                    let tmpRangeDate = _.find(tmpFilter, function(o){return o.field === 'rentan_tanggal_persiapan'});
+                    tmpFilter = [];
+                    tmpFilter.push(
+                        { field: "m.nama_proyek", search: v },
+                        tmpRangeDate
+                    );
+                }
+                else {
+                    tmpFilter[idx].search = v;
+                }  
+                
+                break;
+        }    
+
         setFilterProyek(tmpFilter);
         this.loadProyek(tmpFilter, tmpPagination, urutProyek);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
     }
 
     handleChangeRowsPerPage = (event) => {
@@ -386,6 +560,7 @@ class TableProyek extends React.Component {
         
         setPaginationProyek(tmpPagination);
         this.loadProyek(filterProyek, tmpPagination, urutProyek);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
     }
 
     handleChangePage = (event, newPage) => {
@@ -396,19 +571,36 @@ class TableProyek extends React.Component {
         };
         setPaginationProyek(tmpPagination);
         this.loadProyek(filterProyek, tmpPagination, urutProyek);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
+    }
+
+    handleChangePrefixSearch = (value) => {
+        const { filterProyek, paginationProyek, setFilterProyek, urutProyek, setPaginationProyek } = this.props;
+        let tmpPagination = {...paginationProyek};
+        tmpPagination.current = 1;        
+        setPaginationProyek(tmpPagination);         
+        setTimeout(() => {
+            this.formRef.current.resetFields();
+            this.formRef.current.getFieldInstance('cari').focus();
+        }, 100);
+        this.setState({prefixSearch: value});     
+
+        let tmpFilter = [];
+        let tmpRentan = _.find(filterProyek, function(o){return o.field === 'rentan_tanggal_persiapan'});
+        tmpFilter.push(tmpRentan);
+
+        setFilterProyek(tmpFilter);
+        this.loadProyek(tmpFilter, tmpPagination, urutProyek);  
     }
 
     handleCloseFormAddProyek = () => {
         this.setState({openFormAddProyek: false});
     }
 
-    handleDeleteProyek = (status) => {        
+    handleDeleteProyek = (status) => {          
+        this.setState({openConfirmasiHapusProyek: false});      
         if(status === true) {
-            this.setState({openConfirmasiHapusProyek: false, openProcessingDialog: true});
             this.deleteProyek(this.itemProyek);
-        }
-        else {
-            this.setState({openConfirmasiHapusProyek: false});
         }
     }
 
@@ -439,10 +631,7 @@ class TableProyek extends React.Component {
         };
         setUrutProyek(tmpUrut);
         this.loadProyek(filterProyek, paginationProyek, tmpUrut);
-    }
-
-    handleToggleOpenProgressDialog = () => {
-        this.setState({openProcessingDialog: !this.state.openProcessingDialog});
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
     }
 
     loadProyek = (filter, pagination, urut) => {
@@ -458,8 +647,8 @@ class TableProyek extends React.Component {
     }
 
     render() {
-        const { classes, listProyek, paginationProyek, title, urutProyek } = this.props;
-		const { openConfirmasiHapusProyek, openProcessingDialog } = this.state;
+        const { classes, isProgress, listProyek, paginationProyek, urutProyek } = this.props;
+		const { openConfirmasiHapusProyek, openProcessingDialog, prefixSearch, rentanDate } = this.state;
 
         let pageRender = null;
 
@@ -467,8 +656,14 @@ class TableProyek extends React.Component {
 		<div className={classes.root}>
 			<EnhancedTableToolbar 
                 handleOpen={this.handleAddProyekBaru}  
-                title={title}
+                rangeDate={rentanDate}
+                changeRangeDate={this.changeRangeDate}
                 handleCari={this.handleChangeFilter}
+                acuan={this.formRef}
+                isProgress={isProgress}
+                prefixSearch={prefixSearch}
+                handleChangePrefixSearch={this.handleChangePrefixSearch}
+                key={rentanDate}
             />
             <TableContainer className={classes.tableWrapper}>
             	<Table aria-labelledby="table-proyek">
@@ -526,12 +721,24 @@ class TableProyek extends React.Component {
 	                                    { row.status }
 	                                </TableCell>
 	                                <TableCell 
-                                        style={{width: 100, verticalAlign: 'top'}}
+                                        style={{width: 100, verticalAlign: 'top', cursor: isProgress===false?'pointer':'default'}}
                                         align={'center'}
                                     >
-                                        <PlusOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} onClick={this.handleAddProyekBaru}/>
-                                        <EditOutlined style={{ fontSize: '18px', cursor: 'pointer', marginRight: 4}} data-id={row.no_job} onClick={this.handleEditProyekBaru} data-status={row.id_status_proyek} />
-                                        <DeleteOutlined style={{ fontSize: '18px', cursor: 'pointer' }} data-id={row.no_job} onClick={this.handleBtnDelete}/>
+                                        <PlusOutlined 
+                                            style={{ fontSize: '18px', marginRight: 4}} 
+                                            onClick={isProgress===false?this.handleAddProyekBaru:null}
+                                        />
+                                        <EditOutlined 
+                                            style={{ fontSize: '18px', marginRight: 4}} 
+                                            data-id={row.no_job} 
+                                            onClick={isProgress===false?this.handleEditProyekBaru:null} 
+                                            data-status={row.id_status_proyek} 
+                                        />
+                                        <DeleteOutlined 
+                                            style={{ fontSize: '18px' }} 
+                                            data-id={row.no_job} 
+                                            onClick={isProgress===false?this.handleBtnDelete:null}
+                                        />
                                     </TableCell>
 	                            </TableRow>
                     		);
@@ -549,7 +756,6 @@ class TableProyek extends React.Component {
                 onChangePage={this.handleChangePage}
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
             />
-            <ProcessingDialog open={openProcessingDialog} />
             <KonfirmasiDialog 
                 open={openConfirmasiHapusProyek} 
                 aksi={this.handleDeleteProyek} 

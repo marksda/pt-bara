@@ -91,6 +91,7 @@ class FormProfileProyek extends React.Component {
 
         if(modeProyekBaru === 'edit') {
             this.setState({disabledInputEdit: false});
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnedit').focus();}, 300);
         }
 
         if(listCustomer === null) {
@@ -973,8 +974,9 @@ class FormProfileProyek extends React.Component {
                             </td>
                         </tr>                        
                     </tbody>
-                </table>                
-                <Form.Item {...tailLayout} style={{width:100}}>
+                </table>     
+                <div style={{display: 'flex', flexDirection: 'column'}}>        
+                <Form.Item {...tailLayout} style={{width:100}} name="btnedit">
                     <Button 
                         shape="round"
                         size="default"
@@ -985,6 +987,8 @@ class FormProfileProyek extends React.Component {
                     >
                         Edit
                     </Button>
+                </Form.Item>
+                <Form.Item {...tailLayout} style={{width:100}}>
                     <Button 
                         danger
                         type="primary" 
@@ -1028,6 +1032,7 @@ class FormProfileProyek extends React.Component {
                     Daftar Proyek
                     </Button>
                 </Form.Item>
+                </div>
             </div>
         </Form>;
 
