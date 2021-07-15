@@ -10,6 +10,7 @@ import ProcessingDialog from '../dialogs/Processing-Dialog';
 const mapStateToProps = store => {
     return {      
         statusProyekSelected: store.master.status_proyek_selected,
+        isProgress: store.master.is_progress,
     };
 };
 
@@ -154,7 +155,7 @@ class ProyekBaru extends React.Component {
     render() {
         const { 
             itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, 
-            disabledRadioMonitoring, openProcessingDialog  
+            disabledRadioMonitoring, openProcessingDialog, isProgress
         } = this.state;
 
         let subPage = null;
@@ -189,10 +190,10 @@ class ProyekBaru extends React.Component {
         <>
             <div className="content-flex-center">
                 <Radio.Group value={itemTabSelected} onChange={this.handleChangeItemTab}>
-                    <Radio.Button value="Persiapan" disabled={disabledRadioPersiapan}>Persiapan</Radio.Button>
-                    <Radio.Button value="Profile" disabled={disabledRadioProfile}>Profile</Radio.Button>
-                    <Radio.Button value="Budget" disabled={disabledRadioBudget}>Budget</Radio.Button>
-                    <Radio.Button value="Monitoring" disabled={disabledRadioMonitoring}>Monitoring</Radio.Button>
+                    <Radio.Button value="Persiapan" disabled={isProgress===true?true:disabledRadioPersiapan}>Persiapan</Radio.Button>
+                    <Radio.Button value="Profile" disabled={isProgress===true?true:disabledRadioProfile}>Profile</Radio.Button>
+                    <Radio.Button value="Budget" disabled={isProgress===true?true:disabledRadioBudget}>Budget</Radio.Button>
+                    <Radio.Button value="Monitoring" disabled={isProgress===true?true:disabledRadioMonitoring}>Monitoring</Radio.Button>
                 </Radio.Group>  
             </div>                  
             <Divider style={{borderTop: '1px solid rgba(17, 123, 236, 0.54)'}}/>

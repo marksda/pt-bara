@@ -3,7 +3,10 @@ import axios from 'axios';
 import moment from 'moment';
 import { Button, DatePicker, Form, Input, InputNumber, notification, Select } from 'antd';
 import { connect } from "react-redux";
-import { getCustomer, getStatusProyek, setItemMenuSelected, setItemProyekSelected, setModeProyekBaru, setStatusProyekSelected } from "../../actions/master-action";
+import { 
+    getCustomer, getStatusProyek, setItemMenuSelected, setIsProgress, setItemProyekSelected, 
+    setModeProyekBaru, setStatusProyekSelected 
+} from "../../actions/master-action";
 
 
 const { TextArea } = Input;
@@ -39,6 +42,7 @@ const mapDispatchToProps = dispatch => {
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
         setStatusProyekSelected: (nilai) => dispatch(setStatusProyekSelected(nilai)), 
         setItemProyekSelected: (url, headerAuthorization) => dispatch(setItemProyekSelected(url, headerAuthorization)),
+        setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
     };
 };
 
@@ -299,11 +303,13 @@ class FormPersiapanProyek extends React.Component {
 	}
 
     updatePersiapanProyek = () => {
-        const { headerAuthorization, restfulServer, handleToggleOpenProgressDialog, statusProyekSelected, resetTab, setItemProyekSelected } = this.props;
+        setIsProgress(true);
+        alert('sek');
+        const { headerAuthorization, restfulServer, statusProyekSelected, resetTab, setItemProyekSelected } = this.props;
 
         let self = this;    
                 
-        handleToggleOpenProgressDialog();
+        
 
         axios({
             method: 'post',
@@ -312,7 +318,7 @@ class FormPersiapanProyek extends React.Component {
             data: this.itemProyek
         })
         .then((r) => { 
-            handleToggleOpenProgressDialog();
+            setIsProgress(false);
             if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
                 resetTab(self.itemProyek.id_status_proyek);
                 self.setState({disabledInput: true, disabledInputEdit: false});                    
@@ -320,7 +326,6 @@ class FormPersiapanProyek extends React.Component {
             else {
                 self.setState({disabledInput: true, disabledInputEdit: false}); 
             }
-
             
             setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${self.itemProyek.no_job}`, headerAuthorization);
 
@@ -333,7 +338,7 @@ class FormPersiapanProyek extends React.Component {
             });
         })
         .catch((r) => {         
-            handleToggleOpenProgressDialog();
+            setIsProgress(false);
             self.setState({disabledInput: true, disabledInputEdit: false}); 
             notification.open({
                 message: 'Pemberitahuan',
@@ -614,7 +619,7 @@ class FormPersiapanProyek extends React.Component {
                             size="default"
                             htmlType="button" 
                             onClick={this.handleToNavDaftarProyek} 
-                            disabled={!disabledInput}
+                            disabled={isProgress===true?true:!disabledInput}
                             style={{marginBottom: 8, width: 120}}
                         >
                         Daftar Proyek

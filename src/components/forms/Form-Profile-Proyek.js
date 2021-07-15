@@ -91,7 +91,7 @@ class FormProfileProyek extends React.Component {
 
         if(modeProyekBaru === 'edit') {
             this.setState({disabledInputEdit: false});
-            setTimeout(() => {this.formRef.current.getFieldInstance('btnedit').focus();}, 300);
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnedit').focus();}, 150);
         }
 
         if(listCustomer === null) {
