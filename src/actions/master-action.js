@@ -2,7 +2,7 @@ import { CREDENTIAL_RESET, FILTER_CUSTOMER_LOADED, LIST_CUSTOMER_LOADED, LIST_CU
 
 
 export const setIsProgress = (value) => {
-    return({type: IS_PROGRESS_SET, payload: value});
+    return ({type: IS_PROGRESS_SET, payload: value});
 }
 
 export const getStatusPengajuan = (url='', authorization) => {

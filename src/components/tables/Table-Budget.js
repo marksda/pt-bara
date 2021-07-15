@@ -202,6 +202,7 @@ const mapStateToProps = store => {
     return {
         filterBudget: store.master.filter_budget,
         headerAuthorization: store.credential.header_authorization,
+        itemProyekSelected: store.master.item_proyek_selected,
         listBudget: store.master.list_budget,
         paginationBudget: store.master.pagination_budget,
         restfulServer: store.general.restful_domain,
@@ -232,8 +233,12 @@ class TableBudget extends React.Component {
     }
 
     componentDidMount() {
-    	const { filterBudget, paginationBudget, urutBudget } = this.props;
-        this.loadBudget(filterBudget, paginationBudget, urutBudget);
+    	const { itemProyekSelected, paginationBudget, urutBudget, setFilterBudget } = this.props;
+        let filter = [
+            {field: 'm.no_job', nojob: itemProyekSelected.no_job}
+        ];
+        setFilterBudget(filter);
+        this.loadBudget(filter, paginationBudget, urutBudget);
     }
 
     deleteBudget = (dataBudget) => {

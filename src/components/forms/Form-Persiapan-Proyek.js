@@ -253,12 +253,12 @@ class FormPersiapanProyek extends React.Component {
 
     savePersiapanProyek = () => {
 		const { 
-			headerAuthorization, restfulServer, handleToggleOpenProgressDialog,
+			headerAuthorization, restfulServer, setIsProgress,
             statusProyekSelected, resetTab, setModeProyekBaru, setItemProyekSelected
 		} = this.props;
 	    let self = this;
         
-	    handleToggleOpenProgressDialog();
+	    setIsProgress(true);
 
 	    axios({
             method: 'put',
@@ -267,8 +267,7 @@ class FormPersiapanProyek extends React.Component {
             data: this.itemProyek
         })
 	    .then((r) => {  
-            handleToggleOpenProgressDialog();
-            
+            setIsProgress(false);            
             if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
                 resetTab(self.itemProyek.id_status_proyek);
                 self.setState({disabledInput: true, disabledInputEdit: false});                    
@@ -289,7 +288,7 @@ class FormPersiapanProyek extends React.Component {
             });
 	    })
 	    .catch((r) => {
-            handleToggleOpenProgressDialog();            
+            setIsProgress(false);           
             this.formRef.current.resetFields();
             self.setState({disabledInput: true});
             notification.open({
@@ -302,14 +301,12 @@ class FormPersiapanProyek extends React.Component {
 	    });
 	}
 
-    updatePersiapanProyek = () => {
-        setIsProgress(true);
-        alert('sek');
-        const { headerAuthorization, restfulServer, statusProyekSelected, resetTab, setItemProyekSelected } = this.props;
+    updatePersiapanProyek = () => {        
+        const { headerAuthorization, restfulServer, statusProyekSelected, resetTab, setItemProyekSelected, setIsProgress } = this.props;
 
         let self = this;    
                 
-        
+        setIsProgress(true);
 
         axios({
             method: 'post',
@@ -576,7 +573,7 @@ class FormPersiapanProyek extends React.Component {
                             htmlType="button" 
                             onClick={this.handleEdit} 
                             style={{marginBottom: 8, width: 120}}
-                            disabled={disabledInputEdit}
+                            disabled={isProgress===true?true:disabledInputEdit}
                         >
                             Edit
                         </Button>

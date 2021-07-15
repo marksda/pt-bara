@@ -169,8 +169,6 @@ class Main extends React.Component {
         const { authorizationNotify, classes, itemMenuSelected, isProgress, listMenu, restfulServer, userProfile } = this.props;
         const { anchorEl, isOpenMenu, open } = this.state;
 
-        console.log(isProgress);
-
         let page = null;
         let subPage = null;
 

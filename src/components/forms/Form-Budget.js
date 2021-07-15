@@ -2,9 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import { Button, Dropdown, Form, Input, InputNumber, Menu, Progress, Tooltip, Upload } from 'antd';
 import { connect } from "react-redux";
-import { setModeProyekBaru, setItemProyekSelected } from "../../actions/master-action";
+import { setModeProyekBaru, setItemProyekSelected, setIsProgress } from "../../actions/master-action";
 import TableBudget from '../tables/Table-Budget';
-import ProcessingDialog from '../dialogs/Processing-Dialog';
 import { UploadOutlined, FileExcelOutlined, FileOutlined, FilePdfOutlined,FileWordOutlined } from '@ant-design/icons';
 
     
@@ -14,6 +13,7 @@ const mapStateToProps = store => {
         restfulServer: store.general.restful_domain,
         modeProyekBaru: store.master.mode_proyek_baru,
         itemProyekSelected: store.master.item_proyek_selected,
+        isProgress: store.master.is_progress,
     };
 };
 
@@ -21,6 +21,7 @@ const mapDispatchToProps = dispatch => {
     return {             
         setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)), 
         setItemProyekSelected: (url, headerAuthorization) => dispatch(setItemProyekSelected(url, headerAuthorization)),
+        setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
     };
 };
 
@@ -31,8 +32,7 @@ class FormBudget extends React.Component {
             disabledInput: true,
             disabledInputEdit: true,
             totalBudget: 0.0,
-            isUploadFile: false,
-            openProcessingDialog: false
+            isUploadFile: false
         }
 
         this.formRef = React.createRef();
@@ -52,10 +52,10 @@ class FormBudget extends React.Component {
 
     deleteFile = () => {
 		const { 
-			headerAuthorization, itemProyekSelected, restfulServer, setItemProyekSelected
+			headerAuthorization, itemProyekSelected, restfulServer, setItemProyekSelected, setIsProgress
 		} = this.props;
                         
-        this.handleToggleOpenProgressDialog();
+        setIsProgress(true);
 
         axios({
             method: 'delete',
@@ -65,21 +65,20 @@ class FormBudget extends React.Component {
         })
         .then((r) => {  
             setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${itemProyekSelected.no_job}`, headerAuthorization);
-            this.handleToggleOpenProgressDialog();    
+            setIsProgress(false);    
         })
         .catch((r) => { 
-            console.log(r.toString());
-            this.handleToggleOpenProgressDialog();
+            setIsProgress(false);
         });
 	}
 
     downloadFile = () => {  
 		const { 
-    		restfulServer, headerAuthorization, itemProyekSelected
+    		restfulServer, headerAuthorization, itemProyekSelected, setIsProgress
     	} = this.props;
 
     	let self = this;   
-        this.handleToggleOpenProgressDialog();
+        setIsProgress(true);
 
         axios({
             method: 'GET',
@@ -90,7 +89,7 @@ class FormBudget extends React.Component {
         })
         .then((r) => {   
         	let namaFile = itemProyekSelected.nama_file_budget;
-			this.handleToggleOpenProgressDialog();              
+			setIsProgress(false);             
             let url = window.URL.createObjectURL(new Blob([r.data]));
             let link = document.createElement('a');
             link.href = url;
@@ -102,8 +101,7 @@ class FormBudget extends React.Component {
         	window.URL.revokeObjectURL(url);                
         })
         .catch((r) => {
-            console.log(r.toString());
-            this.handleToggleOpenProgressDialog();
+            setIsProgress(false);
         });
     }
 
@@ -205,10 +203,6 @@ class FormBudget extends React.Component {
 	    });
     }
 
-    handleToggleOpenProgressDialog = () => {
-        this.setState({openProcessingDialog: !this.state.openProcessingDialog});
-    }
-
     formatterRupiah = (value) => {        
         let tmp = value.split('.');
         if(tmp.length>1){
@@ -249,7 +243,7 @@ class FormBudget extends React.Component {
 
     render() {
         const { itemProyekSelected, modeProyekBaru } = this.props;
-        const { isUploadFile, openProcessingDialog, totalBudget } = this.state;
+        const { isUploadFile, totalBudget } = this.state;
 
         let initEdit;
         let iconFile = null;
@@ -308,7 +302,6 @@ class FormBudget extends React.Component {
         }
 
         let page =
-        <>
         <Form
             name="form-budget"
             ref={this.formRef}
@@ -411,9 +404,7 @@ class FormBudget extends React.Component {
                     <TableBudget title="Data Budget" getTotalBudget={this.getTotalBudget}/>
                 </div>
             </div>
-        </Form>
-        <ProcessingDialog open={openProcessingDialog} />
-        </>;
+        </Form>;
 
         return(page);
     }

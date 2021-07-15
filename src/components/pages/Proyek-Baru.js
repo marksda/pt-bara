@@ -5,7 +5,6 @@ import { resetStatusProyekSelected, setStatusProyekSelected, resetItemProyekSele
 import FormBudget from '../forms/Form-Budget';
 import FormPersiapanProyek from '../forms/Form-Persiapan-Proyek';
 import FormProfileProyek from '../forms/Form-Profile-Proyek';
-import ProcessingDialog from '../dialogs/Processing-Dialog';
 
 const mapStateToProps = store => {
     return {      
@@ -31,8 +30,7 @@ class ProyekBaru extends React.Component {
             disabledRadioPersiapan: false,
             disabledRadioProfile: false,
             disabledRadioBudget: false,
-            disabledRadioMonitoring: false,
-            openProcessingDialog: false
+            disabledRadioMonitoring: false
         }
     }
 
@@ -93,11 +91,7 @@ class ProyekBaru extends React.Component {
 
     handleChangeItemTab = (e) => {
         this.setState({ itemTabSelected: e.target.value });
-    }   
-
-    handleToggleOpenProgressDialog = () => {
-        this.setState({openProcessingDialog: !this.state.openProcessingDialog});
-    }
+    } 
 
     resetTab = (statusProyek) => {
         const {statusProyekSelected, setStatusProyekSelected } = this.props;
@@ -155,32 +149,24 @@ class ProyekBaru extends React.Component {
     render() {
         const { 
             itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, 
-            disabledRadioMonitoring, openProcessingDialog, isProgress
+            disabledRadioMonitoring
         } = this.state;
+        const { isProgress } = this.props;
 
         let subPage = null;
 
         switch (itemTabSelected) {
             case 'Persiapan':
                 subPage =
-                <FormPersiapanProyek 
-                    handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
-                    resetTab={this.resetTab}
-                />;
+                <FormPersiapanProyek resetTab={this.resetTab} />;
                 break;
             case 'Profile':
                 subPage =
-                <FormProfileProyek 
-                    handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
-                    resetTab={this.resetTab}
-                />;
+                <FormProfileProyek resetTab={this.resetTab} />;
                 break;
             case 'Budget':
                 subPage =
-                <FormBudget 
-                    handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
-                    resetTab={this.resetTab}
-                />;
+                <FormBudget resetTab={this.resetTab} />;
                 break;
             default:
                 break;
@@ -198,7 +184,6 @@ class ProyekBaru extends React.Component {
             </div>                  
             <Divider style={{borderTop: '1px solid rgba(17, 123, 236, 0.54)'}}/>
             {subPage}
-            <ProcessingDialog open={openProcessingDialog} />
         </>;
 
         return(page);

@@ -1334,7 +1334,7 @@ export default function master(state = initialState, action) {
                 [URUT_PENGAJUAN]: {...tmpUrutPENGAJUAN}
             };   
             break; 
-        case IS_PROGRESS_SET:           
+        case IS_PROGRESS_SET:        
             return {
                 ...state,
                 [IS_PROGRESS]: action.payload

@@ -3,7 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { Button, DatePicker, Form, Input, InputNumber, notification, Select } from 'antd';
 import { connect } from "react-redux";
-import { getCustomer, getDesa, getJenisProyek, getPegawai, getPropinsi, getKabupaten, getKecamatan, getStatusProyek, setItemMenuSelected, setModeProyekBaru, setStatusProyekSelected, setItemProyekSelected } from "../../actions/master-action";
+import { getCustomer, getDesa, getJenisProyek, getPegawai, getPropinsi, getKabupaten, getKecamatan, getStatusProyek, setItemMenuSelected, setModeProyekBaru, setStatusProyekSelected, setItemProyekSelected, setIsProgress } from "../../actions/master-action";
 
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
@@ -51,6 +51,7 @@ const mapStateToProps = store => {
         filterPegawai: store.master.filter_pegawai,
         paginationPegawai: store.master.pagination_pegawai,
         urutPegawai: store.master.urut_pegawai,
+        isProgress: store.master.is_progress,
     };
 };
 
@@ -68,6 +69,7 @@ const mapDispatchToProps = dispatch => {
         setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)), 
         setStatusProyekSelected: (nilai) => dispatch(setStatusProyekSelected(nilai)), 
         setItemProyekSelected: (url, headerAuthorization) => dispatch(setItemProyekSelected(url, headerAuthorization)),
+        setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
     };
 };
 
@@ -374,11 +376,11 @@ class FormProfileProyek extends React.Component {
     }
 
     updatePofileProyek = () => {
-        const { headerAuthorization, restfulServer, handleToggleOpenProgressDialog, resetTab, statusProyekSelected, setItemProyekSelected } = this.props;
+        const { headerAuthorization, restfulServer, resetTab, statusProyekSelected, setItemProyekSelected, setIsProgress } = this.props;
 
         let self = this;    
                 
-        handleToggleOpenProgressDialog();
+        setIsProgress(true);
 
         axios({
             method: 'post',
@@ -388,7 +390,7 @@ class FormProfileProyek extends React.Component {
         })
         .then((r) => { 
             self.setState({disabledInput: false});
-            handleToggleOpenProgressDialog();
+            setIsProgress(false);
 
             if(statusProyekSelected !== self.itemProyek.id_status_proyek) {
                 resetTab(self.itemProyek.id_status_proyek);
@@ -408,7 +410,8 @@ class FormProfileProyek extends React.Component {
                 placement: 'bottomRight'
             });
         })
-        .catch((r) => {         
+        .catch((r) => {  
+            setIsProgress(false);       
             self.setState({disabledInput: false});
             notification.open({
                 message: 'Pemberitahuan',
@@ -438,7 +441,7 @@ class FormProfileProyek extends React.Component {
     }
 
     render() {
-        const { itemProyekSelected, listCustomer, listDesa, listPegawai, listJenisProyek, listKecamatan, listPropinsi, modeProyekBaru, listStatusProyek, listKabupaten } = this.props;
+        const { itemProyekSelected, listCustomer, listDesa, listPegawai, listJenisProyek, listKecamatan, listPropinsi, modeProyekBaru, listStatusProyek, listKabupaten, isProgress } = this.props;
         const { disabledInput, disabledInputEdit } = this.state;
 
         let keyForm;
@@ -983,7 +986,7 @@ class FormProfileProyek extends React.Component {
                         htmlType="button" 
                         onClick={this.handleEdit} 
                         style={{marginBottom: 8, width: 120}}
-                        disabled={disabledInputEdit}
+                        disabled={isProgress===true?true:disabledInputEdit}
                     >
                         Edit
                     </Button>
@@ -1026,7 +1029,7 @@ class FormProfileProyek extends React.Component {
                         size="default"
                         htmlType="button" 
                         onClick={this.handleToNavDaftarProyek} 
-                        disabled={!disabledInput}
+                        disabled={isProgress===true?true:!disabledInput}
                         style={{marginBottom: 8, width: 120}}
                     >
                     Daftar Proyek
