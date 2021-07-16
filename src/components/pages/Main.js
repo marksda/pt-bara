@@ -30,6 +30,7 @@ import { resetCredential } from "../../actions/login-action";
 import Master from "./Master";
 import PengajuanBaru from "./Pengajuan-Baru";
 import Pengajuan from "./Pengajuan";
+import TransaksiBaru from "./Transaksi-Baru";
 import Proyek from "./Proyek";
 import ProyekBaru from "./Proyek-Baru";
 import Security from "./Security";
@@ -194,6 +195,9 @@ class Main extends React.Component {
                 break;
             case 'Daftar Pengajuan':
                 subPage = <Pengajuan />;
+                break;
+            case 'Transaksi Baru':
+                subPage = <TransaksiBaru />;
                 break;
             case 'Master':
                 subPage = <Master />;

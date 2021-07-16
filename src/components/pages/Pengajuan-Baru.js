@@ -11,7 +11,6 @@ import { FilterOutlined, MinusCircleOutlined, PlusOutlined  } from '@ant-design/
 
 import { getStatusPengajuan, resetItemPengajuanSelected, setFilterProyek, setIsProgress, setItemMenuSelected, setModePengajuanBaru } from "../../actions/master-action";
 
-
 const { TextArea } = Input;
 const mapStateToProps = store => {
     return {
