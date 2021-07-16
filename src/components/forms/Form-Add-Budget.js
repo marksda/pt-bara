@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Button, Form, Input, InputNumber, Modal, Select } from 'antd';
 import { connect } from "react-redux";
 import { getBudget } from "../../actions/master-action";
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const mapStateToProps = store => {
     return {      
@@ -155,13 +156,11 @@ class FormAddBudget extends Component {
 
     saveBudget = () => {
 		const { 
-			filterBudget, headerAuthorization, itemProyekSelected, paginationBudget, restfulServer, urutBudget, handleToggleOpenProgressDialog
+			filterBudget, headerAuthorization, itemProyekSelected, paginationBudget, restfulServer, urutBudget
 		} = this.props;
 	    let self = this;
 
         this.itemBudget.no_job = itemProyekSelected.no_job;
-        
-	    handleToggleOpenProgressDialog();
 
 	    axios({
             method: 'put',
@@ -182,7 +181,6 @@ class FormAddBudget extends Component {
                 self.handleReset(); 
 	    	} 
             self.setState({disabledInput: false});
-            handleToggleOpenProgressDialog();
 	    })
 	    .catch((r) => {
 	    	self.setState({disabledInput: true});
@@ -247,7 +245,11 @@ class FormAddBudget extends Component {
             footer={null}      
             style={{top: 125}}      
             width="30%"
+            bodyStyle={{padding: 0, height: 230}}
         >
+            {
+                disabledInput===true?<LinearProgress />:null
+            }            
             <Form
                 {...layout}
                 name="form--Budget"
@@ -260,6 +262,7 @@ class FormAddBudget extends Component {
                     ["id_parent"]: mode==='edit'?`${data.id.split('-')[0]}-00`:null,
                     ["saldo"]: mode==='edit'?data.saldo:null
                 }}
+                style={{margin: 32}}
             >                   
                 <Form.Item 
                     label="Header/Detail"

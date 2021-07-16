@@ -134,6 +134,14 @@ class Main extends React.Component {
         }
     }
 
+    // componentDidMount() {
+    //     this.cekSession();
+    // }
+
+    // cekSession = () => {
+
+    // }
+
     handleCloseMenuPopup = (e) => {
         this.setState({anchorEl: null, isOpenMenu: false});
     }
