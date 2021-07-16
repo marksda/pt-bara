@@ -497,7 +497,7 @@ class PengajuanBaru extends React.Component {
                         </td>
                         <td>
                             <Form.Item 
-                                label="Jenis Pengajuan"
+                                label="Kategori"
                                 name="is_Proyek"
                                 rules={[{required: true, message: 'Jenis pengajuan harus diisi'}]}
                                 style={{marginBottom: 16}}

@@ -2,7 +2,9 @@
     display: flex;
     justify-content: center;
 }
-.table-container-pengajuan-baru td, .table-container-proyek-baru td {
+.table-container-pengajuan-baru td, 
+.table-container-proyek-baru td,
+.table-container-transaksi-baru td {
     padding: 0px 8px;
     vertical-align: top;
     width: 100%;
@@ -22,11 +24,16 @@
 } 
 
 .table-container-pengajuan-baru td:nth-child(2){
-    width: 250;
+    width: 250px;
 } 
+
 .table-container-proyek-baru td:nth-child(3) {
-    width: 250;
+    width: 250px;
 }
+
+.table-container-transaksi-baru td:nth-child(1){
+    width: 150px;
+} 
 
 .table-container-cell-pengajuan-baru {
     display: flex;
