@@ -1,21 +1,39 @@
 import React from 'react';
 import axios from 'axios';
 import { Button, DatePicker, Form, Input, Select, Typography } from 'antd';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Popover from '@material-ui/core/Popover';
 import moment from 'moment';
+import { withStyles } from '@material-ui/core/styles';
+import IconButton from '@material-ui/core/IconButton';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import _ from 'lodash';
+
+import { getAkun, setFilterAkun, resetFilterAkun, setPaginationAkun, setUrutAkun, setModeTransaksiBaru } from "../../actions/master-action";
+
 
 import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
 
 import { connect } from "react-redux";
 import { FilterOutlined, MinusCircleOutlined, PlusOutlined  } from '@ant-design/icons';
 
-// import { 
-//     resetItemTransaksiSelected, setFilterProyek, setIsProgress, setItemMenuSelected, setModeTransaksiBaru 
-// } from "../../actions/master-action";
-
 const { Text } = Typography;
 const { Option } = Select;
 const { Search } = Input;
+
+const styles = theme => ({
+    rootListAkun: {
+        width: '100%',
+        backgroundColor: theme.palette.background.paper,
+        // height: '90%',
+        // padding: 8,
+        overflow: 'auto',
+    }
+});
 
 const mapStateToProps = store => {
     return {
@@ -30,18 +48,31 @@ const mapStateToProps = store => {
         modeTransaksiBaru: store.master.mode_transaksi_baru,
         itemProyekSelected: store.master.item_proyek_selected,
         isProgress: store.master.is_progress,
+        listAkun: store.master.list_akun,
+        filterAkun: store.master.filter_akun,
+        paginationAkun: store.master.pagination_akun,
+        urutAkun: store.master.urut_akun
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
+        getAkun: (url, headerAuthorization) => dispatch(getAkun(url, headerAuthorization)),
         // getStatusTransaksi: (url, headerAuthorization) => dispatch(getStatusTransaksi(url, headerAuthorization)),
         // resetItemTransaksiSelected: () => dispatch(resetItemTransaksiSelected()),
         // setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
-        // setModeTransaksiBaru: (nilai) => dispatch(setModeTransaksiBaru(nilai)), 
+        setModeTransaksiBaru: (nilai) => dispatch(setModeTransaksiBaru(nilai)), 
         // setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
         // setFilterProyek: (value) => dispatch(setFilterProyek(value)),
+        setFilterAkun: (value) => dispatch(setFilterAkun(value)),
+        setPaginationAkun: (value) => dispatch(setPaginationAkun(value)),
+        setUrutAkun: (value) => dispatch(setUrutAkun(value)),
+        resetFilterAkun: () => dispatch(resetFilterAkun()),
     };
+};
+
+const tailLayout = {
+    wrapperCol: { offset: 8, span: 4 },
 };
 
 class TransaksiBaru extends React.Component {
@@ -49,22 +80,85 @@ class TransaksiBaru extends React.Component {
 		super(props);
         this.state = {
             disabledInputEdit: true,
-            disabledInput: false,
+            disabledInput: true,
             kategori: false,
             anchorEl: null,
             keyForm: 'none',
             noTransaksi: `NP-${moment().year()}/0000`,
             listHeaderAkun: [],
-            prefixSearch: 'm.id'
+            prefixSearch: 'm.id',
+            heighLeftContainer: 200
         };
 
         this.formRef = React.createRef();
         this.itemTransaksi = {};
+        this.filterAkunHeader = [{ field: "m.status_header", header: true }];
+        this.paginationAkunHeader = {current: 1, pageSize: 1000};
+        this.sortAkunHeader = {field: 'm.nama', order: 'asc' };
     }
 
     componentDidMount() {
-        this.loadHeaderAkun();
-        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
+        const { paginationAkun, urutAkun, setFilterAkun, setPaginationAkun } = this.props;
+
+        this.loadHeaderAkun(this.filterAkunHeader, this.paginationAkunHeader, this.sortAkunHeader);
+
+        let tmpFilter = [];
+        tmpFilter.push(                        
+            { field: "m.status_header", header: false }
+        );
+
+        let tmpPagination = {...paginationAkun};
+        tmpPagination.current = 1; 
+        tmpPagination.pageSize = 1000;      
+
+        setPaginationAkun(tmpPagination);
+        setFilterAkun(tmpFilter);
+        this.loadAkun(tmpFilter, tmpPagination, urutAkun);
+
+        setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
+    }
+
+    componentWillUnmount() {
+        const { resetFilterAkun } = this.props;  
+        resetFilterAkun();
+    }
+
+    handleBaru = () => {
+        const { modeTransaksiBaru, setModeTransaksiBaru } = this.props;
+        // const { kategori } = this.state;
+        
+        if(modeTransaksiBaru === 'edit') {
+            // resetItemTransaksiSelected();
+            this.setState({disabledInput: false, disabledInputEdit: true, kategori: false,  keyForm: 'add'});  
+            setModeTransaksiBaru('add');          
+        }
+        else {
+            this.setState({disabledInput: false, keyForm: 'add'});  
+        }
+
+        setTimeout(() => {
+            this.formRef.current.resetFields();
+            this.formRef.current.getFieldInstance('cari').focus();
+        }, 100);        
+
+        // this.itemTransaksi = {
+        //     tanggal: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
+        //     is_proyek: false,
+        //     is_reimburse: false,
+        //     dokumen: null
+        // }
+    }
+
+    handleBatal = () => {
+        const { modeTransaksiBaru } = this.props;
+
+        if(modeTransaksiBaru === 'edit') {
+            // this.setState({jenisPengajuan: itemPengajuanSelected.is_proyek, disabledInput: true, disabledInputEdit: false, keyForm: 'batal'});
+        }
+        else {
+            this.setState({kategori: false, disabledInput: true, keyForm: 'batal'});
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
+        }
     }
 
     handleCari = () => {
@@ -72,17 +166,39 @@ class TransaksiBaru extends React.Component {
     }
 
     handleChangeKategoriTransaksi = (value) => {
-        this.itemTransaksi.is_proyek = value;
+        this.itemTransaksi.is_proyek = value;     
         this.setState({kategori: value});
-        // setTimeout(() => {this.formRef.current.getFieldInstance('nominal_pengajuan').focus();}, 300);
+        if(value === true) {
+            this.setState({heighLeftContainer: 286});
+            setTimeout(() => {this.formRef.current.getFieldInstance('btncariproyek').focus();}, 100);
+        }
+        else {
+            this.setState({heighLeftContainer: 200});
+            setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
+        }
 	}
 
     handleChangePrefixSearch = (value) => {
         console.log(value);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
     }
 
-    handleChangeSubKategoriAkun = (value) => {
-        console.log(value);
+    handleChangeSubKategoriAkun = (v) => {
+        const { filterAkun, paginationAkun, urutAkun, setFilterAkun } = this.props;        
+        let tmpFilter = [];
+        let idx = _.findIndex(filterAkun, function(o){return o.field === 'm.id'});  
+        tmpFilter = [...filterAkun]
+        if(idx < 0) {            
+            tmpFilter.push(                        
+                { field: "m.id", id: v.split("0")[0] }
+            );
+        }
+        else {
+            tmpFilter[idx].id = v.split("0")[0];
+        }      
+        setFilterAkun(tmpFilter); 
+        this.loadAkun(tmpFilter, paginationAkun, urutAkun);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
     }
 
     handleChangeTanggal = (date, dateString) => {
@@ -103,7 +219,15 @@ class TransaksiBaru extends React.Component {
         }
 	}
 
-    loadHeaderAkun = () => {
+    handleReset = () => {
+        // const { resetItemTransaksiSelected } = this.props;
+		this.formRef.current.resetFields();    
+        this.setState({keyForm: 'reset'});    
+        // resetItemTransaksiSelected();
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
+	}
+
+    loadHeaderAkun = (f, p, s) => {
         const { headerAuthorization, restfulServer } = this.props;
         let self = this;   
         
@@ -117,14 +241,13 @@ class TransaksiBaru extends React.Component {
             url: `${restfulServer}/master/akun`,
             headers: {...headerAuthorization},
             params: {
-                filter:  JSON.stringify(tmpFilter),
-                pagination: {current: 1, pageSize: 200},
-                sorter: {field: 'm.nama', order: 'asc' }
+                filter:  JSON.stringify(f),
+                pagination: p,
+                sorter: s
             }
         })
 	    .then((r) => {    
             if(r.data.status === 200) {
-                console.log(r.data.keterangan);
                 self.setState({listHeaderAkun: r.data.keterangan.data});
             }
 	    })
@@ -133,14 +256,28 @@ class TransaksiBaru extends React.Component {
 	    });
     }
 
+    loadAkun = (filter, pagination, urut) => {
+        const { getAkun, headerAuthorization, restfulServer } = this.props; 
+        let url;
+        if(filter === null) {
+            url = `${restfulServer}/master/akun?pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        }
+        else {
+            url = `${restfulServer}/master/akun?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        }
+        
+        getAkun(url, headerAuthorization);
+    }
+
     render() {
-        const { disabledInput, listHeaderAkun, kategori, prefixSearch } = this.state;
-        const { modeTransaksiBaru, itemProyekSelected, itemTransaksiSelected } = this.props;
+        const { disabledInput, disabledInputEdit, heighLeftContainer, listHeaderAkun, kategori, prefixSearch } = this.state;
+        const { classes, isProgress, modeTransaksiBaru, itemProyekSelected, itemTransaksiSelected, listAkun } = this.props;
         const selectBefore = (
             <Select 
-                defaultValue={prefixSearch} 
+                value={prefixSearch} 
                 dropdownStyle={{zIndex: 2000}}
                 onChange={this.handleChangePrefixSearch}
+                disabled={disabledInput}
             >
               <Option value="m.id">KODE</Option>
               <Option value="m.nama">NAMA</Option>
@@ -165,7 +302,8 @@ class TransaksiBaru extends React.Component {
                 ["is_reimburse"]: false,
                 ["no_job"]: itemProyekSelected !== null?itemProyekSelected.no_job:null,
                 ["nama_customer"]: itemProyekSelected !== null ? itemProyekSelected.nama_customer:null,
-                ["nama_proyek"]:  itemProyekSelected !== null ? itemProyekSelected.nama_proyek:null
+                ["nama_proyek"]:  itemProyekSelected !== null ? itemProyekSelected.nama_proyek:null,
+                ["kode"]: "0"
             };
         }
 
@@ -178,7 +316,7 @@ class TransaksiBaru extends React.Component {
             initialValues={initEdit}
         >
             <div className="content-flex-center">
-                <div style={{width: '85%', display: 'flex', flexDirection: 'column'}}>
+                <div style={{minWidth: 1000, width: '85%', display: 'flex', flexDirection: 'column'}}>
                     <table className="table-container-transaksi-baru">
                     <tbody>
                         <tr>
@@ -197,7 +335,7 @@ class TransaksiBaru extends React.Component {
                                     />
                                 </Form.Item>
                             </td>
-                            <td>
+                            <td colSpan="2">
                                 <Form.Item 
                                     label="Kategori"
                                     name="is_Proyek"
@@ -239,7 +377,7 @@ class TransaksiBaru extends React.Component {
                                         style={{marginBottom: 16}}
                                         rules={[{required: true, message: 'Customer harus diisi'}]}
                                     >
-                                        <Input disabled={true} style={{color: 'blue'}}/>
+                                        <Input disabled={true} style={{minWidth: 350,color: 'blue'}}/>
                                     </Form.Item>
                                 </td>
                                 <td>
@@ -250,14 +388,16 @@ class TransaksiBaru extends React.Component {
                                         style={{marginBottom: 16, marginRight: 8}}
                                         rules={[{required: true, message: 'Proyek harus diisi'}]}
                                     >
-                                        <Input disabled={true} style={{minWidth: 400, color: 'blue'}}/>
+                                        <Input disabled={true} style={{minWidth: 450, color: 'blue'}}/>
                                     </Form.Item>
-                                    <Button 
-                                        type="dashed" 
-                                        icon={<FilterOutlined />} 
-                                        style={{marginTop: 30}}
-                                        disabled={modeTransaksiBaru==='edit'?true:disabledInput}
-                                        onClick={this.handleOpenWindowProyekSearch} />
+                                    <Form.Item name="btncariproyek">
+                                        <Button 
+                                            type="dashed" 
+                                            icon={<FilterOutlined />} 
+                                            style={{marginTop: 30}}
+                                            disabled={modeTransaksiBaru==='edit'?true:disabledInput}
+                                            onClick={this.handleOpenWindowProyekSearch} />
+                                    </Form.Item>
                                     </div>
                                 </td>
                             </tr>
@@ -266,11 +406,11 @@ class TransaksiBaru extends React.Component {
                     </tbody>
                     </table>   
                     <div className="card-container">    
-                        <div className="left-container">
+                        <div className="left-container" style={{height: `Calc(100vh - ${heighLeftContainer}px)`}}>
                             <Text strong>Daftar Akun</Text>
                             <div style={{marginTop: 8, display: 'flex'}}>
-                                <Form.Item name="kode" style={{ width: '35%', marginRight: 16 }} >
-                                    <Select defaultValue="0" onChange={this.handleChangeSubKategoriAkun}>
+                                <Form.Item name="kode" style={{ width: '35%', marginRight: 16, marginBottom: 16 }} >
+                                    <Select onChange={this.handleChangeSubKategoriAkun} disabled={disabledInput}>
                                         <Option value="0">SEMUA</Option>
                                         {
                                             listHeaderAkun.map((item) =>
@@ -279,23 +419,105 @@ class TransaksiBaru extends React.Component {
                                         }
                                     </Select>
                                 </Form.Item>
-                                <Form.Item name="cari" style={{ width: '65%'}}>
+                                <Form.Item name="cari" style={{ width: '65%', marginBottom: 16}}>
                                     <Search
                                         placeholder="pencarian"
                                         onSearch={this.handleCari}
                                         addonBefore={selectBefore}
+                                        disabled={disabledInput}
                                     />
                                 </Form.Item>
                             </div>
+                            <List className={classes.rootListAkun} style={{height: `Calc(100vh - ${heighLeftContainer+115}px)`}}>
+                                {
+                                    listAkun !== null? listAkun.data.map((row) => {
+                                        return(
+                                            <ListItem key={row.id} button dense disabled={disabledInput}>
+                                                <ListItemText primary={`[${row.id}] -- ${row.nama}`} />
+                                            </ListItem>
+                                        );
+                                    }): null
+                                }
+                            </List>
                         </div>
                         <div className="right-container">sdgsdgds</div>
                     </div>  
-                </div>      
-            </div>            
+                </div>       
+                <div style={{display: 'flex', flexDirection: 'column', width: '15%'}}>
+                    <Form.Item {...tailLayout} style={{width: 150, marginBottom: 8}} name="btnbaru">
+                        <Button 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleBaru} 
+                            style={{width: 150}}
+                            disabled={isProgress===true?true:!disabledInput}
+                        >
+                            Baru
+                        </Button>
+                    </Form.Item>
+                    <Form.Item {...tailLayout} style={{width: 150, marginBottom: 8}} name="btnedit">                    
+                        <Button 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleEdit} 
+                            style={{marginBottom: 8, width: 150}}
+                            disabled={disabledInputEdit}
+                        >
+                            Edit
+                        </Button>
+                    </Form.Item>
+                    <Form.Item {...tailLayout} style={{width: 150}}>  
+                        <Button 
+                            danger
+                            type="primary" 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleBatal} 
+                            style={{marginBottom: 8, width: 150}}
+                            disabled={disabledInput}
+                        >
+                        Batal
+                        </Button>
+                        <Button 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleReset} 
+                            disabled={modeTransaksiBaru==='edit'?true:disabledInput}
+                            style={{marginBottom: 8, width: 150}}
+                        >
+                        Reset
+                        </Button>
+                        <Button 
+                            type="primary" 
+                            shape="round"
+                            size="default"
+                            htmlType="submit" 
+                            disabled={disabledInput}
+                            style={{width: 150, marginBottom: 150}}
+                        >
+                        Simpan
+                        </Button>
+                        <Button 
+                            shape="round"
+                            size="default"
+                            htmlType="button" 
+                            onClick={this.handleToNavDaftarPengajuan} 
+                            disabled={isProgress===true?true:!disabledInput}
+                            style={{marginBottom: 8, width: 150}}
+                        >
+                        Daftar Transaksi
+                        </Button>
+                    </Form.Item>
+                </div>        
+            </div>   
         </Form>;
 
         return(page);
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TransaksiBaru);
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles, { withTheme: true })(TransaksiBaru));

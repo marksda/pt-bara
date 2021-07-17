@@ -32,7 +32,11 @@
 }
 
 .table-container-transaksi-baru td:nth-child(1){
-    width: 150px;
+    width: 100px;
+} 
+
+.table-container-transaksi-baru td:nth-child(2){
+    width: 250px;
 } 
 
 .table-container-cell-pengajuan-baru {
@@ -71,6 +75,7 @@
     width: 45%;
     background-color: #ECEFF1;
     padding: 16px;
+    height: Calc(100vh - 200px);
 }
 
 .right-container {

@@ -263,7 +263,7 @@ class TableAkun extends React.Component {
     componentDidMount() {
     	const { filterAkun, paginationAkun, urutAkun } = this.props;
               
-        this.loadAkun(filterAkun, paginationAkun, urutAkun);
+        this.loadAkun(null, paginationAkun, urutAkun);
     }
 
     deleteAkun = (dataAkun) => {
