@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, DatePicker, Form, Input, InputNumber, notification, Radio , Select } from 'antd';
+import { Button, DatePicker, Form, Input, Select, Typography } from 'antd';
 import Popover from '@material-ui/core/Popover';
 import moment from 'moment';
 
@@ -12,6 +12,10 @@ import { FilterOutlined, MinusCircleOutlined, PlusOutlined  } from '@ant-design/
 // import { 
 //     resetItemTransaksiSelected, setFilterProyek, setIsProgress, setItemMenuSelected, setModeTransaksiBaru 
 // } from "../../actions/master-action";
+
+const { Text } = Typography;
+const { Option } = Select;
+const { Search } = Input;
 
 const mapStateToProps = store => {
     return {
@@ -49,11 +53,22 @@ class TransaksiBaru extends React.Component {
             kategori: false,
             anchorEl: null,
             keyForm: 'none',
-            noTransaksi: `NP-${moment().year()}/0000`
+            noTransaksi: `NP-${moment().year()}/0000`,
+            listHeaderAkun: [],
+            prefixSearch: 'm.id'
         };
 
         this.formRef = React.createRef();
         this.itemTransaksi = {};
+    }
+
+    componentDidMount() {
+        this.loadHeaderAkun();
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
+    }
+
+    handleCari = () => {
+
     }
 
     handleChangeKategoriTransaksi = (value) => {
@@ -61,6 +76,14 @@ class TransaksiBaru extends React.Component {
         this.setState({kategori: value});
         // setTimeout(() => {this.formRef.current.getFieldInstance('nominal_pengajuan').focus();}, 300);
 	}
+
+    handleChangePrefixSearch = (value) => {
+        console.log(value);
+    }
+
+    handleChangeSubKategoriAkun = (value) => {
+        console.log(value);
+    }
 
     handleChangeTanggal = (date, dateString) => {
 		if(date !== null) {
@@ -80,11 +103,49 @@ class TransaksiBaru extends React.Component {
         }
 	}
 
-    render() {
-        const { anchorEl, disabledInput, disabledInputEdit, kategori, keyForm, noPengajuan } = this.state;
-        const { modeTransaksiBaru, itemProyekSelected, itemTransaksiSelected } = this.props;
+    loadHeaderAkun = () => {
+        const { headerAuthorization, restfulServer } = this.props;
+        let self = this;   
+        
+        let tmpFilter = [];
+        tmpFilter.push(                        
+            { field: "m.status_header", header: true }
+        );
 
-        console.log(modeTransaksiBaru);
+        axios({
+            method: 'get',
+            url: `${restfulServer}/master/akun`,
+            headers: {...headerAuthorization},
+            params: {
+                filter:  JSON.stringify(tmpFilter),
+                pagination: {current: 1, pageSize: 200},
+                sorter: {field: 'm.nama', order: 'asc' }
+            }
+        })
+	    .then((r) => {    
+            if(r.data.status === 200) {
+                console.log(r.data.keterangan);
+                self.setState({listHeaderAkun: r.data.keterangan.data});
+            }
+	    })
+	    .catch((r) => {
+	    	console.log(r.toString());
+	    });
+    }
+
+    render() {
+        const { disabledInput, listHeaderAkun, kategori, prefixSearch } = this.state;
+        const { modeTransaksiBaru, itemProyekSelected, itemTransaksiSelected } = this.props;
+        const selectBefore = (
+            <Select 
+                defaultValue={prefixSearch} 
+                dropdownStyle={{zIndex: 2000}}
+                onChange={this.handleChangePrefixSearch}
+            >
+              <Option value="m.id">KODE</Option>
+              <Option value="m.nama">NAMA</Option>
+            </Select>
+        );
         
         let initEdit;
         if(modeTransaksiBaru === 'edit' && itemTransaksiSelected !== null ) {
@@ -117,92 +178,119 @@ class TransaksiBaru extends React.Component {
             initialValues={initEdit}
         >
             <div className="content-flex-center">
-                <table className="table-container-transaksi-baru" style={{width: '65%'}}>
-                <tbody>
-                    <tr>
-                        <td>
-                            <Form.Item
-                                label="Tanggal"
-                                name="tanggal"
-                                rules={[{required: true, message: 'Tanggal pengajuan harus diisi'}]}
-                                style={{marginBottom: 16}}
-                            >
-                                <DatePicker 
-                                    format="DD-MM-YYYY" 
-                                    disabled={disabledInput}
-                                    onChange={this.handleChangeTanggal}
-                                    style={{width: 150}}
-                                />
-                            </Form.Item>
-                        </td>
-                        <td>
-                            <Form.Item 
-                                label="Kategori"
-                                name="is_Proyek"
-                                rules={[{required: true, message: 'kategori pengajuan harus diisi'}]}
-                                style={{marginBottom: 16}}
-                            >
-                                <Select 
-                                    onChange={this.handleChangeKategoriTransaksi}
-                                    disabled={modeTransaksiBaru==='edit'?true:disabledInput}
-                                    style={{width: 180}}
-                                >
-                                    <Select.Option value={true}>Proyek</Select.Option>
-                                    <Select.Option value={false}>Non Proyek</Select.Option>
-                                </Select>
-                            </Form.Item>
-                        </td> 
-                    </tr>
-                    {
-                        kategori===true?
+                <div style={{width: '85%', display: 'flex', flexDirection: 'column'}}>
+                    <table className="table-container-transaksi-baru">
+                    <tbody>
                         <tr>
                             <td>
                                 <Form.Item
-                                    label="No. Job"
-                                    name="no_job"
+                                    label="Tanggal"
+                                    name="tanggal"
+                                    rules={[{required: true, message: 'Tanggal pengajuan harus diisi'}]}
                                     style={{marginBottom: 16}}
-                                    rules={[{required: true, message: 'No. Job harus diisi'}]}
                                 >
-                                    <Input 
-                                        data-jenis="nojob"
-                                        disabled={true}
-                                        style={{ minWidth: 150, color: 'blue'}}
+                                    <DatePicker 
+                                        format="DD-MM-YYYY" 
+                                        disabled={disabledInput}
+                                        onChange={this.handleChangeTanggal}
+                                        style={{width: 150}}
                                     />
                                 </Form.Item>
                             </td>
                             <td>
                                 <Form.Item 
-                                    label="Customer"
-                                    name="nama_customer"
+                                    label="Kategori"
+                                    name="is_Proyek"
+                                    rules={[{required: true, message: 'kategori pengajuan harus diisi'}]}
                                     style={{marginBottom: 16}}
-                                    rules={[{required: true, message: 'Customer harus diisi'}]}
                                 >
-                                    <Input disabled={true} style={{color: 'blue'}}/>
+                                    <Select 
+                                        onChange={this.handleChangeKategoriTransaksi}
+                                        disabled={modeTransaksiBaru==='edit'?true:disabledInput}
+                                        style={{width: 180}}
+                                    >
+                                        <Select.Option value={true}>Proyek</Select.Option>
+                                        <Select.Option value={false}>Non Proyek</Select.Option>
+                                    </Select>
                                 </Form.Item>
-                            </td>
-                            <td>
-                                <div style={{display: 'flex'}}>
-                                <Form.Item 
-                                    label="Proyek"
-                                    name="nama_proyek"
-                                    style={{marginBottom: 16, marginRight: 8}}
-                                    rules={[{required: true, message: 'Proyek harus diisi'}]}
-                                >
-                                    <Input disabled={true} style={{minWidth: 400, color: 'blue'}}/>
-                                </Form.Item>
-                                <Button 
-                                    type="dashed" 
-                                    icon={<FilterOutlined />} 
-                                    style={{marginTop: 30}}
-                                    disabled={modeTransaksiBaru==='edit'?true:disabledInput}
-                                    onClick={this.handleOpenWindowProyekSearch} />
-                                </div>
-                            </td>
+                            </td> 
                         </tr>
-                        :null
-                    }
-                </tbody>
-                </table>                
+                        {
+                            kategori===true?
+                            <tr>
+                                <td>
+                                    <Form.Item
+                                        label="No. Job"
+                                        name="no_job"
+                                        style={{marginBottom: 16}}
+                                        rules={[{required: true, message: 'No. Job harus diisi'}]}
+                                    >
+                                        <Input 
+                                            data-jenis="nojob"
+                                            disabled={true}
+                                            style={{ minWidth: 150, color: 'blue'}}
+                                        />
+                                    </Form.Item>
+                                </td>
+                                <td>
+                                    <Form.Item 
+                                        label="Customer"
+                                        name="nama_customer"
+                                        style={{marginBottom: 16}}
+                                        rules={[{required: true, message: 'Customer harus diisi'}]}
+                                    >
+                                        <Input disabled={true} style={{color: 'blue'}}/>
+                                    </Form.Item>
+                                </td>
+                                <td>
+                                    <div style={{display: 'flex'}}>
+                                    <Form.Item 
+                                        label="Proyek"
+                                        name="nama_proyek"
+                                        style={{marginBottom: 16, marginRight: 8}}
+                                        rules={[{required: true, message: 'Proyek harus diisi'}]}
+                                    >
+                                        <Input disabled={true} style={{minWidth: 400, color: 'blue'}}/>
+                                    </Form.Item>
+                                    <Button 
+                                        type="dashed" 
+                                        icon={<FilterOutlined />} 
+                                        style={{marginTop: 30}}
+                                        disabled={modeTransaksiBaru==='edit'?true:disabledInput}
+                                        onClick={this.handleOpenWindowProyekSearch} />
+                                    </div>
+                                </td>
+                            </tr>
+                            :null
+                        }
+                    </tbody>
+                    </table>   
+                    <div className="card-container">    
+                        <div className="left-container">
+                            <Text strong>Daftar Akun</Text>
+                            <div style={{marginTop: 8, display: 'flex'}}>
+                                <Form.Item name="kode" style={{ width: '35%', marginRight: 16 }} >
+                                    <Select defaultValue="0" onChange={this.handleChangeSubKategoriAkun}>
+                                        <Option value="0">SEMUA</Option>
+                                        {
+                                            listHeaderAkun.map((item) =>
+                                                <Option key={item.id} value={item.id}>{item.nama.toUpperCase()}</Option>
+                                            )
+                                        }
+                                    </Select>
+                                </Form.Item>
+                                <Form.Item name="cari" style={{ width: '65%'}}>
+                                    <Search
+                                        placeholder="pencarian"
+                                        onSearch={this.handleCari}
+                                        addonBefore={selectBefore}
+                                    />
+                                </Form.Item>
+                            </div>
+                        </div>
+                        <div className="right-container">sdgsdgds</div>
+                    </div>  
+                </div>      
             </div>            
         </Form>;
 

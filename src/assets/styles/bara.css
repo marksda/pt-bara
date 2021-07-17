@@ -60,3 +60,20 @@
 .container-preview-img-pegawai .preview-img-pegawai-middle {
     opacity: 0;
 }
+
+.card-container {
+    display: flex;
+    margin: 8px 8px 0px 8px;
+    /* border: 1px solid #d3d1d1; */
+}
+
+.left-container {
+    width: 45%;
+    background-color: #ECEFF1;
+    padding: 16px;
+}
+
+.right-container {
+    width: 55%;
+    padding: 16px;
+}

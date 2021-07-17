@@ -110,10 +110,7 @@ const initialState = {
         order: "asc"
     },
     list_akun: null,
-    filter_akun: {
-        field: null,
-        search: null
-    },
+    filter_akun: null,
     pagination_akun: {
         current: 1,
         pageSize: 100,
@@ -699,13 +696,9 @@ export default function master(state = initialState, action) {
                 [FILTER_AKUN]: action.payload
             };
         case FILTER_AKUN_RESET:
-            let tmpFilterAKUN = {
-                field: null,
-                search: null
-            }
             return {
                 ...state,
-                [FILTER_AKUN]: {...tmpFilterAKUN}
+                [FILTER_AKUN]: null
             };
         case LIST_AKUN_LOADED:
             return {
@@ -1112,10 +1105,7 @@ export default function master(state = initialState, action) {
         case FILTER_BUDGET_RESET:
             return {
                 ...state,
-                [FILTER_BUDGET]: {
-                    field: null,
-                    search: null
-                },
+                [FILTER_BUDGET]: null,
             };
         case LIST_BUDGET_LOADED:
             return {

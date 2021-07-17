@@ -317,14 +317,33 @@ class TableAkun extends React.Component {
     }
 
     handleChangeFilter = (v) => {
-        const { paginationAkun, setFilterAkun, urutAkun, setPaginationAkun } = this.props;
+        const { filterAkun, paginationAkun, setFilterAkun, urutAkun, setPaginationAkun } = this.props;
         let tmpPagination = {...paginationAkun};
         tmpPagination.current = 1;        
         setPaginationAkun(tmpPagination);
-        let tmpFilter = {
-            field: "m.nama",
-            search: v
-        };        
+
+        let tmpFilter = [];
+
+        if(filterAkun !== null) {            
+            let idx = null;
+            tmpFilter = [...filterAkun];
+            idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama'});
+            if(idx < 0) {
+                tmpFilter = [];
+                tmpFilter.push(                        
+                    { field: "m.nama", search: v }
+                );
+            }
+            else {
+                tmpFilter[idx].search = v;
+            } 
+        }
+        else {
+            tmpFilter.push(                        
+                { field: "m.nama", search: v }
+            );
+        }
+
         setFilterAkun(tmpFilter);
         this.loadAkun(tmpFilter, tmpPagination, urutAkun);
     }
@@ -385,7 +404,14 @@ class TableAkun extends React.Component {
 
     loadAkun = (filter, pagination, urut) => {
         const { getAkun, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/akun?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        let url;
+        if(filter === null) {
+            url = `${restfulServer}/master/akun?pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        }
+        else {
+            url = `${restfulServer}/master/akun?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        }
+        
         getAkun(url, headerAuthorization);
     }
 
