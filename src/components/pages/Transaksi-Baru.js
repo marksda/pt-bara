@@ -600,13 +600,13 @@ class TransaksiBaru extends React.PureComponent  {
                             </List>
                         </div>
                         <div className="right-container" style={{height: `Calc(100vh - ${heighLeftContainer}px)`}}>
-                            <table>
+                            <table className="table-transaksi">
                                 <thead>
                                     <tr>
-                                        <td>Akun</td>
-                                        <td>Debet</td>
-                                        <td>Kredit</td>
-                                        <td>Action</td>
+                                        <th>Akun</th>
+                                        <th>Debet</th>
+                                        <th>Kredit</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                             </table>

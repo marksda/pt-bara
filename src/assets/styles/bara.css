@@ -80,5 +80,33 @@
 
 .right-container {
     width: 55%;
-    padding: 16px;
+    padding: 0 16px 16px;
 }
+
+.table-transaksi {
+    width: 100%;
+}
+
+.table-transaksi th {
+    background-color: rgb(200, 198, 202);
+    padding: 8px;
+}
+
+.table-transaksi th:nth-child(1){
+    text-align: left;
+} 
+
+.table-transaksi th:nth-child(2){
+    width: 150px;
+    text-align: right;
+} 
+
+.table-transaksi th:nth-child(3){
+    width: 150px;
+    text-align: right;
+} 
+
+.table-transaksi th:nth-child(4){
+    width: 80px;
+    text-align: center;
+} 
