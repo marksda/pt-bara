@@ -528,6 +528,7 @@ export const setUrutProyek = (value) => {
 
 export const getAkun = (url='', authorization) => {
     return (dispatch) => {
+        dispatch({type: IS_PROGRESS_SET, payload: true});
         return fetch(url, {
             method: 'GET', 
             headers: authorization
@@ -538,7 +539,8 @@ export const getAkun = (url='', authorization) => {
             }
         )
         .then(
-            json => {          
+            json => {       
+                dispatch({type: IS_PROGRESS_SET, payload: false});   
                 if(json.status === 200 ) {
                     dispatch({ type: LIST_AKUN_LOADED, payload: json.keterangan });
                 }
@@ -548,6 +550,7 @@ export const getAkun = (url='', authorization) => {
             }
         )
         .catch((e) => {
+            dispatch({type: IS_PROGRESS_SET, payload: false});
             dispatch({type: LIST_AKUN_RESET}); 
             dispatch({type: CREDENTIAL_RESET});
             dispatch({type: UNAUTHORIZATION_RISE});

@@ -304,8 +304,7 @@ class TablePencarianProyek extends React.Component {
                 tmpFilter.push(tmpRentan);
                 this.setState({rentanDate: filterProyek[idx].rentan, prefixSearch: idx!==0?filterProyek[0].field:'m.no_job'});
             }
-        }         
-
+        }  
         
         setFilterProyek(tmpFilter);
         setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
@@ -459,9 +458,9 @@ class TablePencarianProyek extends React.Component {
     handleOnClickRow = (e) => {
         const { formRef, headerAuthorization, listProyek, setItemProyekSelected, restfulServer, handleCloseWindowProyekSearch  } = this.props;
         setItemProyekSelected(`${restfulServer}/master/detailproyek?no_job=${listProyek.data[Number(e.target.parentElement.dataset.id)].no_job}`, headerAuthorization);
-        setTimeout(() => {
-            formRef.current.getFieldInstance('nominal_pengajuan').focus();
-        }, 100);    
+        // setTimeout(() => {
+        //     formRef.current.getFieldInstance('nominal_pengajuan').focus();
+        // }, 100);    
         
         handleCloseWindowProyekSearch();
     }

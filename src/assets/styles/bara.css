@@ -13,11 +13,11 @@
     width: 150px;
 } 
 .table-container-proyek-baru td:nth-child(2) {
-    width: 550px;
+    width: 350px;
 }
-.table-container-proyek-baru td:nth-child(3) {
+/* .table-container-proyek-baru td:nth-child(3) {
     width: 550px;
-}
+} */
 
 .table-container-pengajuan-baru td:nth-child(1){
     width: 250px;
