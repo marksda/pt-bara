@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, DatePicker, Form, Input, Select, Typography } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, Select, Typography } from 'antd';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -15,11 +15,12 @@ import { getAkun, setFilterAkun, resetFilterAkun, setPaginationAkun, setUrutAkun
 import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
 
 import { connect } from "react-redux";
-import { FilterOutlined  } from '@ant-design/icons';
+import { DeleteOutlined, FilterOutlined, MinusCircleOutlined, PlusOutlined  } from '@ant-design/icons';
 
 const { Text } = Typography;
 const { Option } = Select;
-const { Search } = Input;
+const { Search, TextArea } = Input;
+
 
 const styles = theme => ({
     rootListAkun: {
@@ -72,7 +73,7 @@ const tailLayout = {
     wrapperCol: { offset: 8, span: 4 },
 };
 
-class TransaksiBaru extends React.PureComponent  {
+class TransaksiBaru extends React.Component  {
     constructor(props) {
 		super(props);
         this.state = {
@@ -84,7 +85,10 @@ class TransaksiBaru extends React.PureComponent  {
             noTransaksi: `NP-${moment().year()}/0000`,
             listHeaderAkun: [],
             prefixSearch: 'm.nama',
-            heighLeftContainer: 200
+            heighLeftContainer: 200,
+            transaksi: [],
+            totalDebet: 0,
+            totalKredit: 0
         };
 
         this.formRef = React.createRef();
@@ -241,6 +245,23 @@ class TransaksiBaru extends React.PureComponent  {
         }
     }
 
+    handleChangeDebit = (value, index) => {
+        const { transaksi, totalDebet } = this.state;
+        let tmp = transaksi[index];
+        let total = totalDebet - tmp.debet + value;
+        tmp.debet = value;
+        this.setState({totalDebet: total});
+	}
+
+    handleChangeKredit = (value, index) => {
+        const { transaksi, totalKredit } = this.state;
+        console.log(`value: ${value}, totalKredit: ${totalKredit}`);
+        let tmp = transaksi[index];
+        let total = totalKredit - tmp.kredit + value;
+        tmp.kredit = value;
+        this.setState({totalKredit: total});
+	}
+
     handleChangeKategoriTransaksi = (value) => {
         this.itemTransaksi.is_proyek = value;     
         this.setState({kategori: value});
@@ -334,6 +355,29 @@ class TransaksiBaru extends React.PureComponent  {
 		}
 	}
 
+    handleDeleteItemTransaction = (e, index) => {
+        const { transaksi, totalDebet, totalKredit } = this.state;
+        let tmp = [...transaksi];
+        let tmpDebet = totalDebet - tmp[index].debet;
+        let tmpKredit = totalKredit - tmp[index].kredit
+
+        tmp.splice(index, 1);
+
+        this.setState({transaksi: tmp, totalDebet: tmpDebet, totalKredit: tmpKredit});
+    }
+
+    handleItemAkunClick = (event, index) => {
+        const { transaksi } = this.state;
+        const { listAkun } = this.props
+        let tmp = [...transaksi];
+        let tmpAkunItem = {...listAkun.data[index]}
+        tmpAkunItem.debet = null;
+        tmpAkunItem.kredit = null;
+        delete tmpAkunItem.status_header;
+        tmp.push({...tmpAkunItem});        
+        this.setState({transaksi: tmp});
+    }
+
     handleOnFinish = (value) => {
 		const { modeTransaksiBaru } = this.props;
 		this.setState({disabledInput: true});
@@ -405,8 +449,26 @@ class TransaksiBaru extends React.PureComponent  {
         getAkun(url, headerAuthorization);
     }
 
+    formatterRupiah = (value) => {        
+        let tmp = value.split('.');
+        if(tmp.length>1){
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]},${tmp[1]}`;
+        }
+        else {
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]}`;
+        }
+    }
+
+    parserRupiah = (value) => {
+        value = value.replace(/Rp\s?|(\.*)/g, '')
+        return value.replace(/\,/g, '.');
+    }
+
     render() {
-        const { anchorEl, disabledInput, disabledInputEdit, heighLeftContainer, listHeaderAkun, kategori, prefixSearch } = this.state;
+        const { anchorEl, disabledInput, disabledInputEdit, heighLeftContainer, listHeaderAkun, kategori, prefixSearch, transaksi,
+            totalDebet, totalKredit } = this.state;
         const { classes, isProgress, modeTransaksiBaru, itemProyekSelected, itemTransaksiSelected, listAkun } = this.props;
         
         // console.log(itemProyekSelected);
@@ -444,6 +506,7 @@ class TransaksiBaru extends React.PureComponent  {
                 ["nama_customer"]: itemProyekSelected !== null ? itemProyekSelected.nama_customer:null,
                 ["nama_proyek"]:  itemProyekSelected !== null ? itemProyekSelected.nama_proyek:null,
                 ["kode"]: "0",
+                ["jenis_transaksi"]: null
             };
         }
 
@@ -589,9 +652,15 @@ class TransaksiBaru extends React.PureComponent  {
                             </div>
                             <List className={classes.rootListAkun} style={{height: `Calc(100vh - ${heighLeftContainer+115}px)`}}>
                                 {
-                                    listAkun !== null? listAkun.data.map((row) => {
+                                    listAkun !== null? listAkun.data.map((row, index) => {
                                         return(
-                                            <ListItem key={row.id} button dense disabled={isProgress===true?true:disabledInput}>
+                                            <ListItem 
+                                                key={row.id} 
+                                                button 
+                                                dense 
+                                                disabled={isProgress===true?true:disabledInput}
+                                                onClick={(event) => this.handleItemAkunClick(event, index)}
+                                            >
                                                 <ListItemText primary={`[${row.id}] -- ${row.nama}`} />
                                             </ListItem>
                                         );
@@ -609,7 +678,184 @@ class TransaksiBaru extends React.PureComponent  {
                                         <th>Action</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    {
+                                        transaksi.length > 0 ? transaksi.map((item, index) =>
+                                            <tr key={item.id}>
+                                                <td>{item.nama}</td>
+                                                <td>
+                                                    <InputNumber 
+                                                        style={{width: 130}}
+                                                        onChange={(value)=> this.handleChangeDebit(value, index)}
+                                                        precision={2}
+                                                        formatter={this.formatterRupiah}
+                                                        parser={this.parserRupiah}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <InputNumber 
+                                                        style={{width: 130}}
+                                                        onChange={(value)=> this.handleChangeKredit(value, index)}
+                                                        precision={2}
+                                                        formatter={this.formatterRupiah}
+                                                        parser={this.parserRupiah}
+                                                    />
+                                                </td>
+                                                <td>
+                                                    <DeleteOutlined 
+                                                        style={{ fontSize: '18px', cursor: 'pointer'}} 
+                                                        onClick={(e) => this.handleDeleteItemTransaction(e, index)}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        )                                        
+                                        :null
+                                    }
+                                    <tr>
+                                        <td style={{backgroundColor: '#f3f5f7'}}></td>
+                                        <td>
+                                            <InputNumber 
+                                                style={{width: 130, color: 'blue'}}
+                                                disabled={true}
+                                                precision={2}
+                                                formatter={this.formatterRupiah}
+                                                parser={this.parserRupiah}
+                                                value={totalDebet}
+                                            />
+                                        </td>
+                                        <td>
+                                            <InputNumber 
+                                                style={{width: 130, color: 'blue'}}
+                                                disabled={true}
+                                                precision={2}
+                                                formatter={this.formatterRupiah}
+                                                parser={this.parserRupiah}
+                                                value={totalKredit}
+                                            />
+                                        </td>
+                                        <td style={{backgroundColor: '#f3f5f7'}}></td>
+                                    </tr>
+                                </tbody>
                             </table>
+                            <div style={{display: 'flex'}}>
+                                <Form.Item 
+                                    label="Jenis Transaksi"
+                                    name="jenis_transaksi"
+                                    style={{marginBottom: 16, marginRight: 16}}
+                                >
+                                    <Select 
+                                        onChange={this.handleChangeKategoriTransaksi}
+                                        disabled={modeTransaksiBaru==='edit'?true:disabledInput}
+                                        style={{minWidth: 260}}
+                                    >
+                                        <Select.Option value={true}>Proyek</Select.Option>
+                                        <Select.Option value={false}>Non Proyek</Select.Option>
+                                    </Select>
+                                </Form.Item>
+                                <div style={{display: 'flex', flexDirection: 'column'}}>                                       
+                                    <Form.Item
+                                        label="Jatuh Tempo"
+                                        name="jatuh_tempo"
+                                        style={{marginBottom: 16}}
+                                    >
+                                        <DatePicker 
+                                            format="DD-MM-YYYY" 
+                                            disabled={disabledInput}
+                                            onChange={this.handleChangeTanggal}
+                                        />
+                                    </Form.Item>
+                                    <Form.List name="dokumen">
+                                        {
+                                            (fields, { add, remove }, { errors }) => (
+                                                <>
+                                                    {
+                                                        fields.map(
+                                                            (field, index) => (
+                                                                <div style={{display: 'flex'}} key={field.key}>
+                                                                    <Form.Item
+                                                                        noStyle
+                                                                    >
+                                                                        <Form.Item
+                                                                            {...field}
+                                                                            label={index === 0 ? 'Jenis Dokumen' : ''}
+                                                                            name={[field.name, 'jenis_dokumen']}
+                                                                            fieldKey={[field.fieldKey, 'jenis_dokumen']}
+                                                                            rules={[{required: true, message: 'Jenis Dokumen harus diisi'}]} 
+                                                                            style={{marginBottom: 8}}
+                                                                        >
+                                                                            <Input 
+                                                                                data-jenis="jenisdokumen"
+                                                                                data-idx={index}
+                                                                                disabled={disabledInput} 
+                                                                                placeholder="Dokumen"
+                                                                                style={{ width: 150, marginRight: 16 }} 
+                                                                                onChange={this.handleChangeNilaiText}
+                                                                            />
+                                                                        </Form.Item>
+                                                                        <Form.Item
+                                                                            {...field}
+                                                                            label={index === 0 ? 'No. Dokumen' : ''}
+                                                                            name={[field.name, 'no_dokumen']}
+                                                                            fieldKey={[field.fieldKey, 'no_dokumen']}    
+                                                                            rules={[{required: true, message: 'No. Dokumen harus diisi'}]}      
+                                                                            style={{marginBottom: 8}}                                                               
+                                                                        >
+                                                                            <Input 
+                                                                                data-jenis="nodokumen"
+                                                                                placeholder="Nomor"
+                                                                                data-idx={index}
+                                                                                disabled={disabledInput} 
+                                                                                style={{ width: 150, marginRight: 16}} 
+                                                                                onChange={this.handleChangeNilaiText}
+                                                                            />
+                                                                        </Form.Item>
+                                                                        {
+                                                                            disabledInputEdit===true?<MinusCircleOutlined
+                                                                                className="dynamic-delete-button"
+                                                                                disabled={disabledInput}
+                                                                                style={{marginTop: index===0?38:10, color: 'red'}}
+                                                                                onClick={
+                                                                                    () => {
+                                                                                        remove(field.name);
+                                                                                        this.handleRemoveDokumen(index);
+                                                                                    } 
+                                                                                }
+                                                                            />:null
+                                                                        }
+                                                                    </Form.Item>
+                                                                </div>
+                                                            )
+                                                        )
+                                                    }
+                                                    <Form.Item
+                                                        label={fields.length === 0 ? 'Dokumen' : ''}
+                                                        style={{marginBottom: 8}}
+                                                    >
+                                                        <Button
+                                                            icon={<PlusOutlined />}
+                                                            onClick={() => add()}
+                                                            disabled={disabledInput}
+                                                        />
+                                                    </Form.Item>
+                                                </>
+                                            )
+                                        }
+                                    </Form.List>
+                                </div>
+                            </div>
+                            <Form.Item
+                                label="keterangan"
+                                name="keterangan_transaksi"
+                                rules={[{required: true, message: 'keterangan harus diisi'}]} 
+                            >
+                                <TextArea  
+                                    rows={4}
+                                    data-jenis="keterangan"
+                                    disabled={disabledInput}
+                                    onChange={this.handleChangeNilaiText}
+                                    placeholder="Keterangan transaksi"
+                                />
+                            </Form.Item>
                         </div>
                     </div>  
                 </div>       

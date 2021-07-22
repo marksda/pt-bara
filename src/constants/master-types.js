@@ -89,3 +89,7 @@ export const LIST_PENGAJUAN = "list_pengajuan";
 export const PAGINATION_PENGAJUAN = "pagination_pengajuan";
 export const URUT_PENGAJUAN = "urut_pengajuan";
 export const IS_PROGRESS = "is_progress";
+export const JENIS_TRANSAKSI = "list_jenis_transaksi";
+export const PAGINATION_JENIS_TRANSAKSI = "pagination_jenis_transaksi";
+export const URUT_JENIS_TRANSAKSI = "urut_jenis_transaksi";
+export const FILTER_JENIS_TRANSAKSI = "filter_jenis_transaksi";

@@ -75,20 +75,43 @@
     width: 45%;
     background-color: #ECEFF1;
     padding: 16px;
-    height: Calc(100vh - 200px);
 }
 
 .right-container {
     width: 55%;
-    padding: 0 16px 16px;
+    padding: 8px 16px;
+    background-color: #f3f5f7;
 }
 
 .table-transaksi {
     width: 100%;
+    margin-bottom: 16px;
 }
 
 .table-transaksi th {
-    background-color: rgb(200, 198, 202);
+    padding: 8px;
+    background-color: #f3f5f7;
+    border: 2px solid #f3f5f7;
+}
+
+.table-transaksi tr {
+    background-color: #ECEFF1;
+    border: 2px solid #f3f5f7;
+}
+
+.table-transaksi td {
+    border: 2px solid #f3f5f7;
+}
+
+.table-transaksi td:nth-child(4) {
+    text-align: center;
+}
+
+/* .table-transaksi tr:nth-child(odd) {
+    background-color: rgb(223, 222, 224);
+} */
+
+.table-transaksi td {
     padding: 8px;
 }
 
@@ -98,12 +121,12 @@
 
 .table-transaksi th:nth-child(2){
     width: 150px;
-    text-align: right;
+    text-align: left;
 } 
 
 .table-transaksi th:nth-child(3){
     width: 150px;
-    text-align: right;
+    text-align: left;
 } 
 
 .table-transaksi th:nth-child(4){
