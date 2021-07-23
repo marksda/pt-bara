@@ -31,6 +31,7 @@ import Master from "./Master";
 import PengajuanBaru from "./Pengajuan-Baru";
 import Pengajuan from "./Pengajuan";
 import TransaksiBaru from "./Transaksi-Baru";
+import DaftartTransaksi from "./Daftar-Transaksi";
 import Proyek from "./Proyek";
 import ProyekBaru from "./Proyek-Baru";
 import Security from "./Security";
@@ -198,6 +199,9 @@ class Main extends React.Component {
                 break;
             case 'Transaksi Baru':
                 subPage = <TransaksiBaru />;
+                break;
+            case 'Daftar Transaksi':
+                subPage = <DaftartTransaksi />;
                 break;
             case 'Master':
                 subPage = <Master />;

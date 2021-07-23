@@ -9,7 +9,7 @@ import moment from 'moment';
 import { withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 
-import { getAkun, getJenisTransaksi, setFilterAkun, resetFilterAkun, setPaginationAkun, setUrutAkun, setModeTransaksiBaru, resetItemProyekSelected } from "../../actions/master-action";
+import { getAkun, getJenisTransaksi, setFilterAkun, resetFilterAkun, setPaginationAkun, setUrutAkun, setModeTransaksiBaru, resetItemProyekSelected, setIsProgress } from "../../actions/master-action";
 
 
 import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
@@ -66,6 +66,7 @@ const mapDispatchToProps = dispatch => {
         setUrutAkun: (value) => dispatch(setUrutAkun(value)),
         resetFilterAkun: () => dispatch(resetFilterAkun()),
         resetItemProyekSelected: () => dispatch(resetItemProyekSelected()),
+        setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
     };
 };
 
@@ -311,8 +312,6 @@ class TransaksiBaru extends React.Component  {
 
     handleChangeJenisTransaksi = (value) => {
         this.itemTransaksi.jenis_transaksi = value;  
-        
-        console.log(this.itemTransaksi);
 	}
 
     handleChangeNilaiText = (e) => {
@@ -450,26 +449,28 @@ class TransaksiBaru extends React.Component  {
 	}
 
     handleDeleteItemTransaction = (e, index) => {
-        const { transaksi, totalDebet, totalKredit } = this.state;
-        let tmp = [...transaksi];
-        let tmpDebet = totalDebet - tmp[index].debet;
-        let tmpKredit = totalKredit - tmp[index].kredit
+        const { totalDebet, totalKredit } = this.state;
+        let tmpDebet = totalDebet - this.itemTransaksi.list_transaksi[index].debet;
+        let tmpKredit = totalKredit - this.itemTransaksi.list_transaksi[index].kredit
 
-        tmp.splice(index, 1);
+        this.itemTransaksi.list_transaksi.splice(index, 1);
 
-        this.setState({transaksi: tmp, totalDebet: tmpDebet, totalKredit: tmpKredit});
+        this.setState({transaksi: this.itemTransaksi.list_transaksi, totalDebet: tmpDebet, totalKredit: tmpKredit});
     }
 
     handleItemAkunClick = (event, index) => {
-        const { transaksi } = this.state;
         const { listAkun } = this.props;
         let tmpAkunItem = {...listAkun.data[index]}
         tmpAkunItem.debet = null;
         tmpAkunItem.kredit = null;
         delete tmpAkunItem.status_header;
-        
-        this.itemTransaksi.list_transaksi.push({...tmpAkunItem}); 
-        this.setState({transaksi: this.itemTransaksi.list_transaksi});
+
+        let self = this;        
+        let i =  _.findIndex(self.itemTransaksi.list_transaksi, function(o) { return o.id === tmpAkunItem.id; });
+        if(i < 0) {
+            this.itemTransaksi.list_transaksi.push({...tmpAkunItem}); 
+            this.setState({transaksi: this.itemTransaksi.list_transaksi});
+        }
     }
 
     handleOnFinish = (value) => {
@@ -611,34 +612,33 @@ class TransaksiBaru extends React.Component  {
             method: 'put',
             url: `${restfulServer}/master/transaksi`,
             headers: {...headerAuthorization},
-            data: this.itemPengajuan
+            data: this.itemTransaksi
         })
 	    .then((r) => {              
             setIsProgress(false);
-            // if(r.data.status === 200) {
-            //     notification.open({
-            //         message: 'Pemberitahuan',
-            //         description:
-            //         'Pengajuan baru berhasil ditambahkan.',
-            //         duration: 4,
-            //         placement: 'bottomRight'
-            //     });
-            // }
-            // else {
-            //     notification.open({
-            //         message: 'Pemberitahuan',
-            //         description:
-            //           'Pengajuan baru gagal ditambahkan.',
-            //         duration: 4,
-            //         placement: 'bottomRight'
-            //     });
-            // }
-
-	    	// self.handleReset();
-            self.setState({disabledInput: true, disabledInputEdit: false}); 
+            if(r.data.status === 200) {
+                notification.open({
+                    message: 'Pemberitahuan',
+                    description:
+                    'Transaksi berhasil ditambahkan.',
+                    duration: 4,
+                    placement: 'bottomRight'
+                });
+                self.handleBatal();
+            }
+            else {
+                notification.open({
+                    message: 'Pemberitahuan',
+                    description:
+                      'Transaksi ditambahkan.',
+                    duration: 4,
+                    placement: 'bottomRight'
+                });
+                self.setState({disabledInput: true, disabledInputEdit: false}); 
+            }            
 	    })
 	    .catch((r) => {
-	    	self.setState({disabledInput: true});
+	    	self.setState({disabledInput: true, disabledInputEdit: false}); 
             notification.open({
                 message: 'Pemberitahuan',
                 description:
@@ -888,7 +888,8 @@ class TransaksiBaru extends React.Component  {
                                                 </td>
                                                 <td>
                                                     <DeleteOutlined 
-                                                        style={{ fontSize: '18px', cursor: 'pointer'}} 
+                                                        style={{ fontSize: '18px', cursor: 'pointer'}}
+                                                        data-id={index}
                                                         onClick={(e) => this.handleDeleteItemTransaction(e, index)}
                                                     />
                                                 </td>

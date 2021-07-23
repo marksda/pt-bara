@@ -244,8 +244,8 @@ class FormAddBudget extends Component {
             onCancel={handleClose}
             footer={null}      
             style={{top: 125}}      
-            width="30%"
-            bodyStyle={{padding: 0, height: 230}}
+            width="35%"
+            bodyStyle={{padding: '0px 0px 8px 0px'}}
         >
             {
                 disabledInput===true?<LinearProgress />:null
