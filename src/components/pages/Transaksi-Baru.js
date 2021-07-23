@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Button, DatePicker, Form, Input, InputNumber, Select, Typography } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, notification, Select, Typography } from 'antd';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -9,7 +9,7 @@ import moment from 'moment';
 import { withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 
-import { getAkun, setFilterAkun, resetFilterAkun, setPaginationAkun, setUrutAkun, setModeTransaksiBaru, resetItemProyekSelected } from "../../actions/master-action";
+import { getAkun, getJenisTransaksi, setFilterAkun, resetFilterAkun, setPaginationAkun, setUrutAkun, setModeTransaksiBaru, resetItemProyekSelected } from "../../actions/master-action";
 
 
 import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
@@ -48,19 +48,19 @@ const mapStateToProps = store => {
         listAkun: store.master.list_akun,
         filterAkun: store.master.filter_akun,
         paginationAkun: store.master.pagination_akun,
-        urutAkun: store.master.urut_akun
+        urutAkun: store.master.urut_akun,
+        listJenisTransaksi: store.master.list_jenis_transaksi,
+        filterJenistransaksi: store.master.filter_jenis_transaksi,
+        paginationJenistransaksi: store.master.pagination_jenis_transaksi,
+        urutJenisTransaksi: store.master.urut_jenis_transaksi,
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
         getAkun: (url, headerAuthorization) => dispatch(getAkun(url, headerAuthorization)),
-        // getStatusTransaksi: (url, headerAuthorization) => dispatch(getStatusTransaksi(url, headerAuthorization)),
-        // resetItemTransaksiSelected: () => dispatch(resetItemTransaksiSelected()),
-        // setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+        getJenisTransaksi: (url, headerAuthorization) => dispatch(getJenisTransaksi(url, headerAuthorization)),
         setModeTransaksiBaru: (nilai) => dispatch(setModeTransaksiBaru(nilai)), 
-        // setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
-        // setFilterProyek: (value) => dispatch(setFilterProyek(value)),
         setFilterAkun: (value) => dispatch(setFilterAkun(value)),
         setPaginationAkun: (value) => dispatch(setPaginationAkun(value)),
         setUrutAkun: (value) => dispatch(setUrutAkun(value)),
@@ -92,7 +92,7 @@ class TransaksiBaru extends React.Component  {
         };
 
         this.formRef = React.createRef();
-        this.itemTransaksi = {};
+        this.itemTransaksi = null;
         this.filterAkunHeader = [{ field: "m.status_header", header: true }];
         this.paginationAkunHeader = {current: 1, pageSize: 1000};
         this.sortAkunHeader = {field: 'm.nama', order: 'asc' };
@@ -101,7 +101,8 @@ class TransaksiBaru extends React.Component  {
     }
 
     componentDidMount() {
-        const { paginationAkun, urutAkun, setFilterAkun, setPaginationAkun } = this.props;
+        const { paginationAkun, urutAkun, setFilterAkun, setPaginationAkun,
+            filterJenistransaksi, paginationJenistransaksi, urutJenisTransaksi } = this.props;
 
         this.loadHeaderAkun(this.filterAkunHeader, this.paginationAkunHeader, this.sortAkunHeader);
 
@@ -117,6 +118,7 @@ class TransaksiBaru extends React.Component  {
         setPaginationAkun(tmpPagination);
         setFilterAkun(tmpFilter);
         this.loadAkun(tmpFilter, tmpPagination, urutAkun);
+        this.loadJenisTransaksi(filterJenistransaksi, paginationJenistransaksi, urutJenisTransaksi);
 
         setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 300);
     }
@@ -132,6 +134,7 @@ class TransaksiBaru extends React.Component  {
         if(nextProps.itemProyekSelected !== null) {
             if(this.prevDataPencarianProyek === null) {
                 this.prevDataPencarianProyek = nextProps.itemProyekSelected;
+                this.itemTransaksi.no_job = nextProps.itemProyekSelected.no_job;
                 this.formRef.current.setFieldsValue({
                     no_job: nextProps.itemProyekSelected.no_job,
                     nama_customer: nextProps.itemProyekSelected.nama_customer,
@@ -140,6 +143,7 @@ class TransaksiBaru extends React.Component  {
             }
             else if (nextProps.itemProyekSelected.no_job !== this.prevDataPencarianProyek.no_job) {
                 this.prevDataPencarianProyek = nextProps.itemProyekSelected;
+                this.itemTransaksi.no_job = nextProps.itemProyekSelected.no_job;
                 this.formRef.current.setFieldsValue({
                     no_job: nextProps.itemProyekSelected.no_job,
                     nama_customer: nextProps.itemProyekSelected.nama_customer,
@@ -152,7 +156,6 @@ class TransaksiBaru extends React.Component  {
 
     handleBaru = () => {
         const { modeTransaksiBaru, setModeTransaksiBaru } = this.props;
-        // const { kategori } = this.state;
         
         if(modeTransaksiBaru === 'edit') {
             // resetItemTransaksiSelected();
@@ -168,16 +171,20 @@ class TransaksiBaru extends React.Component  {
             this.formRef.current.getFieldInstance('cari').focus();
         }, 100);        
 
-        // this.itemTransaksi = {
-        //     tanggal: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
-        //     is_proyek: false,
-        //     is_reimburse: false,
-        //     dokumen: null
-        // }
+        this.itemTransaksi = {
+            tanggal: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
+            is_proyek: false,
+            no_job: null,
+            list_transaksi: [],
+            jenis_transaksi: null,
+            jatuh_tempo: null,
+            dokumen: null,
+            keterangan: null
+        };
     }
 
     handleBatal = () => {
-        const { modeTransaksiBaru, paginationAkun, urutAkun, resetFilterAkun, resetItemProyekSelected } = this.props;
+        const { modeTransaksiBaru, paginationAkun, urutAkun, setFilterAkun, resetItemProyekSelected } = this.props;
         this.formRef.current.resetFields();  
         resetFilterAkun();
         this.loadAkun(null, paginationAkun, urutAkun);
@@ -185,10 +192,31 @@ class TransaksiBaru extends React.Component  {
             // this.setState({jenisPengajuan: itemPengajuanSelected.is_proyek, disabledInput: true, disabledInputEdit: false, keyForm: 'batal'});
         }
         else {
-            resetItemProyekSelected();
-            this.setState({kategori: false, disabledInput: true, keyForm: 'batal'});
-            setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
+            this.itemTransaksi = {
+                tanggal: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
+                is_proyek: false,
+                no_job: null,
+                list_transaksi: [],
+                jenis_transaksi: null,
+                jatuh_tempo: null,
+                dokumen: null,
+                keterangan: null
+            };           
+                
+            resetItemProyekSelected(); 
+            this.setState({disabledInput: true, kategori: false, transaksi: [], totalDebet: 0, totalKredit: 0, heighLeftContainer: 200 });            
         }
+
+        this.formRef.current.resetFields(); 
+        this.kodeAwalcari = '';
+        let tmpFilter = [];
+        tmpFilter.push(                        
+            { field: "m.status_header", header: false }
+        ); 
+        setFilterAkun(tmpFilter);        
+        this.loadAkun(tmpFilter, paginationAkun, urutAkun);
+
+        setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 100);
     }
 
     handleCari = (value, event) => {
@@ -246,17 +274,16 @@ class TransaksiBaru extends React.Component  {
     }
 
     handleChangeDebit = (value, index) => {
-        const { transaksi, totalDebet } = this.state;
-        let tmp = transaksi[index];
+        const { totalDebet } = this.state;
+        let tmp = this.itemTransaksi.list_transaksi[index];
         let total = totalDebet - tmp.debet + value;
         tmp.debet = value;
         this.setState({totalDebet: total});
 	}
 
     handleChangeKredit = (value, index) => {
-        const { transaksi, totalKredit } = this.state;
-        console.log(`value: ${value}, totalKredit: ${totalKredit}`);
-        let tmp = transaksi[index];
+        const { totalKredit } = this.state;
+        let tmp = this.itemTransaksi.list_transaksi[index];
         let total = totalKredit - tmp.kredit + value;
         tmp.kredit = value;
         this.setState({totalKredit: total});
@@ -270,18 +297,75 @@ class TransaksiBaru extends React.Component  {
             setTimeout(() => {this.formRef.current.getFieldInstance('btncariproyek').focus();}, 100);
         }
         else {
+            this.itemTransaksi.no_job = null;
+            this.formRef.current.setFieldsValue({
+                no_job: null,
+                nama_customer: null,
+                nama_proyek: null
+            });
+            resetItemProyekSelected();
             this.setState({heighLeftContainer: 200});
             setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
         }
 	}
 
-    handleChangePrefixSearch = (value) => {
-        const { filterAkun, paginationAkun, urutAkun, setFilterAkun } = this.props; 
+    handleChangeJenisTransaksi = (value) => {
+        this.itemTransaksi.jenis_transaksi = value;  
         
+        console.log(this.itemTransaksi);
+	}
+
+    handleChangeNilaiText = (e) => {
+		switch(e.currentTarget.dataset.jenis) {
+            case 'keterangan':
+                this.itemTransaksi.keterangan = e.currentTarget.value;          
+                break;
+            case 'jenisdokumen':
+                if(this.itemTransaksi.dokumen === null) {
+                    this.itemTransaksi.dokumen = [];
+                    this.itemTransaksi.dokumen.push({
+                        jenis_dokumen: e.currentTarget.value
+                    });                  
+                }
+                else {
+                    if(Number(e.currentTarget.dataset.idx) < this.itemTransaksi.dokumen.length) {
+                        this.itemTransaksi.dokumen[Number(e.currentTarget.dataset.idx)].jenis_dokumen = e.currentTarget.value;
+                    } 
+                    else {
+                        this.itemTransaksi.dokumen.push({
+                            jenis_dokumen: e.currentTarget.value
+                        });  
+                    }                   
+                }
+                break;
+            case 'nodokumen':
+                if(this.itemTransaksi.dokumen === null) {
+                    this.itemTransaksi.dokumen = [];
+                    this.itemTransaksi.dokumen.push({
+                        no_dokumen: e.currentTarget.value
+                    });
+                }
+                else {
+                    if(Number(e.currentTarget.dataset.idx) < this.itemTransaksi.dokumen.length) {
+                        this.itemTransaksi.dokumen[Number(e.currentTarget.dataset.idx)].no_dokumen = e.currentTarget.value;
+                    } 
+                    else {
+                        this.itemTransaksi.dokumen.push({
+                            no_dokumen: e.currentTarget.value
+                        });
+                    }      
+                }                
+                break;
+			default:
+		}
+	}
+
+    handleChangePrefixSearch = (value) => {
+        const { filterAkun, paginationAkun, urutAkun, setFilterAkun } = this.props;         
+        this.setState({prefixSearch: value});
         let tmpFilter = [];
         let idx = -1;         
         tmpFilter = [...filterAkun];
-        this.setState({prefixSearch: value});
         idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.id'});             
         if(idx < 0) {            
             tmpFilter.push(                        
@@ -348,7 +432,17 @@ class TransaksiBaru extends React.Component  {
         }, 300);
     }
 
-    handleChangeTanggal = (date, dateString) => {
+    handleChangeTanggalJatuhTempo = (date, dateString) => {
+		if(date !== null) {
+			let tmp = dateString.split('-');
+            this.itemTransaksi.jatuh_tempo = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
+		}
+        else {
+            this.itemTransaksi.jatuh_tempo = null;
+        }
+	}
+
+    handleChangeTanggalTransaksi = (date, dateString) => {
 		if(date !== null) {
 			let tmp = dateString.split('-');
             this.itemTransaksi.tanggal = `${tmp[2]}-${tmp[1]}-${tmp[0]}`;
@@ -368,14 +462,14 @@ class TransaksiBaru extends React.Component  {
 
     handleItemAkunClick = (event, index) => {
         const { transaksi } = this.state;
-        const { listAkun } = this.props
-        let tmp = [...transaksi];
+        const { listAkun } = this.props;
         let tmpAkunItem = {...listAkun.data[index]}
         tmpAkunItem.debet = null;
         tmpAkunItem.kredit = null;
         delete tmpAkunItem.status_header;
-        tmp.push({...tmpAkunItem});        
-        this.setState({transaksi: tmp});
+        
+        this.itemTransaksi.list_transaksi.push({...tmpAkunItem}); 
+        this.setState({transaksi: this.itemTransaksi.list_transaksi});
     }
 
     handleOnFinish = (value) => {
@@ -385,7 +479,7 @@ class TransaksiBaru extends React.Component  {
             // this.updateTransaksi();
         }
         else {
-			// this.saveTransaksi();
+			this.saveTransaksi();
         }
 	}
 
@@ -397,13 +491,42 @@ class TransaksiBaru extends React.Component  {
         this.setState({anchorEl: null});
     }
 
+    handleRemoveDokumen = (idx) => {
+        if(this.itemTransaksi.dokumen !== null) {
+            this.itemTransaksi.dokumen.splice(idx,1);
+            if(this.itemPengajuan.dokumen.length === 0) {
+                this.itemPengajuan.dokumen = null;
+            }
+        }
+    }
+
     handleReset = () => {
-        const { paginationAkun, urutAkun, resetFilterAkun } = this.props;   
-        // const { resetItemTransaksiSelected } = this.props;
-		this.formRef.current.resetFields();      
-        // resetItemTransaksiSelected();
-        resetFilterAkun();
-        this.loadAkun(null, paginationAkun, urutAkun);
+        const { paginationAkun, modeTransaksiBaru, urutAkun, setFilterAkun } = this.props;  
+        if(modeTransaksiBaru === 'edit') {
+        }
+        else {
+            this.itemTransaksi = {
+                tanggal: `${moment().year()}-${moment().month()+1}-${moment().date()}`,
+                is_proyek: false,
+                no_job: null,
+                list_transaksi: [],
+                jenis_transaksi: null,
+                jatuh_tempo: null,
+                dokumen: null,
+                keterangan: null
+            };           
+                
+            resetItemProyekSelected(); 
+            this.setState({kategori: false, transaksi: [], totalDebet: 0, totalKredit: 0, heighLeftContainer: 200 });
+        }
+		this.formRef.current.resetFields(); 
+        this.kodeAwalcari = '';
+        let tmpFilter = [];
+        tmpFilter.push(                        
+            { field: "m.status_header", header: false }
+        ); 
+        setFilterAkun(tmpFilter);        
+        this.loadAkun(tmpFilter, paginationAkun, urutAkun);
         setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
 	}
 
@@ -449,6 +572,19 @@ class TransaksiBaru extends React.Component  {
         getAkun(url, headerAuthorization);
     }
 
+    loadJenisTransaksi = (filter, pagination, urut) => {
+        const { getJenisTransaksi, headerAuthorization, restfulServer } = this.props; 
+        let url;
+        if(filter === null) {
+            url = `${restfulServer}/master/jenis_transaksi?pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        }
+        else {
+            url = `${restfulServer}/master/jenis_transaksi?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        }
+        
+        getJenisTransaksi(url, headerAuthorization);
+    }
+
     formatterRupiah = (value) => {        
         let tmp = value.split('.');
         if(tmp.length>1){
@@ -466,13 +602,59 @@ class TransaksiBaru extends React.Component  {
         return value.replace(/\,/g, '.');
     }
 
+    saveTransaksi = () => {
+		const { headerAuthorization, restfulServer, setIsProgress } = this.props;
+	    let self = this;
+        setIsProgress(true);
+       
+	    axios({
+            method: 'put',
+            url: `${restfulServer}/master/transaksi`,
+            headers: {...headerAuthorization},
+            data: this.itemPengajuan
+        })
+	    .then((r) => {              
+            setIsProgress(false);
+            // if(r.data.status === 200) {
+            //     notification.open({
+            //         message: 'Pemberitahuan',
+            //         description:
+            //         'Pengajuan baru berhasil ditambahkan.',
+            //         duration: 4,
+            //         placement: 'bottomRight'
+            //     });
+            // }
+            // else {
+            //     notification.open({
+            //         message: 'Pemberitahuan',
+            //         description:
+            //           'Pengajuan baru gagal ditambahkan.',
+            //         duration: 4,
+            //         placement: 'bottomRight'
+            //     });
+            // }
+
+	    	// self.handleReset();
+            self.setState({disabledInput: true, disabledInputEdit: false}); 
+	    })
+	    .catch((r) => {
+	    	self.setState({disabledInput: true});
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Pengajuan baru gagal ditambahkan.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+	    });
+	}
+
     render() {
         const { anchorEl, disabledInput, disabledInputEdit, heighLeftContainer, listHeaderAkun, kategori, prefixSearch, transaksi,
             totalDebet, totalKredit } = this.state;
-        const { classes, isProgress, modeTransaksiBaru, itemProyekSelected, itemTransaksiSelected, listAkun } = this.props;
-        
-        // console.log(itemProyekSelected);
+        const { classes, isProgress, modeTransaksiBaru, itemProyekSelected, itemTransaksiSelected, listAkun, listJenisTransaksi } = this.props;
 
+        
         const selectBefore = (
             <Select 
                 value={prefixSearch} 
@@ -499,14 +681,16 @@ class TransaksiBaru extends React.Component  {
             initEdit = {
                 layout: 'vertical',
                 remember: true,
-                ["tanggal"]: this.itemTransaksi.tanggal===undefined?moment():moment(this.itemPengajuan.tanggal),
-                ["is_Proyek"]: kategori,
-                ["is_reimburse"]: false,
-                ["no_job"]: itemProyekSelected !== null?itemProyekSelected.no_job:null,
-                ["nama_customer"]: itemProyekSelected !== null ? itemProyekSelected.nama_customer:null,
-                ["nama_proyek"]:  itemProyekSelected !== null ? itemProyekSelected.nama_proyek:null,
+                ["tanggal"]: moment(),
+                ["is_proyek"]: false,
+                ["no_job"]: null,
+                ["nama_customer"]: null,
+                ["nama_proyek"]:  null,
                 ["kode"]: "0",
-                ["jenis_transaksi"]: null
+                ["jenis_transaksi"]: null,
+                ["jatuh_tempo"]: null,
+                ["list_transaksi"]: null,
+                ["keterangan"]: null
             };
         }
 
@@ -533,7 +717,8 @@ class TransaksiBaru extends React.Component  {
                                     <DatePicker 
                                         format="DD-MM-YYYY" 
                                         disabled={disabledInput}
-                                        onChange={this.handleChangeTanggal}
+                                        allowClear={false}
+                                        onChange={this.handleChangeTanggalTransaksi}
                                         style={{width: 150}}
                                     />
                                 </Form.Item>
@@ -541,7 +726,7 @@ class TransaksiBaru extends React.Component  {
                             <td colSpan="2">
                                 <Form.Item 
                                     label="Kategori"
-                                    name="is_Proyek"
+                                    name="is_proyek"
                                     rules={[{required: true, message: 'kategori pengajuan harus diisi'}]}
                                     style={{marginBottom: 16}}
                                 >
@@ -712,7 +897,7 @@ class TransaksiBaru extends React.Component  {
                                         :null
                                     }
                                     <tr>
-                                        <td style={{backgroundColor: '#f3f5f7'}}></td>
+                                        <td></td>
                                         <td>
                                             <InputNumber 
                                                 style={{width: 130, color: 'blue'}}
@@ -733,7 +918,7 @@ class TransaksiBaru extends React.Component  {
                                                 value={totalKredit}
                                             />
                                         </td>
-                                        <td style={{backgroundColor: '#f3f5f7'}}></td>
+                                        <td></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -744,12 +929,17 @@ class TransaksiBaru extends React.Component  {
                                     style={{marginBottom: 16, marginRight: 16}}
                                 >
                                     <Select 
-                                        onChange={this.handleChangeKategoriTransaksi}
+                                        onChange={this.handleChangeJenisTransaksi}
                                         disabled={modeTransaksiBaru==='edit'?true:disabledInput}
                                         style={{minWidth: 260}}
                                     >
-                                        <Select.Option value={true}>Proyek</Select.Option>
-                                        <Select.Option value={false}>Non Proyek</Select.Option>
+                                        {
+                                            listJenisTransaksi !== null?
+                                            listJenisTransaksi.data.map((item) => 
+                                                <Select.Option key={item.id} value={item.id}>{item.nama}</Select.Option>
+                                            )
+                                            :null
+                                        }
                                     </Select>
                                 </Form.Item>
                                 <div style={{display: 'flex', flexDirection: 'column'}}>                                       
@@ -761,7 +951,7 @@ class TransaksiBaru extends React.Component  {
                                         <DatePicker 
                                             format="DD-MM-YYYY" 
                                             disabled={disabledInput}
-                                            onChange={this.handleChangeTanggal}
+                                            onChange={this.handleChangeTanggalJatuhTempo}
                                         />
                                     </Form.Item>
                                     <Form.List name="dokumen">
@@ -845,7 +1035,7 @@ class TransaksiBaru extends React.Component  {
                             </div>
                             <Form.Item
                                 label="keterangan"
-                                name="keterangan_transaksi"
+                                name="keterangan"
                                 rules={[{required: true, message: 'keterangan harus diisi'}]} 
                             >
                                 <TextArea  

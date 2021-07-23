@@ -310,10 +310,12 @@ class PengajuanBaru extends React.Component {
     }
 
     handleRemoveDokumen = (idx) => {
-        this.itemPengajuan.dokumen.splice(idx,1);
-        if(this.itemPengajuan.dokumen.length === 0) {
-            this.itemPengajuan.dokumen = null;
-        }
+        if(this.itemPengajuan.dokumen !== null) {
+            this.itemPengajuan.dokumen.splice(idx,1);
+            if(this.itemPengajuan.dokumen.length === 0) {
+                this.itemPengajuan.dokumen = null;
+            }
+        }        
     }
 
     handleToNavDaftarPengajuan = () => {
