@@ -93,3 +93,7 @@ export const JENIS_TRANSAKSI = "list_jenis_transaksi";
 export const PAGINATION_JENIS_TRANSAKSI = "pagination_jenis_transaksi";
 export const URUT_JENIS_TRANSAKSI = "urut_jenis_transaksi";
 export const FILTER_JENIS_TRANSAKSI = "filter_jenis_transaksi";
+export const FILTER_TRANSAKSI = "filter_transaksi";
+export const LIST_TRANSAKSI = "list_transaksi";
+export const PAGINATION_TRANSAKSI = "pagination_transaksi";
+export const URUT_TRANSAKSI = "urut_transaksi";
