@@ -648,7 +648,7 @@ class TableProyek extends React.Component {
 
     render() {
         const { classes, isProgress, listProyek, paginationProyek, urutProyek } = this.props;
-		const { openConfirmasiHapusProyek, openProcessingDialog, prefixSearch, rentanDate } = this.state;
+		const { openConfirmasiHapusProyek, prefixSearch, rentanDate } = this.state;
 
         let pageRender = null;
 
