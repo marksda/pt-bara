@@ -281,7 +281,7 @@ class TableTransaksi extends React.Component {
         }
         else {                        
             tmpFilter = [...filterTransaksi];
-            let idx = _.findIndex(tmpFilter, function(o){return o.field === 'rentan_tanggal_persiapan'});
+            let idx = _.findIndex(tmpFilter, function(o){return o.field === 'rentan_tanggal'});
             if(idx < 0) {
                 this.setState({rentanDate: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]});      
                 tmpFilter = [];
@@ -303,6 +303,11 @@ class TableTransaksi extends React.Component {
         setFilterTransaksi(tmpFilter);
         setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
         this.loadTransaksi(tmpFilter, paginationTransaksi, urutTransaksi);
+    }
+
+    componentWillUnmount() {
+        const { setFilterTransaksi } = this.props;
+        setFilterTransaksi(null);
     }
 
     changeRangeDate = (dates, datesString) => {
