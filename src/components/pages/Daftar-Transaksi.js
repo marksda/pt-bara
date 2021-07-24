@@ -1,13 +1,13 @@
 import React from 'react';
 
-import TableProyek from '../tables/Table-Proyek';
+import TableTransaksi from '../tables/Table-Transaksi';
 
 
 class DaftarTransaksi extends React.Component {
     render() {
         let page =
         <div className="content-flex-center">
-            <TableProyek title="Data Proyek" />
+            <TableTransaksi title="Data Transaksi" />
         </div>;
         return(page);
     }

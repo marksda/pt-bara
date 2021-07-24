@@ -20,9 +20,9 @@ class Master extends React.Component {
                     <TableAkun title="Data Akun"/>
                 </div>
             </TabPane>           
-            <TabPane tab="Customer" key="1">
+            <TabPane tab="Client" key="1">
                 <div className="content-flex-center">
-                    <TableCustomer title="Data Customer"/>
+                    <TableCustomer title="Data Client"/>
                 </div>
             </TabPane>            
             <TabPane tab="Jabatan" key="2">
