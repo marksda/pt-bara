@@ -9,7 +9,7 @@ import moment from 'moment';
 import { withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 
-import { getAkun, getJenisTransaksi, setFilterAkun, resetFilterAkun, setPaginationAkun, setUrutAkun, setModeTransaksiBaru, resetItemProyekSelected, setIsProgress } from "../../actions/master-action";
+import { getAkun, getJenisTransaksi, setFilterAkun, resetFilterAkun, setItemMenuSelected, setPaginationAkun, setUrutAkun, setModeTransaksiBaru, resetItemProyekSelected, setIsProgress } from "../../actions/master-action";
 
 
 import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
@@ -67,6 +67,7 @@ const mapDispatchToProps = dispatch => {
         resetFilterAkun: () => dispatch(resetFilterAkun()),
         resetItemProyekSelected: () => dispatch(resetItemProyekSelected()),
         setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
+        setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
     };
 };
 
@@ -530,6 +531,11 @@ class TransaksiBaru extends React.Component  {
         this.loadAkun(tmpFilter, paginationAkun, urutAkun);
         setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
 	}
+
+    handleToNavDaftarTransaksi = () => {
+        const { setItemMenuSelected } = this.props;
+        setItemMenuSelected('Daftar Transaksi');
+    }
 
     loadHeaderAkun = (f, p, s) => {
         const { headerAuthorization, restfulServer } = this.props;
@@ -1112,7 +1118,7 @@ class TransaksiBaru extends React.Component  {
                             shape="round"
                             size="default"
                             htmlType="button" 
-                            onClick={this.handleToNavDaftarPengajuan} 
+                            onClick={this.handleToNavDaftarTransaksi} 
                             disabled={isProgress===true?true:!disabledInput}
                             style={{marginBottom: 8, width: 150}}
                         >

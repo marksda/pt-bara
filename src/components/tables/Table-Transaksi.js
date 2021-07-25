@@ -91,15 +91,13 @@ const EnhancedTableToolbar = (props) => {
             </div>
             <div className={classes.spacer} />
             <div className={classes.actions}>
-                <Tooltip title="tambah" className={classes.showIconTambah}>
                     <IconButton 
                         aria-label="add" 
                         onClick={isProgress===false?handleOpen:null}
                         disabled={isProgress}
                     >
                         <AddBoxOutlineIcon />
-                    </IconButton>                             
-                </Tooltip>   
+                    </IconButton>    
             </div>            
         </Toolbar>
     );
@@ -109,6 +107,7 @@ const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
     {id: 'm.tanggal', numerik: false, label: 'Tanggal'},
     {id: 'm.is_proyek', numerik: false, label: 'Transaksi'},
+    {id: 'm.keterangan', numerik: false, label: 'Keterangan'},
     {id: 'm.transaksi', numerik: false, label: 'Akun dan Nilai'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
@@ -141,7 +140,7 @@ const EnhancedTableHead = (props) => {
                                     <TableCell
                                         key={headCell.id}
                                         align={'left'}
-                                        style={{width: 150}}
+                                        style={{width: 100}}
                                     >
                                         <TableSortLabel
                                             active={orderBy === headCell.id}
@@ -162,7 +161,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
-                                    style={{width: 200}}
+                                    style={{width: 150}}
                                 >
                                     <TableSortLabel
                                       active={orderBy === headCell.id}
@@ -179,6 +178,16 @@ const EnhancedTableHead = (props) => {
                                 </TableCell>;
                                 break;
                             case 3:
+                                page = 
+                                <TableCell
+                                    key={headCell.id}
+                                    align={'left'}                                    
+                                    style={{width: 350}}
+                                >
+                                    {headCell.label}
+                                </TableCell>;
+                                break;
+                            case 4:
                                 page = 
                                 <TableCell
                                     key={headCell.id}
@@ -205,6 +214,26 @@ const EnhancedTableHead = (props) => {
         </TableHead>
     );
 };
+
+const DetailJurnal = (props) => {
+    const { data } = props;
+
+    let page =
+    <table>
+        <tbody>
+            {
+                data.map((item, index) => 
+                    <tr key={index}>
+                        <td style={{minWidth: 250, padding: '0px 32px 4px 0px', color: 'blue'}}>{item.nama}</td>
+                        <td style={{padding: '0px 8px 4px 0px'}}>{item.debet!==null?new Intl.NumberFormat('id').format(item.debet):null}</td>
+                        <td>{item.kredit!==null?new Intl.NumberFormat('id').format(item.kredit):null}</td>
+                    </tr>
+                )
+            }
+        </tbody>
+    </table>;
+    return(page);
+}
 
 const styles = theme => ({
     root: {
@@ -301,7 +330,6 @@ class TableTransaksi extends React.Component {
         }
         
         setFilterTransaksi(tmpFilter);
-        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
         this.loadTransaksi(tmpFilter, paginationTransaksi, urutTransaksi);
     }
 
@@ -422,7 +450,6 @@ class TableTransaksi extends React.Component {
         
         setPaginationTransaksi(tmpPagination);
         this.loadTransaksi(filterTransaksi, tmpPagination, urutTransaksi);
-        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
     }
 
     handleChangePage = (event, newPage) => {
@@ -485,6 +512,7 @@ class TableTransaksi extends React.Component {
                 rangeDate={rentanDate}
                 changeRangeDate={this.changeRangeDate}
                 isProgress={isProgress}
+                key={rentanDate}
             />
             <TableContainer className={classes.tableWrapper}>
                 <Table aria-labelledby="table-transaksi">
@@ -501,7 +529,7 @@ class TableTransaksi extends React.Component {
                     			<TableRow 
 	                                hover
 	                                tabIndex={-1}
-	                                key={row.no_job}      
+	                                key={row.id}      
 	                            >
 	                            	<TableCell 
 	                                    align={'right'}
@@ -511,7 +539,7 @@ class TableTransaksi extends React.Component {
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{width: 150, verticalAlign: 'top'}}
+                                        style={{width: 100, verticalAlign: 'top'}}
 	                                >
 	                                    { 
                                             this.flipDate(row.tanggal)                                      
@@ -519,15 +547,21 @@ class TableTransaksi extends React.Component {
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'left'}
-                                        style={{width: 200, verticalAlign: 'top'}}
+                                        style={{width: 150, verticalAlign: 'top'}}
 	                                >
 	                                    { row.is_proyek === true ? 'Proyek' : 'Non Proyek' }
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{verticalAlign: 'top'}}
+                                        style={{width: 350, verticalAlign: 'top'}}
 	                                >
-	                                    { row.transaksi }
+	                                    { row.keterangan }
+	                                </TableCell>
+                                    <TableCell 
+	                                    align={'left'}
+                                        style={{minWidth: 350, verticalAlign: 'top'}}
+	                                >
+                                        <DetailJurnal data={row.isijurnal} />
 	                                </TableCell>
 	                                <TableCell 
                                         style={{width: 100, verticalAlign: 'top', cursor: isProgress===false?'pointer':'default'}}
