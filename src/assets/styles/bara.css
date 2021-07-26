@@ -7,15 +7,14 @@
 .table-container-transaksi-baru td {
     padding: 0px 8px;
     vertical-align: top;
-    width: 100%;
 }
-.table-container-proyek-baru td:nth-child(1){
-    width: 150px;
+.table-container-proyek-baru td {
+    width: 250px;
 } 
-.table-container-proyek-baru td:nth-child(2) {
-    width: 350px;
+/* .table-container-proyek-baru td:nth-child(2) {
+    width: 250px;
 }
-/* .table-container-proyek-baru td:nth-child(3) {
+.table-container-proyek-baru td:nth-child(3) {
     width: 550px;
 } */
 
@@ -43,16 +42,8 @@
     display: flex;
 }
 
-/*.table-container-cel-pengajuan-baru {
-    display: flex;
-    flex-direction: column;
-}
-.table-container-cel-pengajuan-baru>.item-label {
-    margin-bottom: 8px;
-} */
 .container-preview-img-pegawai {
     display: none;
-    /* margin-bottom: 16px; */
     cursor: pointer;
 }
 .container-preview-img-pegawai:hover .preview-img-pegawai {

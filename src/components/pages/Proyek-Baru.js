@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Divider, Radio } from 'antd';
 import { resetStatusProyekSelected, setStatusProyekSelected, resetItemProyekSelected } from "../../actions/master-action";
 import FormBudget from '../forms/Form-Budget';
+import FormMonitoring from '../forms/Form-Monitoring';
 import FormPersiapanProyek from '../forms/Form-Persiapan-Proyek';
 import FormProfileProyek from '../forms/Form-Profile-Proyek';
 
@@ -167,6 +168,10 @@ class ProyekBaru extends React.Component {
             case 'Budget':
                 subPage =
                 <FormBudget resetTab={this.resetTab} />;
+                break;
+            case 'Monitoring':
+                subPage =
+                <FormMonitoring resetTab={this.resetTab} />;
                 break;
             default:
                 break;

@@ -548,7 +548,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="nojob"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
-                                        style={{ minWidth: 150}}
+                                        style={{ width: 150}}
                                     />
                                 </Form.Item>
                             </td>
