@@ -9,7 +9,7 @@ import moment from 'moment';
 import { withStyles } from '@material-ui/core/styles';
 import _ from 'lodash';
 
-import { getAkun, getJenisTransaksi, setFilterAkun, resetFilterAkun, setItemMenuSelected, setPaginationAkun, setUrutAkun, setModeTransaksiBaru, resetItemProyekSelected, setIsProgress } from "../../actions/master-action";
+import { getAkun, getJenisTransaksi, setFilterAkun, resetFilterAkun, setItemMenuSelected, setPaginationAkun, setUrutAkun, setModeTransaksiBaru, resetItemProyekSelected, resetItemTransaksiSelected, setIsProgress, setItemTransaksiSelected } from "../../actions/master-action";
 
 
 import FormPencarianProyek from '../forms/Form-Pencarian-Proyek';
@@ -68,6 +68,8 @@ const mapDispatchToProps = dispatch => {
         resetItemProyekSelected: () => dispatch(resetItemProyekSelected()),
         setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
         setItemMenuSelected: (nilai) => dispatch(setItemMenuSelected(nilai)),
+        resetItemTransaksiSelected: () => dispatch(resetItemTransaksiSelected()),
+        setItemTransaksiSelected: (url, headerAuthorization) => dispatch(setItemTransaksiSelected(url, headerAuthorization)),
     };
 };
 
@@ -83,7 +85,6 @@ class TransaksiBaru extends React.Component  {
             disabledInput: true,
             kategori: false,
             anchorEl: null,
-            keyForm: 'none',
             noTransaksi: `NP-${moment().year()}/0000`,
             listHeaderAkun: [],
             prefixSearch: 'm.nama',
@@ -103,7 +104,7 @@ class TransaksiBaru extends React.Component  {
     }
 
     componentDidMount() {
-        const { paginationAkun, urutAkun, setFilterAkun, setPaginationAkun,
+        const { paginationAkun, modeTransaksiBaru, urutAkun, setFilterAkun, setPaginationAkun,
             filterJenistransaksi, paginationJenistransaksi, urutJenisTransaksi } = this.props;
 
         this.loadHeaderAkun(this.filterAkunHeader, this.paginationAkunHeader, this.sortAkunHeader);
@@ -122,37 +123,99 @@ class TransaksiBaru extends React.Component  {
         this.loadAkun(tmpFilter, tmpPagination, urutAkun);
         this.loadJenisTransaksi(filterJenistransaksi, paginationJenistransaksi, urutJenisTransaksi);
 
-        setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 300);
+        if(modeTransaksiBaru === 'edit') {
+            this.setState({disabledInputEdit: false});
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnedit').focus();}, 100);
+        }
+        else {
+            setTimeout(() => {this.formRef.current.getFieldInstance('btnbaru').focus();}, 300);
+        }        
     }
 
     componentWillUnmount() {
-        const { resetFilterAkun, resetItemProyekSelected } = this.props;  
-        // this.formRef.current.resetFields();
+        const { resetFilterAkun, resetItemProyekSelected, resetItemTransaksiSelected, setModeTransaksiBaru } = this.props;  
+        setModeTransaksiBaru('add');
         resetFilterAkun();
-        resetItemProyekSelected();
+        resetItemTransaksiSelected();
+        resetItemProyekSelected(); 
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        if(nextProps.itemProyekSelected !== null) {
-            if(this.prevDataPencarianProyek === null) {
-                this.prevDataPencarianProyek = nextProps.itemProyekSelected;
-                this.itemTransaksi.no_job = nextProps.itemProyekSelected.no_job;
-                this.formRef.current.setFieldsValue({
-                    no_job: nextProps.itemProyekSelected.no_job,
-                    nama_customer: nextProps.itemProyekSelected.nama_customer,
-                    nama_proyek: nextProps.itemProyekSelected.nama_proyek
-                });
+        if(nextProps.modeTransaksiBaru === 'add') {
+            if(nextProps.itemProyekSelected !== null) {
+                if(this.prevDataPencarianProyek === null) {
+                    this.prevDataPencarianProyek = nextProps.itemProyekSelected;
+                    this.itemTransaksi.no_job = nextProps.itemProyekSelected.no_job;
+                    this.formRef.current.setFieldsValue({
+                        no_job: nextProps.itemProyekSelected.no_job,
+                        nama_customer: nextProps.itemProyekSelected.nama_customer,
+                        nama_proyek: nextProps.itemProyekSelected.nama_proyek
+                    });
+                }
+                else if (nextProps.itemProyekSelected.no_job !== this.prevDataPencarianProyek.no_job) {
+                    this.prevDataPencarianProyek = nextProps.itemProyekSelected;
+                    this.itemTransaksi.no_job = nextProps.itemProyekSelected.no_job;
+                    this.formRef.current.setFieldsValue({                    
+                        no_job: nextProps.itemProyekSelected.no_job,
+                        nama_customer: nextProps.itemProyekSelected.nama_customer,
+                        nama_proyek: nextProps.itemProyekSelected.nama_proyek
+                    });
+                }            
             }
-            else if (nextProps.itemProyekSelected.no_job !== this.prevDataPencarianProyek.no_job) {
-                this.prevDataPencarianProyek = nextProps.itemProyekSelected;
-                this.itemTransaksi.no_job = nextProps.itemProyekSelected.no_job;
-                this.formRef.current.setFieldsValue({
-                    no_job: nextProps.itemProyekSelected.no_job,
-                    nama_customer: nextProps.itemProyekSelected.nama_customer,
-                    nama_proyek: nextProps.itemProyekSelected.nama_proyek
+        }
+        else if (nextProps.modeTransaksiBaru === 'edit' && this.itemTransaksi === null) {
+            if(nextProps.itemTransaksiSelected !== null) {
+                let j = nextProps.itemTransaksiSelected.list_transaksi.length;
+                let i=0;
+                let td = 0; 
+                let tk = 0;
+                for(i=0; i<j;i++) {
+                    td = td + nextProps.itemTransaksiSelected.list_transaksi[i].debet;
+                    tk = tk + nextProps.itemTransaksiSelected.list_transaksi[i].kredit;
+                }
+
+
+                this.formRef.current.setFieldsValue({                    
+                    tanggal: moment(nextProps.itemTransaksiSelected.tanggal),
+                    is_proyek: nextProps.itemTransaksiSelected.is_proyek,
+                    no_job: nextProps.itemTransaksiSelected.no_job,
+                    nama_customer: nextProps.itemTransaksiSelected.nama,
+                    nama_proyek: nextProps.itemTransaksiSelected.nama_proyek,
+                    jenis_transaksi: nextProps.itemTransaksiSelected.id_jenis_transaksi,
+                    jatuh_tempo: nextProps.itemTransaksiSelected.jatuh_tempo !== null?moment(nextProps.itemTransaksiSelected.jatuh_tempo):null,
+                    keterangan: nextProps.itemTransaksiSelected.keterangan,
+                    dokumen: _.cloneDeep(nextProps.itemTransaksiSelected.dokumen),                    
                 });
+                nextState.transaksi = _.cloneDeep(nextProps.itemTransaksiSelected.list_transaksi);
+                nextState.kategori = nextProps.itemTransaksiSelected.is_proyek;
+                nextState.totalDebet = td;
+                nextState.totalKredit = tk;
+                nextState.heighLeftContainer = nextProps.itemTransaksiSelected.is_proyek === true?286:200;
             }            
         }
+        else {
+            if(nextProps.itemProyekSelected !== null) {
+                if(this.prevDataPencarianProyek === null) {
+                    this.prevDataPencarianProyek = nextProps.itemProyekSelected;
+                    this.itemTransaksi.no_job = nextProps.itemProyekSelected.no_job;
+                    this.formRef.current.setFieldsValue({
+                        no_job: nextProps.itemProyekSelected.no_job,
+                        nama_customer: nextProps.itemProyekSelected.nama_customer,
+                        nama_proyek: nextProps.itemProyekSelected.nama_proyek
+                    });
+                }
+                else if (nextProps.itemProyekSelected.no_job !== this.prevDataPencarianProyek.no_job) {
+                    this.prevDataPencarianProyek = nextProps.itemProyekSelected;
+                    this.itemTransaksi.no_job = nextProps.itemProyekSelected.no_job;
+                    this.formRef.current.setFieldsValue({                    
+                        no_job: nextProps.itemProyekSelected.no_job,
+                        nama_customer: nextProps.itemProyekSelected.nama_customer,
+                        nama_proyek: nextProps.itemProyekSelected.nama_proyek
+                    });
+                }            
+            }
+        }
+        
         return true;
     }
 
@@ -161,11 +224,11 @@ class TransaksiBaru extends React.Component  {
         
         if(modeTransaksiBaru === 'edit') {
             // resetItemTransaksiSelected();
-            this.setState({disabledInput: false, disabledInputEdit: true, kategori: false,  keyForm: 'add'});  
+            this.setState({disabledInput: false, disabledInputEdit: true, kategori: false});  
             setModeTransaksiBaru('add');          
         }
         else {
-            this.setState({disabledInput: false, keyForm: 'add'});  
+            this.setState({disabledInput: false});  
         }
 
         setTimeout(() => {
@@ -185,13 +248,69 @@ class TransaksiBaru extends React.Component  {
         };
     }
 
+    handleEdit = () => {
+        const { itemTransaksiSelected } = this.props;
+        
+        this.itemTransaksi = {
+            id: itemTransaksiSelected.id,
+            tanggal: itemTransaksiSelected.tanggal,
+            is_proyek: itemTransaksiSelected.is_proyek,
+            no_job: itemTransaksiSelected.no_job,
+            list_transaksi: _.cloneDeep(itemTransaksiSelected.list_transaksi),
+            jenis_transaksi: itemTransaksiSelected.id_jenis_transaksi,
+            jatuh_tempo: itemTransaksiSelected.jatuh_tempo,
+            dokumen: _.cloneDeep(itemTransaksiSelected.dokumen),
+            keterangan: itemTransaksiSelected.keterangan
+        };
+        
+        this.setState({
+            disabledInput: false, 
+            disabledInputEdit: true, 
+        });              
+
+        setTimeout(() => {
+            this.formRef.current.getFieldInstance('cari').focus();
+        }, 100);       
+        
+    }
+
     handleBatal = () => {
-        const { modeTransaksiBaru, paginationAkun, urutAkun, setFilterAkun, resetItemProyekSelected } = this.props;
-        this.formRef.current.resetFields();  
+        const { itemTransaksiSelected, modeTransaksiBaru, paginationAkun, urutAkun, setFilterAkun, resetItemProyekSelected } = this.props;         
         resetFilterAkun();
         this.loadAkun(null, paginationAkun, urutAkun);
         if(modeTransaksiBaru === 'edit') {
-            // this.setState({jenisPengajuan: itemPengajuanSelected.is_proyek, disabledInput: true, disabledInputEdit: false, keyForm: 'batal'});
+            this.itemTransaksi = {};
+
+            this.formRef.current.setFieldsValue({                    
+                tanggal: moment(itemTransaksiSelected.tanggal),
+                is_proyek: itemTransaksiSelected.is_proyek,
+                no_job: itemTransaksiSelected.no_job,
+                nama_customer: itemTransaksiSelected.nama,
+                nama_proyek: itemTransaksiSelected.nama_proyek,
+                jenis_transaksi: itemTransaksiSelected.id_jenis_transaksi,
+                jatuh_tempo: itemTransaksiSelected.jatuh_tempo !== null?moment(itemTransaksiSelected.jatuh_tempo):null,
+                keterangan: itemTransaksiSelected.keterangan,
+                dokumen: _.cloneDeep(itemTransaksiSelected.dokumen)             
+            });
+            
+            let j = itemTransaksiSelected.list_transaksi.length;
+            let i=0;
+            let td = 0; 
+            let tk = 0;
+            for(i=0; i<j; i++) {
+                td = td + itemTransaksiSelected.list_transaksi[i].debet;
+                tk = tk + itemTransaksiSelected.list_transaksi[i].kredit;
+            }
+
+            this.setState({
+                disabledInput: true, 
+                disabledInputEdit:false,
+                transaksi: _.cloneDeep(itemTransaksiSelected.list_transaksi),
+                kategori: itemTransaksiSelected.is_proyek,
+                totalDebet: td, 
+                totalKredit: tk, 
+                heighLeftContainer: itemTransaksiSelected.is_proyek === true?286:200 
+            });
         }
         else {
             this.itemTransaksi = {
@@ -204,12 +323,12 @@ class TransaksiBaru extends React.Component  {
                 dokumen: null,
                 keterangan: null
             };           
-                
+            this.formRef.current.resetFields(); 
             resetItemProyekSelected(); 
             this.setState({disabledInput: true, kategori: false, transaksi: [], totalDebet: 0, totalKredit: 0, heighLeftContainer: 200 });            
         }
 
-        this.formRef.current.resetFields(); 
+        
         this.kodeAwalcari = '';
         let tmpFilter = [];
         tmpFilter.push(                        
@@ -292,23 +411,59 @@ class TransaksiBaru extends React.Component  {
 	}
 
     handleChangeKategoriTransaksi = (value) => {
+        const { modeTransaksiBaru, itemTransaksiSelected, itemProyekSelected } = this.props;        
         this.itemTransaksi.is_proyek = value;     
         this.setState({kategori: value});
-        if(value === true) {
-            this.setState({heighLeftContainer: 286});
-            setTimeout(() => {this.formRef.current.getFieldInstance('btncariproyek').focus();}, 100);
+
+        if(modeTransaksiBaru === 'edit') {
+            if(value === true) {    
+                if(itemProyekSelected === null) {
+                    this.itemTransaksi.no_job = itemTransaksiSelected.no_job;
+                    this.formRef.current.setFieldsValue({
+                        no_job: itemTransaksiSelected.no_job,
+                        nama_customer: itemTransaksiSelected.nama,
+                        nama_proyek: itemTransaksiSelected.nama_proyek
+                    });
+                }            
+                else {
+                    this.itemTransaksi.no_job = itemProyekSelected.no_job;
+                    this.formRef.current.setFieldsValue({
+                        no_job: itemProyekSelected.no_job,
+                        nama_customer: itemProyekSelected.nama_customer,
+                        nama_proyek: itemProyekSelected.nama_proyek
+                    });
+                }
+
+                this.setState({heighLeftContainer: 286});
+                setTimeout(() => {this.formRef.current.getFieldInstance('btncariproyek').focus();}, 100);
+            }
+            else {
+                this.itemTransaksi.no_job = null;
+                this.formRef.current.setFieldsValue({
+                    no_job: null,
+                    nama_customer: null,
+                    nama_proyek: null
+                });
+                this.setState({heighLeftContainer: 200});
+                setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
+            }
         }
         else {
-            this.itemTransaksi.no_job = null;
-            this.formRef.current.setFieldsValue({
-                no_job: null,
-                nama_customer: null,
-                nama_proyek: null
-            });
-            resetItemProyekSelected();
-            this.setState({heighLeftContainer: 200});
-            setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
-        }
+            if(value === true) {
+                this.setState({heighLeftContainer: 286});
+                setTimeout(() => {this.formRef.current.getFieldInstance('btncariproyek').focus();}, 100);
+            }
+            else {
+                this.itemTransaksi.no_job = null;
+                this.formRef.current.setFieldsValue({
+                    no_job: null,
+                    nama_customer: null,
+                    nama_proyek: null
+                });
+                this.setState({heighLeftContainer: 200});
+                setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
+            }
+        }        
 	}
 
     handleChangeJenisTransaksi = (value) => {
@@ -456,7 +611,11 @@ class TransaksiBaru extends React.Component  {
 
         this.itemTransaksi.list_transaksi.splice(index, 1);
 
-        this.setState({transaksi: this.itemTransaksi.list_transaksi, totalDebet: tmpDebet, totalKredit: tmpKredit});
+        this.setState({
+            transaksi: this.itemTransaksi.list_transaksi, 
+            totalDebet: tmpDebet, 
+            totalKredit: tmpKredit
+        });
     }
 
     handleItemAkunClick = (event, index) => {
@@ -476,11 +635,12 @@ class TransaksiBaru extends React.Component  {
 
     handleOnFinish = (value) => {
 		const { modeTransaksiBaru } = this.props;
-		this.setState({disabledInput: true});
-		if(modeTransaksiBaru === 'edit') {
-            // this.updateTransaksi();
+		if(modeTransaksiBaru === 'edit') {            
+		    this.setState({disabledInput: true, disabledInputEdit: true});
+            this.updateTransaksi();
         }
-        else {
+        else {            
+		    this.setState({disabledInput: true});
 			this.saveTransaksi();
         }
 	}
@@ -496,15 +656,55 @@ class TransaksiBaru extends React.Component  {
     handleRemoveDokumen = (idx) => {
         if(this.itemTransaksi.dokumen !== null) {
             this.itemTransaksi.dokumen.splice(idx,1);
-            if(this.itemPengajuan.dokumen.length === 0) {
-                this.itemPengajuan.dokumen = null;
+            if(this.itemTransaksi.dokumen.length === 0) {
+                this.itemTransaksi.dokumen = null;
             }
         }
     }
 
     handleReset = () => {
-        const { paginationAkun, modeTransaksiBaru, urutAkun, setFilterAkun } = this.props;  
+        const { itemTransaksiSelected, paginationAkun, modeTransaksiBaru, urutAkun, setFilterAkun } = this.props;  
         if(modeTransaksiBaru === 'edit') {
+            this.itemTransaksi = {
+                id: itemTransaksiSelected.id,
+                tanggal: itemTransaksiSelected.tanggal,
+                is_proyek: itemTransaksiSelected.is_proyek,
+                no_job: itemTransaksiSelected.no_job,
+                list_transaksi: _.cloneDeep(itemTransaksiSelected.list_transaksi),
+                jenis_transaksi: itemTransaksiSelected.id_jenis_transaksi,
+                jatuh_tempo: itemTransaksiSelected.jatuh_tempo,
+                dokumen: _.cloneDeep(itemTransaksiSelected.dokumen),
+                keterangan: itemTransaksiSelected.keterangan
+            };
+
+            this.formRef.current.setFieldsValue({                    
+                tanggal: moment(itemTransaksiSelected.tanggal),
+                is_proyek: itemTransaksiSelected.is_proyek,
+                no_job: itemTransaksiSelected.no_job,
+                nama_customer: itemTransaksiSelected.nama,
+                nama_proyek: itemTransaksiSelected.nama_proyek,
+                jenis_transaksi: itemTransaksiSelected.id_jenis_transaksi,
+                jatuh_tempo: itemTransaksiSelected.jatuh_tempo !== null?moment(itemTransaksiSelected.jatuh_tempo):null,
+                keterangan: itemTransaksiSelected.keterangan,
+                dokumen: _.cloneDeep(itemTransaksiSelected.dokumen)             
+            });
+            
+            let j = itemTransaksiSelected.list_transaksi.length;
+            let i=0;
+            let td = 0; 
+            let tk = 0;
+            for(i=0; i<j; i++) {
+                td = td + itemTransaksiSelected.list_transaksi[i].debet;
+                tk = tk + itemTransaksiSelected.list_transaksi[i].kredit;
+            }
+
+            this.setState({
+                transaksi: _.cloneDeep(itemTransaksiSelected.list_transaksi),
+                kategori: itemTransaksiSelected.is_proyek,
+                totalDebet: td, 
+                totalKredit: tk, 
+                heighLeftContainer: itemTransaksiSelected.is_proyek === true?286:200 
+            });
         }
         else {
             this.itemTransaksi = {
@@ -517,11 +717,11 @@ class TransaksiBaru extends React.Component  {
                 dokumen: null,
                 keterangan: null
             };           
-                
-            resetItemProyekSelected(); 
+            this.formRef.current.resetFields();             
             this.setState({kategori: false, transaksi: [], totalDebet: 0, totalKredit: 0, heighLeftContainer: 200 });
         }
-		this.formRef.current.resetFields(); 
+		
+        resetItemProyekSelected(); 
         this.kodeAwalcari = '';
         let tmpFilter = [];
         tmpFilter.push(                        
@@ -610,7 +810,7 @@ class TransaksiBaru extends React.Component  {
     }
 
     saveTransaksi = () => {
-		const { headerAuthorization, restfulServer, setIsProgress } = this.props;
+		const { headerAuthorization, modeTransaksiBaru, restfulServer, setIsProgress, setItemTransaksiSelected } = this.props;
 	    let self = this;
         setIsProgress(true);
        
@@ -630,7 +830,7 @@ class TransaksiBaru extends React.Component  {
                     duration: 4,
                     placement: 'bottomRight'
                 });
-                self.handleBatal();
+                setItemTransaksiSelected(`${restfulServer}/master/detailtransaksi?id=${self.itemTransaksi.id}`, headerAuthorization);
             }
             else {
                 notification.open({
@@ -640,11 +840,24 @@ class TransaksiBaru extends React.Component  {
                     duration: 4,
                     placement: 'bottomRight'
                 });
+                
+            }    
+            
+            if(modeTransaksiBaru === 'edit') {
                 self.setState({disabledInput: true, disabledInputEdit: false}); 
-            }            
+            }
+            else {
+                self.setState({disabledInput: true}); 
+            }
 	    })
 	    .catch((r) => {
-	    	self.setState({disabledInput: true, disabledInputEdit: false}); 
+            setIsProgress(false);
+	    	if(modeTransaksiBaru === 'edit') {
+                self.setState({disabledInput: false, disabledInputEdit: false}); 
+            }
+            else {
+                self.setState({disabledInput: false}); 
+            } 
             notification.open({
                 message: 'Pemberitahuan',
                 description:
@@ -655,11 +868,48 @@ class TransaksiBaru extends React.Component  {
 	    });
 	}
 
+    updateTransaksi = () => {
+        const { headerAuthorization, restfulServer, setIsProgress, setItemTransaksiSelected } = this.props;
+
+        setIsProgress(true);
+
+        let self = this;    
+
+        axios({
+            method: 'post',
+            url: `${restfulServer}/master/transaksi`,
+            headers: {...headerAuthorization},
+            data: this.itemTransaksi
+        })
+        .then((r) => {             
+            self.setState({disabledInput: true, disabledInputEdit: false}); 
+            setIsProgress(false);
+            setItemTransaksiSelected(`${restfulServer}/master/detailtransaksi?id=${self.itemTransaksi.id}`, headerAuthorization);
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Transaksi berhasil diupdate.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+        })
+        .catch((r) => {    
+            setIsProgress(false);     
+            self.setState({disabledInput: true, disabledInputEdit: false}); 
+            notification.open({
+                message: 'Pemberitahuan',
+                description:
+                  'Transaksi gagal diupdate.',
+                duration: 4,
+                placement: 'bottomRight'
+            });
+        });        
+    }
+
     render() {
         const { anchorEl, disabledInput, disabledInputEdit, heighLeftContainer, listHeaderAkun, kategori, prefixSearch, transaksi,
             totalDebet, totalKredit } = this.state;
-        const { classes, isProgress, modeTransaksiBaru, itemProyekSelected, itemTransaksiSelected, listAkun, listJenisTransaksi } = this.props;
-
+        const { classes, isProgress, modeTransaksiBaru, itemTransaksiSelected, listAkun, listJenisTransaksi } = this.props;
         
         const selectBefore = (
             <Select 
@@ -678,9 +928,6 @@ class TransaksiBaru extends React.Component  {
             initEdit = {
                 layout: 'vertical',
                 remember: true,
-                ["tanggal"]: moment(itemTransaksiSelected.tanggal),
-                ["is_Proyek"]: itemTransaksiSelected.is_proyek,                
-                // ["cari"]: kodeAwalAkun
             };
         }
         else {
@@ -738,7 +985,7 @@ class TransaksiBaru extends React.Component  {
                                 >
                                     <Select 
                                         onChange={this.handleChangeKategoriTransaksi}
-                                        disabled={modeTransaksiBaru==='edit'?true:disabledInput}
+                                        disabled={disabledInput}
                                         style={{width: 180}}
                                     >
                                         <Select.Option value={true}>Proyek</Select.Option>
@@ -789,7 +1036,7 @@ class TransaksiBaru extends React.Component  {
                                             type="dashed" 
                                             icon={<FilterOutlined />} 
                                             style={{marginTop: 30}}
-                                            disabled={modeTransaksiBaru==='edit'?true:disabledInput}
+                                            disabled={disabledInput}
                                             onClick={this.handleOpenWindowProyekSearch} />
                                     </Form.Item>
                                     </div>
@@ -881,6 +1128,8 @@ class TransaksiBaru extends React.Component  {
                                                         precision={2}
                                                         formatter={this.formatterRupiah}
                                                         parser={this.parserRupiah}
+                                                        defaultValue={item.debet}
+                                                        disabled={disabledInput}
                                                     />
                                                 </td>
                                                 <td>
@@ -890,6 +1139,8 @@ class TransaksiBaru extends React.Component  {
                                                         precision={2}
                                                         formatter={this.formatterRupiah}
                                                         parser={this.parserRupiah}
+                                                        defaultValue={item.kredit}
+                                                        disabled={disabledInput}
                                                     />
                                                 </td>
                                                 <td>
@@ -937,7 +1188,7 @@ class TransaksiBaru extends React.Component  {
                                 >
                                     <Select 
                                         onChange={this.handleChangeJenisTransaksi}
-                                        disabled={modeTransaksiBaru==='edit'?true:disabledInput}
+                                        disabled={disabledInput}
                                         style={{minWidth: 260}}
                                     >
                                         {
@@ -1099,7 +1350,7 @@ class TransaksiBaru extends React.Component  {
                             size="default"
                             htmlType="button" 
                             onClick={this.handleReset} 
-                            disabled={modeTransaksiBaru==='edit'?true:disabledInput}
+                            disabled={disabledInput}
                             style={{marginBottom: 8, width: 150}}
                         >
                         Reset

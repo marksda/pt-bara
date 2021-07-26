@@ -224,9 +224,9 @@ const DetailJurnal = (props) => {
             {
                 data.map((item, index) => 
                     <tr key={index}>
-                        <td style={{minWidth: 250, padding: '0px 32px 4px 0px', color: 'blue'}}>{item.nama}</td>
-                        <td style={{padding: '0px 8px 4px 0px'}}>{item.debet!==null?new Intl.NumberFormat('id').format(item.debet):null}</td>
-                        <td>{item.kredit!==null?new Intl.NumberFormat('id').format(item.kredit):null}</td>
+                        <td style={{padding: '0px 16px 4px 0px', color: 'blue'}}>{item.nama}</td>
+                        <td style={{padding: '0px 8px 4px 0px', align: 'right'}}>{item.debet!==null?new Intl.NumberFormat('id').format(item.debet):null}</td>
+                        <td style={{align: 'right'}}>{item.kredit!==null?new Intl.NumberFormat('id').format(item.kredit):null}</td>
                     </tr>
                 )
             }
@@ -464,7 +464,7 @@ class TableTransaksi extends React.Component {
     }
 
     handleDeleteTransaksi = (status) => {          
-        this.setState({openConfirmasiHapusProyek: false});      
+        this.setState({openConfirmasiHapusTransaksi: false});      
         if(status === true) {
             this.deleteTransaksi(this.itemTransaksi);
         }
@@ -601,7 +601,7 @@ class TableTransaksi extends React.Component {
             <KonfirmasiDialog 
                 open={openConfirmasiHapusTransaksi} 
                 aksi={this.handleDeleteTransaksi} 
-                message={`Hapus item transaksi`}
+                message={`Hapus item transaksi : ${this.itemTransaksi.keterangan}`}
             />
         </div>;
 
