@@ -3,7 +3,6 @@ import axios from 'axios';
 import { Button, Dropdown, Form, Input, InputNumber, Menu, Progress, Tooltip, Upload } from 'antd';
 import { connect } from "react-redux";
 import { setItemProyekSelected, setIsProgress } from "../../actions/master-action";
-import TableBudget from '../tables/Table-Budget';
 import { UploadOutlined, FileExcelOutlined, FileOutlined, FilePdfOutlined,FileWordOutlined } from '@ant-design/icons';
 
 
@@ -242,7 +241,8 @@ class FormMonitoring extends React.Component {
                     </table>
                 </div>
                 <div className="content-flex-center">
-                    <TableBudget title="Data Budget" getTotalBudget={this.getTotalBudget}/>
+                    <table className="table-container-transaksi-baru">
+                    </table>
                 </div>
             </div>
         </Form>;

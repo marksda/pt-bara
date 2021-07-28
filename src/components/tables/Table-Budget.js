@@ -89,8 +89,8 @@ const EnhancedTableToolbar = (props) => {
 const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
     {id: 'm.nama', numerik: false, label: 'Nama'},
-    {id: 'm.nilai', numerik: true, label: 'Nilai(Rp)'},
-    {id: 'm.jumlah', numerik: true, label: 'Sub-Total(Rp)'},
+    {id: 'm.nilai', numerik: true, label: 'Nilai (Rp)'},
+    {id: 'm.jumlah', numerik: true, label: 'Sub-Total (Rp)'},
     {id: 'act', numerik: false, label: 'Action'}
 ];
 
