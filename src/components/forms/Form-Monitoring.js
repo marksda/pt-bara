@@ -196,7 +196,7 @@ class FormMonitoring extends React.Component {
                                         />
                                     </Form.Item>
                                 </td>
-                                <td colSpan="2">
+                                <td>
                                     <div style={{display: 'flex'}}>
                                         <Form.Item
                                             label="Jumlah Budget"
@@ -241,7 +241,49 @@ class FormMonitoring extends React.Component {
                     </table>
                 </div>
                 <div className="content-flex-center">
-                    <table className="table-container-transaksi-baru">
+                    <table className="table-monitoring">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Tanggal</th>
+                                <th>Nilai (Rp)</th>
+                                <th>Jumlah (Rp)</th>
+                                <th>Keterangan</th>
+                                <th>Kategori budget</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colSpan="3" style={{textAlign: 'left', paddingTop: 16}}>
+                                    <b>Biaya material proyek</b>
+                                </td>
+                                <td style={{textAlign: 'right', paddingTop: 16}}>
+                                    <b>41421412</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>28-Juni-2021</td>
+                                <td>1000</td>
+                                <td></td>
+                                <td>Pembayaran material rmk</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>28-Juni-2021</td>
+                                <td>1000</td>
+                                <td></td>
+                                <td>DP Material Dusung Korea</td>
+                            </tr>
+                            <tr>
+                                <td colSpan="3" style={{textAlign: 'left', paddingTop: 16}}>
+                                    <b>Biaya peralatan proyek</b>
+                                </td>
+                                <td style={{textAlign: 'right', paddingTop: 16}}>
+                                    <b>1000000000</b>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
