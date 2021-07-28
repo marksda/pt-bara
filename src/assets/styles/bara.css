@@ -2,21 +2,36 @@
     display: flex;
     justify-content: center;
 }
+
+.table-proyek-persiapan, 
+.table-proyek-profile, 
+.table-proyek-budget {
+    width: 80%;
+    max-width: 900px;
+}
+
+.table-proyek-monitoring {
+    width: 80%;
+    min-width: 1000px;
+}
+
+.table-proyek-persiapan td:nth-child(1),
+.table-proyek-profile td:nth-child(1),
+.table-proyek-budget td:nth-child(1),
+.table-proyek-monitoring td:nth-child(1) {
+    width: 150px;
+} 
+
+.table-proyek-persiapan td, 
+.table-proyek-profile td,
+.table-proyek-budget td,
+.table-proyek-monitoring td,
 .table-container-pengajuan-baru td, 
 .table-container-proyek-baru td,
 .table-container-transaksi-baru td {
     padding: 0px 8px;
     vertical-align: top;
 }
-.table-container-proyek-baru td {
-    width: 250px;
-} 
-/* .table-container-proyek-baru td:nth-child(2) {
-    width: 250px;
-}
-.table-container-proyek-baru td:nth-child(3) {
-    width: 550px;
-} */
 
 .table-container-pengajuan-baru td:nth-child(1){
     width: 250px;

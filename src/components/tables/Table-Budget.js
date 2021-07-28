@@ -142,7 +142,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'right'}
-                                    style={{width: 250}}
+                                    style={{width: 200}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -152,7 +152,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'right'}
-                                    style={{width: 250}}
+                                    style={{width: 200}}
                                 >
                                     {headCell.label}
                                 </TableCell>;
@@ -178,12 +178,12 @@ const EnhancedTableHead = (props) => {
 
 const styles = theme => ({
     root: {
-        width: '80%',
-        minWidth: 800,
+        width: '100%',
+        maxWidth: 900,
     },
     tableWrapper: {
         overflowX: 'auto',
-        marginTop: -20
+        marginTop: -20,
     },
     visuallyHidden: {
         border: 0,
@@ -414,19 +414,19 @@ class TableBudget extends React.Component {
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'left'}
-                                        style={{minWidth: 250, verticalAlign: 'top'}}
+                                        style={{minWidth: 350, verticalAlign: 'top'}}
 	                                >
 	                                    { row.status_header === true? <b>{row.nama}</b>:<label style={{marginLeft: 16}}>{row.nama}</label>}
 	                                </TableCell>
 	                                <TableCell 
 	                                    align={'right'}
-                                        style={{width: 250, verticalAlign: 'top'}}
+                                        style={{width: 200, verticalAlign: 'top'}}
 	                                >
 	                                    { row.status_header===true?null:new Intl.NumberFormat('id').format(row.saldo)}
 	                                </TableCell>
                                     <TableCell 
 	                                    align={'right'}
-                                        style={{width: 250, verticalAlign: 'top'}}
+                                        style={{width: 200, verticalAlign: 'top'}}
 	                                >
 	                                    { row.status_header===true?<b>{new Intl.NumberFormat('id').format(row.saldo)}</b>:null }
 	                                </TableCell>

@@ -496,7 +496,7 @@ class FormProfileProyek extends React.Component {
             key={keyForm}
         >
             <div className="content-flex-center">
-                <table className="table-container-proyek-baru" style={{width: '80%'}}>
+                <table className="table-proyek-profile">
                     <tbody>
                         <tr>
                             <td>
@@ -569,6 +569,7 @@ class FormProfileProyek extends React.Component {
                                         filterOption={false}
                                         defaultActiveFirstOption={false}
                                         notFoundContent={null}
+                                        style={{minWidth: 250}}
                                     >
                                     {
                                         listCustomer !== null ? listCustomer.data.map((row) => 
@@ -613,6 +614,7 @@ class FormProfileProyek extends React.Component {
                                         filterOption={false}
                                         defaultActiveFirstOption={false}
                                         notFoundContent={null}
+                                        style={{minWidth: 250}}
                                     >
                                     {
                                         listCustomer !== null ? listCustomer.data.map((row) => 
@@ -658,6 +660,7 @@ class FormProfileProyek extends React.Component {
                                         filterOption={false}
                                         defaultActiveFirstOption={false}
                                         notFoundContent={null}
+                                        style={{minWidth: 250}}
                                     >
                                     {
                                         listPropinsi !== null ? listPropinsi.data.map((row) => 
@@ -682,6 +685,7 @@ class FormProfileProyek extends React.Component {
                                         filterOption={false}
                                         defaultActiveFirstOption={false}
                                         notFoundContent={null}
+                                        style={{minWidth: 250}}
                                     >
                                     {
                                         listKabupaten !== null ? listKabupaten.data.map((row) => 
@@ -706,6 +710,7 @@ class FormProfileProyek extends React.Component {
                                         filterOption={false}
                                         defaultActiveFirstOption={false}
                                         notFoundContent={null}
+                                        style={{minWidth: 250}}
                                     >
                                     {
                                         listKecamatan !== null ? listKecamatan.data.map((row) => 
@@ -730,6 +735,7 @@ class FormProfileProyek extends React.Component {
                                         filterOption={false}
                                         defaultActiveFirstOption={false}
                                         notFoundContent={null}
+                                        style={{minWidth: 250}}
                                     >
                                     {
                                         listDesa !== null ? listDesa.data.map((row) => 
@@ -748,6 +754,7 @@ class FormProfileProyek extends React.Component {
                                         onChange={this.handleChangeNilaiText}
                                         placeholder="isi dengan nama jalan, nama komplek, rt/rw, atau blok jika ada"
                                         rows={3}
+                                        style={{minWidth: 250}}
                                     />
                                 </Form.Item>
                             </td>
@@ -765,6 +772,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="nokontrak"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
+                                        style={{minWidth: 250}}
                                     />
                                 </Form.Item>
                             </td>
@@ -778,6 +786,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="nokontrakinduk"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
+                                        style={{minWidth: 250}}
                                     />
                                 </Form.Item>
                             </td>
@@ -794,7 +803,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="nilaikontrak"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiKontrak}
-                                        style={{minWidth: 250}}
+                                        style={{minWidth: 150}}
                                         formatter={this.formatterRupiah}
                                         parser={this.parserRupiah}
                                     />
@@ -808,7 +817,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="ppn"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiPpn}
-                                        style={{width: 250}}
+                                        style={{width: 150}}
                                         formatter={this.formatterRupiah}
                                         parser={this.parserRupiah}
                                     />
@@ -822,7 +831,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="pph"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiPph}
-                                        style={{width: 250}}
+                                        style={{width: 150}}
                                         formatter={this.formatterRupiah}
                                         parser={this.parserRupiah}
                                     />
@@ -907,6 +916,7 @@ class FormProfileProyek extends React.Component {
                                         filterOption={false}
                                         defaultActiveFirstOption={false}
                                         notFoundContent={null}
+                                        style={{minWidth: 250}}
                                     >
                                     {
                                         listPegawai !== null ? listPegawai.data.map((row) => 
@@ -926,6 +936,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="piccustomer"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
+                                        style={{minWidth: 250}}
                                     />
                                 </Form.Item>
                             </td>
@@ -942,7 +953,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="nohpbara"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
-                                        style={{ width: 250 }}
+                                        style={{ width: 150 }}
                                     />
                                 </Form.Item>
                             </td>
@@ -956,7 +967,7 @@ class FormProfileProyek extends React.Component {
                                         data-jenis="nohpcustomer"
                                         disabled={disabledInput}
                                         onChange={this.handleChangeNilaiText}
-                                        style={{ width: 250 }}
+                                        style={{ width: 150 }}
                                     />
                                 </Form.Item>
                             </td>

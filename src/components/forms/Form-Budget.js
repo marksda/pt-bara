@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { Button, Dropdown, Form, Input, InputNumber, Menu, Progress, Tooltip, Upload } from 'antd';
 import { connect } from "react-redux";
-import { setModeProyekBaru, setItemProyekSelected, setIsProgress } from "../../actions/master-action";
+import { setItemProyekSelected, setIsProgress } from "../../actions/master-action";
 import TableBudget from '../tables/Table-Budget';
 import { UploadOutlined, FileExcelOutlined, FileOutlined, FilePdfOutlined,FileWordOutlined } from '@ant-design/icons';
 
@@ -19,7 +19,6 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {    
     return {             
-        setModeProyekBaru: (nilai) => dispatch(setModeProyekBaru(nilai)), 
         setItemProyekSelected: (url, headerAuthorization) => dispatch(setItemProyekSelected(url, headerAuthorization)),
         setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
     };
@@ -311,94 +310,94 @@ class FormBudget extends React.Component {
         >
             <div style={{display: 'flex', flexDirection: 'column'}}>
                 <div className="content-flex-center">
-                <table className="table-container-proyek-baru" style={{width: '80%'}}>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <Form.Item
-                                    label="No. Job"
-                                    name="no_job"
-                                    style={{marginBottom: 16}}
-                                >
-                                    <Input 
-                                        disabled={true}
-                                        style={{ width: 150, color: 'blue' }}
-                                    />
-                                </Form.Item>
-                            </td>
-                            <td>
-                                <Form.Item 
-                                    label="Customer"
-                                    name="nama_customer"
-                                    style={{marginBottom: 16}}
-                                >
-                                    <Input 
-                                        disabled={true}
-                                        style={{color: 'blue'}}
-                                    />
-                                </Form.Item>
-                            </td>
-                            <td>
-                                <Form.Item
-                                    label="Proyek"
-                                    name="nama_proyek"
-                                    style={{marginBottom: 16}}
-                                >
-                                    <Input 
-                                        data-jenis="namaproyek"
-                                        disabled={true}
-                                        style={{minWidth: 250, color: 'blue'}}
-                                    />
-                                </Form.Item>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <Form.Item
-                                    label="Nilai Kontrak/PO"
-                                    name="nilai_kontrak"
-                                    style={{marginBottom: 16}}
-                                >
-                                    <InputNumber
-                                        data-jenis="nilaikontrak"
-                                        disabled={true}
-                                        style={{width: 150, color: 'blue'}}
-                                        formatter={this.formatterRupiah}
-                                        parser={this.parserRupiah}
-                                    />
-                                </Form.Item>
-                            </td>
-                            <td>
-                                <Form.Item
-                                    label="Total Budget"
-                                    name="total_budget"
-                                    style={{marginBottom: 16, marginRight: 16}}
-                                >
-                                    <InputNumber
-                                        disabled={true}
-                                        style={{minWidth: 250, color: 'blue'}}
-                                        formatter={this.formatterRupiah}
-                                        parser={this.parserRupiah}
-                                    />
-                                </Form.Item>
-                            </td>
-                            <td>
-                                <Form.Item
-                                    label="File Budged"
-                                    style={{marginBottom: 16}}
-                                >
-                                    {iconFile}
-                                    {
-                                        isUploadFile === true ?
-                                        <div style={{ width: 170 }}>
-                                            <Progress percent={30} size="small" />
-                                        </div>:null
-                                    }                                    
-                                </Form.Item>
-                            </td>
-                        </tr>                        
-                    </tbody>
-                </table> 
+                    <table className="table-proyek-budget">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <Form.Item
+                                        label="No. Job"
+                                        name="no_job"
+                                        style={{marginBottom: 16}}
+                                    >
+                                        <Input 
+                                            disabled={true}
+                                            style={{ width: 150, color: 'blue' }}
+                                        />
+                                    </Form.Item>
+                                </td>
+                                <td>
+                                    <Form.Item 
+                                        label="Customer"
+                                        name="nama_customer"
+                                        style={{marginBottom: 16}}
+                                    >
+                                        <Input 
+                                            disabled={true}
+                                            style={{minWidth: 250, color: 'blue'}}
+                                        />
+                                    </Form.Item>
+                                </td>
+                                <td>
+                                    <Form.Item
+                                        label="Proyek"
+                                        name="nama_proyek"
+                                        style={{marginBottom: 16}}
+                                    >
+                                        <Input 
+                                            data-jenis="namaproyek"
+                                            disabled={true}
+                                            style={{minWidth: 250, color: 'blue'}}
+                                        />
+                                    </Form.Item>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <Form.Item
+                                        label="Nilai Kontrak/PO"
+                                        name="nilai_kontrak"
+                                        style={{marginBottom: 16}}
+                                    >
+                                        <InputNumber
+                                            data-jenis="nilaikontrak"
+                                            disabled={true}
+                                            style={{width: 150, color: 'blue'}}
+                                            formatter={this.formatterRupiah}
+                                            parser={this.parserRupiah}
+                                        />
+                                    </Form.Item>
+                                </td>
+                                <td>
+                                    <Form.Item
+                                        label="Total Budget"
+                                        name="total_budget"
+                                        style={{marginBottom: 16, marginRight: 16}}
+                                    >
+                                        <InputNumber
+                                            disabled={true}
+                                            style={{minWidth: 250, color: 'blue'}}
+                                            formatter={this.formatterRupiah}
+                                            parser={this.parserRupiah}
+                                        />
+                                    </Form.Item>
+                                </td>
+                                <td>
+                                    <Form.Item
+                                        label="File Budged"
+                                        style={{marginBottom: 16}}
+                                    >
+                                        {iconFile}
+                                        {
+                                            isUploadFile === true ?
+                                            <div style={{ width: 170 }}>
+                                                <Progress percent={30} size="small" />
+                                            </div>:null
+                                        }                                    
+                                    </Form.Item>
+                                </td>
+                            </tr>                        
+                        </tbody>
+                    </table> 
                 </div>
                 <div className="content-flex-center">
                     <TableBudget title="Data Budget" getTotalBudget={this.getTotalBudget}/>
