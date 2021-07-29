@@ -1007,7 +1007,7 @@ class TransaksiBaru extends React.Component  {
                                         <Input 
                                             data-jenis="nojob"
                                             disabled={true}
-                                            style={{ minWidth: 150, color: 'blue'}}
+                                            style={{ minWidth: 150, color: '#646463'}}
                                         />
                                     </Form.Item>
                                 </td>
@@ -1018,7 +1018,7 @@ class TransaksiBaru extends React.Component  {
                                         style={{marginBottom: 16}}
                                         rules={[{required: true, message: 'Customer harus diisi'}]}
                                     >
-                                        <Input disabled={true} style={{minWidth: 350,color: 'blue'}}/>
+                                        <Input disabled={true} style={{minWidth: 350,color: '#646463'}}/>
                                     </Form.Item>
                                 </td>
                                 <td>
@@ -1029,7 +1029,7 @@ class TransaksiBaru extends React.Component  {
                                         style={{marginBottom: 16, marginRight: 8}}
                                         rules={[{required: true, message: 'Proyek harus diisi'}]}
                                     >
-                                        <Input disabled={true} style={{minWidth: 450, color: 'blue'}}/>
+                                        <Input disabled={true} style={{minWidth: 450, color: '#646463'}}/>
                                     </Form.Item>
                                     <Form.Item name="btncariproyek">
                                         <Button 
@@ -1158,7 +1158,7 @@ class TransaksiBaru extends React.Component  {
                                         <td></td>
                                         <td>
                                             <InputNumber 
-                                                style={{width: 130, color: 'blue'}}
+                                                style={{width: 130, color: '#646463'}}
                                                 disabled={true}
                                                 precision={2}
                                                 formatter={this.formatterRupiah}
@@ -1168,7 +1168,7 @@ class TransaksiBaru extends React.Component  {
                                         </td>
                                         <td>
                                             <InputNumber 
-                                                style={{width: 130, color: 'blue'}}
+                                                style={{width: 130, color: '#646463'}}
                                                 disabled={true}
                                                 precision={2}
                                                 formatter={this.formatterRupiah}

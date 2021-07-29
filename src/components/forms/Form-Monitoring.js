@@ -29,7 +29,8 @@ class FormMonitoring extends React.Component {
         this.state ={
             disabledInput: true,
             disabledInputEdit: true,
-            totalBudget: 0.0
+            totalBudget: 0.0,
+            listMonitoring: []
         }
 
         this.formRef = React.createRef();
@@ -41,7 +42,6 @@ class FormMonitoring extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        console.log(nextProps.itemProyekSelected);
         if(this.itemProyek === null && nextProps.itemProyekSelected !== null) {
             this.itemProyek = {
                 no_job: nextProps.itemProyekSelected.no_job,
@@ -54,7 +54,7 @@ class FormMonitoring extends React.Component {
                 nama_customer: nextProps.itemProyekSelected.nama_customer,
                 nama_proyek: nextProps.itemProyekSelected.nama_proyek,
                 nilai_kontrak: nextProps.itemProyekSelected.nilai_kontrak
-            });  
+            });              
         }
 
         if(nextState.totalBudget !== this.state.totalBudget) {
@@ -65,6 +65,28 @@ class FormMonitoring extends React.Component {
         }
 
         return true;
+    }
+
+    getMonitoring = (noJob) => {
+        const { headerAuthorization, restfulServer } = this.props;
+
+        let self = this;    
+                
+        axios({
+            method: 'get',
+            url: `${restfulServer}/master/monitoring`,
+            headers: {...headerAuthorization},
+            params: { no_job: noJob }
+        })
+        .then((r) => {         
+            if(r.data.status === 200) {
+                console.log(r.data.keterangan);
+                self.setState({listMonitoring: r.data.keterangan});
+            }
+        })
+        .catch((r) => {         
+            // self.setState({disabledInput: false});
+        });        
     }
 
     getTotalBudget = () => {
@@ -123,8 +145,9 @@ class FormMonitoring extends React.Component {
     }
 
     render() {
-        const { itemProyekSelected, modeProyekBaru } = this.props;
+        const { itemProyekSelected, modeProyekBaru, listMonitoring } = this.props;
         const { totalBudget } = this.state;
+        console.log(listMonitoring);
         let page =
         <Form
             name="form-budget"
@@ -151,7 +174,7 @@ class FormMonitoring extends React.Component {
                                 >
                                     <Input 
                                         disabled={true}
-                                        style={{ width: 150, color: 'blue' }}
+                                        style={{ width: 150, color: '#646463' }}
                                     />
                                 </Form.Item>
                             </td>
@@ -163,7 +186,7 @@ class FormMonitoring extends React.Component {
                                 >
                                     <Input 
                                         disabled={true}
-                                        style={{minWidth: 250, color: 'blue'}}
+                                        style={{minWidth: 250, color: '#646463'}}
                                     />
                                 </Form.Item>
                             </td>
@@ -176,7 +199,7 @@ class FormMonitoring extends React.Component {
                                     <Input 
                                         data-jenis="namaproyek"
                                         disabled={true}
-                                        style={{minWidth: 250, color: 'blue'}}
+                                        style={{minWidth: 250, color: '#646463'}}
                                     />
                                 </Form.Item>
                             </td>
@@ -190,7 +213,7 @@ class FormMonitoring extends React.Component {
                                     >
                                         <InputNumber
                                             disabled={true}
-                                            style={{width: 150, color: 'blue'}}
+                                            style={{width: 150, color: '#646463'}}
                                             formatter={this.formatterRupiah}
                                             parser={this.parserRupiah}
                                         />
@@ -205,7 +228,7 @@ class FormMonitoring extends React.Component {
                                         >
                                             <InputNumber
                                                 disabled={true}
-                                                style={{width: 150, color: 'blue'}}
+                                                style={{width: 150, color: '#646463'}}
                                                 formatter={this.formatterRupiah}
                                                 parser={this.parserRupiah}
                                             />
@@ -217,7 +240,7 @@ class FormMonitoring extends React.Component {
                                         >
                                             <InputNumber
                                                 disabled={true}
-                                                style={{width: 150, color: 'blue'}}
+                                                style={{width: 150, color: '#646463'}}
                                                 formatter={this.formatterRupiah}
                                                 parser={this.parserRupiah}
                                             />
@@ -229,7 +252,7 @@ class FormMonitoring extends React.Component {
                                         >
                                             <InputNumber
                                                 disabled={true}
-                                                style={{width: 75, color: 'blue'}}
+                                                style={{width: 75, color: '#646463'}}
                                                 formatter={this.formatterPersen}
                                                 parser={this.parserPersen}
                                             />
@@ -267,6 +290,7 @@ class FormMonitoring extends React.Component {
                                 <td>1000</td>
                                 <td></td>
                                 <td>Pembayaran material rmk</td>
+                                <td>ole ole ole</td>
                             </tr>
                             <tr>
                                 <td>2</td>
@@ -274,6 +298,7 @@ class FormMonitoring extends React.Component {
                                 <td>1000</td>
                                 <td></td>
                                 <td>DP Material Dusung Korea</td>
+                                <td>-</td>
                             </tr>
                             <tr>
                                 <td colSpan="3" style={{textAlign: 'left', paddingTop: 16}}>
@@ -283,6 +308,7 @@ class FormMonitoring extends React.Component {
                                     <b>1000000000</b>
                                 </td>
                             </tr>
+                        
                         </tbody>
                     </table>
                 </div>

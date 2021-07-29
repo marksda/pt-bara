@@ -132,6 +132,9 @@
     min-width: 1000px;
     margin-left: 8px;
 }
+.table-monitoring tr:hover {
+    background-color: #c2c1bf;
+}
 .table-monitoring th {
     padding: 4px 8px;
     background-color: #f5d99e;
@@ -193,4 +196,5 @@
 .table-monitoring td:nth-child(6) {
     width: 300px;
     text-align: left;
+    cursor: pointer;
 }
