@@ -195,6 +195,6 @@
 }
 .table-monitoring td:nth-child(6) {
     width: 300px;
-    text-align: left;
-    cursor: pointer;
+    /* text-align: left;
+    cursor: pointer; */
 }

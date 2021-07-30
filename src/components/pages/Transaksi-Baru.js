@@ -223,8 +223,7 @@ class TransaksiBaru extends React.Component  {
         const { modeTransaksiBaru, setModeTransaksiBaru } = this.props;
         
         if(modeTransaksiBaru === 'edit') {
-            // resetItemTransaksiSelected();
-            this.setState({disabledInput: false, disabledInputEdit: true, kategori: false});  
+            this.setState({disabledInput: false, disabledInputEdit: true, kategori: false, transaksi: [],totalDebet: 0, totalKredit: 0});  
             setModeTransaksiBaru('add');          
         }
         else {
@@ -246,6 +245,8 @@ class TransaksiBaru extends React.Component  {
             dokumen: null,
             keterangan: null
         };
+
+        console.log(this.itemTransaksi);
     }
 
     handleEdit = () => {
@@ -605,17 +606,19 @@ class TransaksiBaru extends React.Component  {
 	}
 
     handleDeleteItemTransaction = (e, index) => {
-        const { totalDebet, totalKredit } = this.state;
-        let tmpDebet = totalDebet - this.itemTransaksi.list_transaksi[index].debet;
-        let tmpKredit = totalKredit - this.itemTransaksi.list_transaksi[index].kredit
+        const { totalDebet, totalKredit, disabledInput } = this.state;
+        if(disabledInput === false) {
+            let tmpDebet = totalDebet - this.itemTransaksi.list_transaksi[index].debet;
+            let tmpKredit = totalKredit - this.itemTransaksi.list_transaksi[index].kredit
 
-        this.itemTransaksi.list_transaksi.splice(index, 1);
+            this.itemTransaksi.list_transaksi.splice(index, 1);
 
-        this.setState({
-            transaksi: this.itemTransaksi.list_transaksi, 
-            totalDebet: tmpDebet, 
-            totalKredit: tmpKredit
-        });
+            this.setState({
+                transaksi: this.itemTransaksi.list_transaksi, 
+                totalDebet: tmpDebet, 
+                totalKredit: tmpKredit
+            });
+        }
     }
 
     handleItemAkunClick = (event, index) => {
@@ -909,7 +912,7 @@ class TransaksiBaru extends React.Component  {
     render() {
         const { anchorEl, disabledInput, disabledInputEdit, heighLeftContainer, listHeaderAkun, kategori, prefixSearch, transaksi,
             totalDebet, totalKredit } = this.state;
-        const { classes, isProgress, modeTransaksiBaru, itemTransaksiSelected, listAkun, listJenisTransaksi } = this.props;
+        const { classes, isProgress, listAkun, listJenisTransaksi } = this.props;
         
         const selectBefore = (
             <Select 
@@ -922,30 +925,6 @@ class TransaksiBaru extends React.Component  {
               <Option value="m.nama">NAMA</Option>
             </Select>
         );
-        
-        let initEdit;
-        if(modeTransaksiBaru === 'edit' && itemTransaksiSelected !== null ) {
-            initEdit = {
-                layout: 'vertical',
-                remember: true,
-            };
-        }
-        else {
-            initEdit = {
-                layout: 'vertical',
-                remember: true,
-                ["tanggal"]: moment(),
-                ["is_proyek"]: false,
-                ["no_job"]: null,
-                ["nama_customer"]: null,
-                ["nama_proyek"]:  null,
-                ["kode"]: "0",
-                ["jenis_transaksi"]: null,
-                ["jatuh_tempo"]: null,
-                ["list_transaksi"]: null,
-                ["keterangan"]: null
-            };
-        }
 
         let page =
         <Form
@@ -953,7 +932,22 @@ class TransaksiBaru extends React.Component  {
             onFinish={this.handleOnFinish}
             ref={this.formRef}
             layout='vertical'
-            initialValues={initEdit}     
+            initialValues={
+                {
+                    layout: 'vertical',
+                    remember: true,
+                    ["tanggal"]: moment(),
+                    ["is_proyek"]: false,
+                    ["no_job"]: null,
+                    ["nama_customer"]: null,
+                    ["nama_proyek"]:  null,
+                    ["kode"]: "0",
+                    ["jenis_transaksi"]: null,
+                    ["jatuh_tempo"]: null,
+                    ["list_transaksi"]: null,
+                    ["keterangan"]: null
+                }
+            }     
         >
             <div className="content-flex-center">
                 <div style={{minWidth: 1000, width: '85%', display: 'flex', flexDirection: 'column'}}>
@@ -1145,7 +1139,7 @@ class TransaksiBaru extends React.Component  {
                                                 </td>
                                                 <td>
                                                     <DeleteOutlined 
-                                                        style={{ fontSize: '18px', cursor: 'pointer'}}
+                                                        style={{ fontSize: '18px', cursor: disabledInput===true?'default':'pointer'}}
                                                         data-id={index}
                                                         onClick={(e) => this.handleDeleteItemTransaction(e, index)}
                                                     />
