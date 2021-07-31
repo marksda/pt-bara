@@ -27,6 +27,7 @@ import { setUnauthorization } from "../../actions/notification-action";
 import { setItemMenuSelected, setModeProyekBaru } from "../../actions/master-action";
 import { resetCredential } from "../../actions/login-action";
 
+import CommandCenter from "./Command-Center";
 import Master from "./Master";
 import PengajuanBaru from "./Pengajuan-Baru";
 import Pengajuan from "./Pengajuan";
@@ -183,6 +184,10 @@ class Main extends React.Component {
         let subPage = null;
 
         switch (itemMenuSelected) {
+            case 'Command Center':
+                subPage = 
+                <CommandCenter  />;
+                break;
             case 'Proyek Baru':
                 subPage = 
                 <ProyekBaru  />;
