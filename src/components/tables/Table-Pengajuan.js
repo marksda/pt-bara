@@ -256,6 +256,7 @@ const EnhancedTableHead = (props) => {
                                 <TableCell
                                     key={headCell.id}
                                     align={'left'}
+                                    style={{minWidth: 350}}
                                 >
                                     {headCell.label}
                                 </TableCell>;

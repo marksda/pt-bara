@@ -114,7 +114,6 @@ class FormAddAkun extends Component {
 	    	} 
 	    	self.handleReset();
             self.setState({disabledInput: false});
-            // handleClose();
             handleToggleOpenProgressDialog();
 	    })
 	    .catch((r) => {
@@ -135,7 +134,6 @@ class FormAddAkun extends Component {
         })
         .then((r) => {         
             if(r.data.status === 200) {
-                console.log(paginationAkun);
                 self.loadAkun(
                     filterAkun,
                     paginationAkun,

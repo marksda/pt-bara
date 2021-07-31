@@ -101,7 +101,7 @@ const EnhancedTableToolbar = (props) => {
 const headRows = [
     {id: 'm.tanggal_persiapan', numerik: false, label: 'Tgl. aktif'},
     {id: 'm.no_job', numerik: false, label: 'No. job'},
-    {id: 'c.nama', numerik: false, label: 'Customer'},
+    {id: 'c.nama', numerik: false, label: 'Client'},
     {id: 'm.nama_proyek', numerik: false, label: 'Proyek'}
 ];
 

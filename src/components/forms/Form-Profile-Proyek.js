@@ -554,7 +554,7 @@ class FormProfileProyek extends React.Component {
                             </td>
                             <td>
                                 <Form.Item 
-                                    label="Customer"
+                                    label="Client"
                                     name="nama_customer"
                                     rules={[{required: true, message: 'Customer harus diisi'}]}
                                     style={{marginBottom: 16}}
@@ -928,7 +928,7 @@ class FormProfileProyek extends React.Component {
                             </td>
                             <td>
                                 <Form.Item
-                                    label="PIC Proyek (Customer)"
+                                    label="PIC Proyek (Client)"
                                     name="pic_customer"
                                     style={{marginBottom: 16}}
                                 >
@@ -959,7 +959,7 @@ class FormProfileProyek extends React.Component {
                             </td>
                             <td>
                                 <Form.Item
-                                    label="No. Handphone PIC Proyek (Customer)"
+                                    label="No. Handphone PIC Proyek (Client)"
                                     name="no_hp_pic_customer"
                                     style={{marginBottom: 16}}
                                 >

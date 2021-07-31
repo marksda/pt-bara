@@ -100,15 +100,13 @@ const EnhancedTableToolbar = (props) => {
             </div>
             <div className={classes.spacer} />
             <div className={classes.actions}>
-                <Tooltip title="tambah" className={classes.showIconTambah}>
-                    <IconButton 
-                        aria-label="add" 
-                        onClick={isProgress===false?handleOpen:null}
-                        disabled={isProgress}
-                    >
-                        <AddBoxOutlineIcon />
-                    </IconButton>                             
-                </Tooltip>
+                <IconButton 
+                    aria-label="add" 
+                    onClick={isProgress===false?handleOpen:null}
+                    disabled={isProgress}
+                >
+                    <AddBoxOutlineIcon />
+                </IconButton>    
                 <Form ref={acuan} style={{marginTop: 24, marginLeft: 8}}>
                     <Form.Item name="cari">
                         <Search
@@ -129,7 +127,7 @@ const headRows = [
 	{id: 'm.no', numerik: false, label: 'No.'},
     {id: 'm.tanggal_persiapan', numerik: false, label: 'Tgl. persiapan'},
     {id: 'm.no_job', numerik: false, label: 'No. job'},
-    {id: 'c.nama', numerik: false, label: 'Customer'},
+    {id: 'c.nama', numerik: false, label: 'Client'},
     {id: 'm.nama_proyek', numerik: false, label: 'Proyek'},
     {id: 'm.id_status_proyek', numerik: false, label: 'Status'},
     {id: 'act', numerik: false, label: 'Action'}

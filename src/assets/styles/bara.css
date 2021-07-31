@@ -11,7 +11,7 @@
 }
 
 .table-proyek-monitoring {
-    width: 80%;
+    width: 90%;
     min-width: 1000px;
 }
 
@@ -128,7 +128,7 @@
 } 
 
 .table-monitoring {
-    width: 80%;
+    width: 90%;
     min-width: 1000px;
     margin-left: 8px;
 }
@@ -179,22 +179,13 @@
     width: 150px;
     text-align: right;
 }
-
 .table-monitoring th:nth-child(5) {
-    min-width: 350px;
-    text-align: center;
-}
-.table-monitoring td:nth-child(5) {
-    min-width: 350px;
-    text-align: left;
-}
-
-.table-monitoring th:nth-child(6) {
-    width: 300px;
+    width: 350px;
     text-align: center;
 }
 .table-monitoring td:nth-child(6) {
-    width: 300px;
-    /* text-align: left;
-    cursor: pointer; */
+    width: 350px;
+    text-align: left;
+    padding-left: 32px;
+    /* cursor: pointer; */
 }

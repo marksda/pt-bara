@@ -1007,7 +1007,7 @@ class TransaksiBaru extends React.Component  {
                                 </td>
                                 <td>
                                     <Form.Item 
-                                        label="Customer"
+                                        label="Client"
                                         name="nama_customer"
                                         style={{marginBottom: 16}}
                                         rules={[{required: true, message: 'Customer harus diisi'}]}
