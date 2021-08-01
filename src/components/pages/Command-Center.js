@@ -171,7 +171,7 @@ class CommandCenter extends React.Component {
                         <span>{item.nama_customer}</span>
                         <span>{item.nama_proyek}</span>
                         <span>{new Intl.NumberFormat('id').format(item.nilai_kontrak)}</span>
-                        <span>{new Intl.NumberFormat('id').format(65000000n)}</span>
+                        <span>{new Intl.NumberFormat('id').format(0)}</span>
                         <ProfileOutlined style={{ fontSize: '18px', cursor: 'pointer'}}  />
                     </div>
                 )):

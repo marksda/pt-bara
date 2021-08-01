@@ -208,6 +208,9 @@ class Main extends React.Component {
             case 'Daftar Transaksi':
                 subPage = <DaftartTransaksi />;
                 break;
+            case 'Proyek':
+                subPage = <ProyekBaru />;
+                break;
             case 'Master':
                 subPage = <Master />;
                 break;
