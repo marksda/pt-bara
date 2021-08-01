@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { Button, Divider } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, ProfileOutlined } from '@ant-design/icons';
+import Paper from '@material-ui/core/Paper';
 import moment from 'moment';
 
-import { getPengajuan, setFilterPengajuan, setIsProgress, setItemMenuSelected, setPaginationPengajuan, setUrutPengajuan } from "../../actions/master-action";
-import { Height } from '@material-ui/icons';
+import { getPengajuan, setFilterPengajuan, setIsProgress, setItemMenuSelected, setPaginationPengajuan, setUrutPengajuan, getProyek, setFilterProyek, setPaginationProyek, setUrutProyek } from "../../actions/master-action";
 
 
 
@@ -18,6 +18,10 @@ const mapStateToProps = store => {
         filterPengajuan: store.master.filter_pengajuan,
         paginationPengajuan: store.master.pagination_pengajuan,
         urutPengajuan: store.master.urut_pengajuan,
+        listProyek: store.master.list_proyek,
+        filterProyek: store.master.filter_proyek,
+        paginationProyek: store.master.pagination_proyek,
+        urutProyek: store.master.urut_proyek,
     };
 };
 
@@ -29,6 +33,10 @@ const mapDispatchToProps = dispatch => {
         setFilterPengajuan: (value) => dispatch(setFilterPengajuan(value)),
         setPaginationPengajuan: (value) => dispatch(setPaginationPengajuan(value)),
         setUrutPengajuan: (value) => dispatch(setUrutPengajuan(value)),  
+        getProyek: (url, headerAuthorization) => dispatch(getProyek(url, headerAuthorization)),
+        setFilterProyek: (value) => dispatch(setFilterProyek(value)),
+        setPaginationProyek: (value) => dispatch(setPaginationProyek(value)),
+        setUrutProyek: (value) => dispatch(setUrutProyek(value)),
     };
 };
 
@@ -39,14 +47,24 @@ class CommandCenter extends React.Component {
     }
 
     componentDidMount() {
-    	const { paginationPengajuan, setFilterPengajuan, urutPengajuan } = this.props;
+    	const { 
+            paginationPengajuan, setFilterPengajuan, urutPengajuan,
+            setFilterProyek, paginationProyek, urutProyek
+        } = this.props;
 
-        let tmpFilter = [
+        let tmpFilterPengajuan = [
             {field: 'rentan_tanggal', rentan: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]}
         ];
         
-        setFilterPengajuan(tmpFilter);
-        this.loadPengajuan(tmpFilter, paginationPengajuan, urutPengajuan);
+        setFilterPengajuan(tmpFilterPengajuan);
+        this.loadPengajuan(tmpFilterPengajuan, paginationPengajuan, urutPengajuan);
+
+        let tmpFilterProyek = [
+            {field: 'rentan_tanggal_persiapan', rentan: [`${moment().year()}-01-01`, `${moment().year()}-${moment().month()+1}-${moment().date()}`]}
+        ];
+
+        setFilterProyek(tmpFilterProyek);
+        this.loadProyek(tmpFilterProyek, paginationProyek, urutProyek);
     }
 
     flipDate = (tgl) => {
@@ -81,9 +99,21 @@ class CommandCenter extends React.Component {
         getPengajuan(url, headerAuthorization);
     }
 
+    loadProyek = (filter, pagination, urut) => {
+        const { getProyek, headerAuthorization, restfulServer } = this.props; 
+        let url;
+        if(filter === null) {
+            url = `${restfulServer}/master/proyek?pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;        
+        }
+        else {
+            url = `${restfulServer}/master/proyek?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`;
+        } 
+        getProyek(url, headerAuthorization);
+    }
+
     render() {
-        const { listPengajuan } = this.props;
-        console.log(listPengajuan);
+        const { listPengajuan, listProyek } = this.props;
+        console.log(listProyek);
 
         let page =
         <>
@@ -130,6 +160,31 @@ class CommandCenter extends React.Component {
                 <span>Nilai</span>
                 <span>Piutang</span>
                 <span>Pilihan</span>
+            </div>
+            <div className="proyek-cc-body" style={{height: 100}}>
+            {
+                listProyek !== null?
+                listProyek.data.map((item, index) => (
+                    <div className="proyek-cc-item" key={item.no_job}>
+                        <span>{`${index+1}.`}</span>
+                        <span>{item.no_job}</span>
+                        <span>{item.nama_customer}</span>
+                        <span>{item.nama_proyek}</span>
+                        <span>{new Intl.NumberFormat('id').format(item.nilai_kontrak)}</span>
+                        <span>{new Intl.NumberFormat('id').format(65000000n)}</span>
+                        <ProfileOutlined style={{ fontSize: '18px', cursor: 'pointer'}}  />
+                    </div>
+                )):
+                null
+            }
+            </div>
+            <div style={{display: 'flex', marginTop: 16}}>
+                <Paper className="widget-cc" style={{marginRight: 16, flexGrow: 4, padding: 8}} elevation={16}>
+                    <span>RESUME LABA/RUGI</span>
+                </Paper>
+                <Paper className="widget-cc" style={{flexGrow: 3, padding: 8}} elevation={16}>
+                    <span>BUDGET & REALISASI BIAYA PROYEK</span>
+                </Paper>
             </div>
         </>;
         return(page);
