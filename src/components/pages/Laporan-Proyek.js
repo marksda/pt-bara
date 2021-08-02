@@ -1,5 +1,11 @@
 import React from 'react';
 import { connect } from "react-redux";
+import { Divider, Radio } from 'antd';
+import FormBudget from '../forms/Form-Budget';
+import FormMonitoring from '../forms/Form-Monitoring';
+import FormLaporanPiutangProyek from '../forms/Form-Laporan-Piutang-Proyek';
+import FormProfileProyek from '../forms/Form-Profile-Proyek';
+
 
 import { resetStatusProyekSelected, setStatusProyekSelected, resetItemProyekSelected } from "../../actions/master-action";
 
@@ -18,7 +24,74 @@ const mapDispatchToProps = dispatch => {
     };
 };
 class LaporanProyek extends React.Component {
+    constructor(props) {
+		super(props);
 
+        this.state = {
+            itemTabSelected: 'Tagihan',
+            disabledRadioPersiapan: false,
+            disabledRadioProfile: false,
+            disabledRadioBudget: false,
+            disabledRadioMonitoring: false
+        }
+    }
+
+    handleChangeItemTab = (e) => {
+        this.setState({ itemTabSelected: e.target.value });
+    } 
+    
+    render() {
+        const { 
+            itemTabSelected, disabledRadioPersiapan, disabledRadioProfile, disabledRadioBudget, 
+            disabledRadioMonitoring
+        } = this.state;
+        const { isProgress } = this.props;
+
+        let subPage = null;
+
+        switch (itemTabSelected) {
+            case 'Tagihan':
+                subPage =
+                <FormLaporanPiutangProyek />;
+                break;
+            case 'Budget':
+                subPage =
+                <FormProfileProyek  />;
+                break;
+            case 'L/R':
+                subPage =
+                <FormBudget  />;
+                break;
+            case 'Pendapatan':
+                subPage =
+                <FormMonitoring  />;
+                break;
+            case 'Biaya':
+                subPage =
+                <FormMonitoring />;
+                break;
+            default:
+                break;
+        }
+
+        let page =
+        <>
+            <div className="content-flex-center">
+                <Radio.Group value={itemTabSelected} onChange={this.handleChangeItemTab}>
+                    <Radio.Button value="Tagihan" disabled={isProgress===true?true:disabledRadioPersiapan}>Tagihan</Radio.Button>
+                    <Radio.Button value="Budget" disabled={isProgress===true?true:disabledRadioProfile}>Budget</Radio.Button>
+                    <Radio.Button value="L/R" disabled={isProgress===true?true:disabledRadioBudget}>L/R</Radio.Button>
+                    <Radio.Button value="Pendapatan" disabled={isProgress===true?true:disabledRadioMonitoring}>Pendapatan</Radio.Button>
+                    <Radio.Button value="Biaya" disabled={isProgress===true?true:disabledRadioMonitoring}>Biaya</Radio.Button>
+                </Radio.Group>  
+            </div>                  
+            <Divider style={{borderTop: '1px solid rgba(17, 123, 236, 0.54)'}}/>
+            {subPage}
+        </>;
+
+        return(page);
+
+    }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(LaporanProyek);

@@ -35,6 +35,7 @@ import TransaksiBaru from "./Transaksi-Baru";
 import DaftartTransaksi from "./Daftar-Transaksi";
 import Proyek from "./Proyek";
 import ProyekBaru from "./Proyek-Baru";
+import LaporanProyek from "./Laporan-Proyek";
 import Security from "./Security";
 
 import Avatar from '@material-ui/core/Avatar';
@@ -209,7 +210,7 @@ class Main extends React.Component {
                 subPage = <DaftartTransaksi />;
                 break;
             case 'Proyek':
-                subPage = <ProyekBaru />;
+                subPage = <LaporanProyek />;
                 break;
             case 'Master':
                 subPage = <Master />;
