@@ -113,7 +113,6 @@ class CommandCenter extends React.Component {
 
     render() {
         const { listPengajuan, listProyek } = this.props;
-        console.log(listProyek);
 
         let page =
         <>
