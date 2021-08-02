@@ -4,7 +4,7 @@ import { Divider, Radio } from 'antd';
 import FormBudget from '../forms/Form-Budget';
 import FormMonitoring from '../forms/Form-Monitoring';
 import FormLaporanPiutangProyek from '../forms/Form-Laporan-Piutang-Proyek';
-import FormProfileProyek from '../forms/Form-Profile-Proyek';
+import FormLaporanBudgetProyek from '../forms/Form-Laporan-Budget-Proyek';
 
 
 import { resetStatusProyekSelected, setStatusProyekSelected, resetItemProyekSelected } from "../../actions/master-action";
@@ -56,7 +56,7 @@ class LaporanProyek extends React.Component {
                 break;
             case 'Budget':
                 subPage =
-                <FormProfileProyek  />;
+                <FormLaporanBudgetProyek  />;
                 break;
             case 'L/R':
                 subPage =
