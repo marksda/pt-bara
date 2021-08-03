@@ -225,7 +225,7 @@
 .proyek-cc-body::-webkit-scrollbar-track,
 .lp-piutang-body::-webkit-scrollbar-track,
 .lp-budget-body::-webkit-scrollbar-track {
-    background-color: rgb(214, 230, 126);
+    background-color: rgb(233, 235, 226);
 }
 .pengajuan-cc-body::-webkit-scrollbar-thumb,
 .proyek-cc-body::-webkit-scrollbar-thumb,
@@ -398,14 +398,62 @@
     padding: 2px 4px;
 }
 .lp-budget-header div:nth-child(1) {
-    width: 250px;
-    padding-right: 16px;
+    padding-right: 8px;
 }
 .lp-budget-header div:nth-child(2),
-.lp-budget-header div:nth-child(3) {
-    width: 300px;
-    padding-right: 16px;
+.lp-budget-header div:nth-child(3),
+.lp-budget-header div:nth-child(5) {
+    width: 250px;
+    padding-right: 8px;
 }
 .lp-budget-header div:nth-child(4) {
-    min-width: 352px;
+    width: 120px;
+    padding-right: 8px; 
+}
+
+.lp-budget-body {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.lp-budget-item {
+    display: flex;
+    justify-content: center;
+    vertical-align: top;
+}
+.lp-budget-item div {    
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 4px;
+}
+.lp-budget-item div:nth-child(1) {
+    padding-right: 8px;
+}
+.lp-budget-item div:nth-child(2),
+.lp-budget-item div:nth-child(3),
+.lp-budget-item div:nth-child(5) {
+    width: 250px;
+    padding-right: 8px;    
+}
+.lp-budget-item div:nth-child(4) {
+    width: 120px;
+    padding-right: 8px;    
+}
+.lp-budget-item div:nth-child(1) span,
+.lp-budget-item div:nth-child(2) span,
+.lp-budget-item div:nth-child(3) span,
+.lp-budget-item div:nth-child(4) span,
+.lp-budget-item div:nth-child(5) span {
+    background-color: rgb(240, 240, 238);
+}
+.lp-budget-item div:nth-child(1) span {
+    flex-grow: 1;
+    padding-left: 8px;
+}
+.lp-budget-item div:nth-child(2) span,
+.lp-budget-item div:nth-child(3) span,
+.lp-budget-item div:nth-child(4) span,
+.lp-budget-item div:nth-child(5) span {
+    text-align: right;
+    padding-right: 8px;
 }

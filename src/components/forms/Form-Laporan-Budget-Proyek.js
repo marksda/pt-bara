@@ -1,6 +1,7 @@
 import React from 'react';
+import axios from 'axios';
 import { connect } from "react-redux";
-import { Button, DatePicker, Form, Input, InputNumber, notification, Select, Typography } from 'antd';
+import { Button, Form, Input, InputNumber, Typography } from 'antd';
 import { FilterOutlined, FilePdfTwoTone, FileExcelTwoTone } from '@ant-design/icons';
 import { setIsProgress, resetFilterProyek } from "../../actions/master-action";
 import Paper from '@material-ui/core/Paper';
@@ -31,6 +32,7 @@ class FormLaporanBudgetProyek extends React.Component {
 		super(props);
         this.state = {
             anchorEl: null,
+            listLaporanBudget: null
         }
 
         this.formRef = React.createRef();
@@ -51,8 +53,10 @@ class FormLaporanBudgetProyek extends React.Component {
             this.formRef.current.setFieldsValue({
                 no_job: nextProps.itemProyekSelected.no_job,
                 nama_customer: nextProps.itemProyekSelected.nama_customer,
-                nama_proyek: nextProps.itemProyekSelected.nama_proyek
+                nama_proyek: nextProps.itemProyekSelected.nama_proyek,
+                nilai_kontrak:  nextProps.itemProyekSelected.nilai_kontrak
             });
+            this.loadLaporanBudget(nextProps.itemProyekSelected.no_job);
         }
 
         return true;
@@ -100,8 +104,36 @@ class FormLaporanBudgetProyek extends React.Component {
         return value.replace(/\,/g, '.');
     }
 
+    loadLaporanBudget = (noJob) => {
+		const { 
+			headerAuthorization, restfulServer, setIsProgress
+		} = this.props;
+	    let self = this;
+        setIsProgress(true);
+
+	    axios({
+            method: 'get',
+            url: `${restfulServer}/master/laporan_budget`,
+            headers: {...headerAuthorization},
+            params: {no_job: noJob}
+        })
+	    .then((r) => {  
+            setIsProgress(false);
+            // console.log(r.data.keterangan);
+	    	if(r.data.status === 200) {        
+			     self.setState({listLaporanBudget: r.data.keterangan});
+	    	} 
+	    	// self.handleReset();
+            // self.setState({disabledInput: false});
+            // handleToggleOpenProgressDialog();
+	    })
+	    .catch((r) => {
+	    	setIsProgress(false);
+	    });
+	}    
+
     render() {
-        const { anchorEl } = this.state;
+        const { anchorEl, listLaporanBudget } = this.state;
         const { itemProyekSelected } = this.props;
 
         console.log(itemProyekSelected);
@@ -197,9 +229,9 @@ class FormLaporanBudgetProyek extends React.Component {
                             />
                         </Form.Item>
                     </div>
-                    <Paper elevation={4} square style={{width: '100%', height: 200, padding: 16}}>
+                    <Paper elevation={4} square style={{width: '100%', height: 400, padding: 16}}>
                         <div className="lp-budget-header">
-                            <div>                                
+                            <div style={{flexGrow: 1}}>                                
                                 <span>Post Budget</span>
                                 <span>Sub-Post</span>
                             </div>
@@ -211,11 +243,60 @@ class FormLaporanBudgetProyek extends React.Component {
                                 <span>Sub-Realisasi</span>
                                 <span>Realisasi</span>
                             </div>  
-                            <div style={{flexGrow: 1}}>
+                            <div>
                                 <span>Progress</span>
+                            </div>
+                            <div>
                                 <span>Sub-Sisa</span>
                                 <span>Sisa-Budget</span>
                             </div> 
+                        </div>
+                        <div className="lp-budget-body" style={{height: 400}}>
+                        {
+                            listLaporanBudget !== null?
+                            listLaporanBudget.map((item, index) => (
+                                <div className="lp-budget-item" key={item.id}>
+                                    <div style={{flexGrow: 1}}>
+                                    {
+                                        item.status_header===true?
+                                        <span><b>{item.nama}</b></span>:
+                                        <span style={{marginLeft: 16}}>{item.nama}</span>
+                                    }
+                                    </div>
+                                    <div>
+                                    {   
+                                        item.status_header===false?
+                                        <span style={{width: '80%'}}>{new Intl.NumberFormat('id').format(item.budget)}</span>:
+                                        <span style={{flexGrow: 1}}><b>{new Intl.NumberFormat('id').format(item.budget)}</b></span>
+                                    }
+                                    </div>
+                                    <div>
+                                    {
+                                        item.status_header===true?
+                                        <span style={{flexGrow: 1}}><b>{new Intl.NumberFormat('id').format(item.realisasi)}</b></span>:
+                                        <span style={{width: '80%'}}>{new Intl.NumberFormat('id').format(item.realisasi)}</span>
+                                    }   
+                                    </div>
+                                    <div>
+                                    {
+                                        item.status_header===true?
+                                        <span style={{flexGrow: 1}}>
+                                            <b>{`${new Intl.NumberFormat('id').format(item.progress)} %`}</b>
+                                        </span>:
+                                        <span style={{width: '60%'}}>{`${new Intl.NumberFormat('id').format(item.progress)} %`}</span>
+                                    }
+                                    </div>
+                                    <div>
+                                    {
+                                        item.status_header===true?
+                                        <span style={{flexGrow: 1}}><b>{new Intl.NumberFormat('id').format(item.sisa)}</b></span>:
+                                        <span style={{width: '80%'}}>{new Intl.NumberFormat('id').format(item.sisa)}</span>
+                                    }
+                                    </div> 
+                                </div>
+                            )):
+                            null
+                        }
                         </div>
                     </Paper>
                 </div>
