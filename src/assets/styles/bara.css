@@ -2,9 +2,17 @@
     overflow-x: hidden; 
 } */
 
+.content-flex-left {
+    display: flex;
+    justify-content: flex-start;
+}
 .content-flex-center {
     display: flex;
     justify-content: center;
+}
+.content-flex-right {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .table-proyek-persiapan, 
@@ -209,17 +217,20 @@
 } */
 .pengajuan-cc-body::-webkit-scrollbar,
 .proyek-cc-body::-webkit-scrollbar,
-.lp-piutang-body::-webkit-scrollbar {
+.lp-piutang-body::-webkit-scrollbar,
+.lp-budget-body::-webkit-scrollbar {
     width: 2px;
 }
 .pengajuan-cc-body::-webkit-scrollbar-track,
 .proyek-cc-body::-webkit-scrollbar-track,
-.lp-piutang-body::-webkit-scrollbar-track {
+.lp-piutang-body::-webkit-scrollbar-track,
+.lp-budget-body::-webkit-scrollbar-track {
     background-color: rgb(214, 230, 126);
 }
 .pengajuan-cc-body::-webkit-scrollbar-thumb,
 .proyek-cc-body::-webkit-scrollbar-thumb,
-.lp-piutang-body::-webkit-scrollbar-thumb {
+.lp-piutang-body::-webkit-scrollbar-thumb,
+.lp-budget-body::-webkit-scrollbar-thumb {
     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 .pengajuan-cc-header,
@@ -364,4 +375,37 @@
 .widget-cc {
     /* width: 300px; */
     height: 250px;
+}
+.kontainer-left-lp-budget {
+    display: flex;
+    flex-direction: column;
+    width: 85%;
+    min-width: 900px;
+}
+.kontainer-right-lp-budget {
+    display: flex;
+    flex-direction: column;
+    max-width: 15%;
+    min-width: 150px;
+}
+.lp-budget-header {
+    display: flex;
+    justify-content: center;
+}
+.lp-budget-header div {    
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 4px;
+}
+.lp-budget-header div:nth-child(1) {
+    width: 250px;
+    padding-right: 16px;
+}
+.lp-budget-header div:nth-child(2),
+.lp-budget-header div:nth-child(3) {
+    width: 300px;
+    padding-right: 16px;
+}
+.lp-budget-header div:nth-child(4) {
+    min-width: 352px;
 }

@@ -59,7 +59,7 @@ const EnhancedTableToolbar = (props) => {
             onChange={handleChangePrefixSearch}
         >
           <Option value="m.no_job">No. Job</Option>
-          <Option value="c.nama">Customer</Option>
+          <Option value="c.nama">Client</Option>
           <Option value="m.nama_proyek">Proyek</Option>
         </Select>
     );
