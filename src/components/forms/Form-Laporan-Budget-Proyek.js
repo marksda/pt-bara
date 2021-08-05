@@ -180,7 +180,8 @@ class FormLaporanBudgetProyek extends React.Component {
                     ["nama_customer"]: null,
                     ["nama_proyek"]:  null,
                     ["nilai_kontrak"]: null,
-                    ["total_budget"]: null
+                    ["total_budget"]: null,
+                    ["persentase_realisasi_biaya"]: null
                 }
             }     
         >

@@ -138,7 +138,33 @@ class FormLaporanLabaRugiProyek extends React.Component {
 	}
 
     render() {
-        
+        const { anchorEl, listLaporanLabaRugi } = this.state;
+
+        let page = 
+        <Form
+            name="form-laporan-labarugi"
+            onFinish={this.handleOnFinish}
+            ref={this.formRef}
+            layout='vertical'
+            initialValues={
+                {
+                    remember: true,
+                    ["no_job"]: null,
+                    ["nama_customer"]: null,
+                    ["nama_proyek"]:  null,
+                    ["nilai_kontrak"]: null,
+                    ["total_budget"]: null
+                }
+            }     
+        >
+            <div className="content-flex-center">
+                <div className="kontainer-left-lp-labarugi">
+                    
+                </div>
+            </div>
+        </Form>;
+
+        return(page);
     }
 }
 

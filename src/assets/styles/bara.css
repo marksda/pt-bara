@@ -376,7 +376,8 @@
     /* width: 300px; */
     height: 250px;
 }
-.kontainer-left-lp-budget {
+.kontainer-left-lp-budget,
+.kontainer-left-lp-labarugi {
     display: flex;
     flex-direction: column;
     width: 85%;
