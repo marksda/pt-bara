@@ -101,7 +101,7 @@ class FormLaporanBudgetProyek extends React.Component {
                     realisasi_biaya: totalRealisasi,
                     persentase_realisasi_biaya: (totalRealisasi/r.data.keterangan*100).toFixed(2)
                 });
-                self.getMonitoring(r.data.keterangan);
+                // self.getMonitoring(r.data.keterangan);
             }
         })
         .catch((r) => {         
