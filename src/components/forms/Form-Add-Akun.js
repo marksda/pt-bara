@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import axios from 'axios';
 import { Button, Form, Input, Modal, Select } from 'antd';
 import { connect } from "react-redux";
-import { getAkun } from "../../actions/master-action";
+import { getAkun, setIsProgress } from "../../actions/master-action";
 
 const mapStateToProps = store => {
     return {      
@@ -10,13 +10,15 @@ const mapStateToProps = store => {
         headerAuthorization: store.credential.header_authorization,
         paginationAkun: store.master.pagination_akun,
         restfulServer: store.general.restful_domain,
-        urutAkun: store.master.urut_akun
+        urutAkun: store.master.urut_akun,
+        isProgress: store.master.is_progress,
     };
 };
 
 const mapDispatchToProps = dispatch => {    
     return {
-        getAkun: (url, headerAuthorization) => dispatch(getAkun(url, headerAuthorization))
+        getAkun: (url, headerAuthorization) => dispatch(getAkun(url, headerAuthorization)),
+        setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
     };
 };
 
@@ -38,6 +40,9 @@ class FormAddAkun extends Component {
 
 		this.formRef = React.createRef();
 		this.itemAkun = {};
+        this.filterAkunHeader = [{ field: "m.status_header", header: true }];
+        this.paginationAkunHeader = {current: 1, pageSize: 1000};
+        this.sortAkunHeader = {field: 'm.nama', order: 'asc' };
 	}
 
     componentDidMount() {
@@ -104,11 +109,13 @@ class FormAddAkun extends Component {
 
     saveAkun = () => {
 		const { 
-			filterAkun, headerAuthorization, paginationAkun, restfulServer, urutAkun, handleToggleOpenProgressDialog
+			filterAkun, headerAuthorization, paginationAkun, restfulServer, urutAkun, 
+            loadHeaderAkun, setIsProgress
 		} = this.props;
 	    let self = this;
         
-	    handleToggleOpenProgressDialog();
+	    // handleToggleOpenProgressDialog();
+        setIsProgress(true);
 
 	    axios({
             method: 'put',
@@ -117,14 +124,19 @@ class FormAddAkun extends Component {
             data: this.itemAkun
         })
 	    .then((r) => {  
+            setIsProgress(false);
 	    	if(r.data.status === 200) {        
 				self.loadAkun(filterAkun, paginationAkun, urutAkun);
+                if(self.itemAkun.status_header === true) {
+                    loadHeaderAkun(self.filterAkunHeader, self.paginationAkunHeader, self.sortAkunHeader);
+                }
 	    	} 
 	    	self.handleReset();
             self.setState({disabledInput: false});
-            handleToggleOpenProgressDialog();
+            // handleToggleOpenProgressDialog();
 	    })
 	    .catch((r) => {
+            setIsProgress(false);
 	    	self.setState({disabledInput: true});
 	    });
 	}    
@@ -157,7 +169,7 @@ class FormAddAkun extends Component {
     }
 
     render() {
-        const { data, handleClose, mode, visible } = this.props;
+        const { data, handleClose, isProgress, mode, visible } = this.props;
 		const { disabledInput } = this.state;
 
 		let page = null;
@@ -190,7 +202,7 @@ class FormAddAkun extends Component {
                 >
                     <Input 
                         data-jenis="id"
-                        disabled={disabledInput}
+                        disabled={isProgress===true?true:disabledInput}
                         onChange={this.handleChangeNilaiText}
                         style={{width: 150}}
                     />
@@ -202,7 +214,7 @@ class FormAddAkun extends Component {
                 >
                     <Select 
                         onChange={this.handleChangeStatusHeader}
-                        disabled={disabledInput}
+                        disabled={isProgress===true?true:disabledInput}
                         style={{width: 200}}
                     >
                         <Select.Option value="true">Header</Select.Option>
@@ -216,23 +228,34 @@ class FormAddAkun extends Component {
                 >
                     <Input 
                         data-jenis="nama"
-                        disabled={disabledInput}
+                        disabled={isProgress===true?true:disabledInput}
                         onChange={this.handleChangeNilaiText}
                     />
                 </Form.Item>
                 <Form.Item {...tailLayout}>
-                    <Button 
-                        htmlType="button" 
-                        onClick={this.handleReset} 
-                        disabled={mode==='edit'?true:disabledInput}
-                        style={{marginRight: 8}}
-                    >
-                    Reset
-                    </Button>
+                    {
+                        mode==='edit'?
+                        <Button 
+                            htmlType="button" 
+                            onClick={this.handleReset} 
+                            disabled={mode==='edit'?true:disabledInput}
+                            style={{marginRight: 8}}
+                        >
+                            Reset
+                        </Button>:
+                        <Button 
+                            htmlType="button" 
+                            onClick={this.handleReset} 
+                            disabled={isProgress===true?true:disabledInput}
+                            style={{marginRight: 8}}
+                        >
+                            Reset
+                        </Button>
+                    }                    
                     <Button 
                         type="primary" 
                         htmlType="submit" 
-                        disabled={disabledInput}
+                        disabled={isProgress===true?true:disabledInput}
                     >
                     Simpan
                     </Button>

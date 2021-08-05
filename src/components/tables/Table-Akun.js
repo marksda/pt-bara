@@ -13,11 +13,10 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Tooltip from '@material-ui/core/Tooltip';
 import Toolbar from '@material-ui/core/Toolbar';
 import _ from 'lodash';
 
-import { Input, Typography } from 'antd';
+import { Form, Input, Select, Typography } from 'antd';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import {
     DeleteOutlined,
@@ -26,12 +25,13 @@ import {
 } from '@ant-design/icons';
   
 
-import { getAkun, setFilterAkun, setPaginationAkun, setUrutAkun } from "../../actions/master-action";
+import { getAkun, setFilterAkun, setPaginationAkun, setUrutAkun, setIsProgress } from "../../actions/master-action";
 
 import { connect } from "react-redux";
 
 const { Title } = Typography;
 const { Search } = Input;
+const { Option } = Select;
 
 const useToolbarStyles = makeStyles(theme => ({
     actions: {
@@ -61,7 +61,18 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = (props) => {
     const classes = useToolbarStyles();
-    const { handleOpen, title, handleCari } = props;
+    const { acuan, handleOpen, isProgress, listHeaderAkun, title, handleCari, handleChange, handleChangeSubKategoriAkun, handleChangePrefixSearch, prefixSearch } = props;
+    const selectBefore = (
+        <Select 
+            value={prefixSearch} 
+            dropdownStyle={{zIndex: 2000}}
+            onChange={handleChangePrefixSearch}
+            disabled={isProgress}
+        >
+          <Option value="m.id">KODE</Option>
+          <Option value="m.nama">NAMA</Option>
+        </Select>
+    );
 
     return(
         <Toolbar
@@ -74,19 +85,51 @@ const EnhancedTableToolbar = (props) => {
             </div>
             <div className={classes.spacer} />
             <div className={classes.actions}>
-                <Tooltip title="tambah" className={classes.showIconTambah}>
-                    <IconButton 
-                        aria-label="add" 
-                        onClick={handleOpen}
+                <IconButton 
+                    aria-label="add" 
+                    onClick={handleOpen}
+                >
+                    <AddBoxOutlineIcon />
+                </IconButton> 
+                <Form 
+                    ref={acuan} 
+                    initialValues={
+                        {
+                            remember: true,
+                            ["kode"]: "0",
+                        }
+                    }
+                >
+                    <div style={{display: 'flex'}}>
+                    <Form.Item 
+                        name="kode" 
+                        style={{ width: 180, marginRight: 16, marginTop: 24 }} 
                     >
-                        <AddBoxOutlineIcon />
-                    </IconButton>                             
-                </Tooltip>
-                <Search
-                  placeholder="pencarian"
-                  onSearch={handleCari}
-                  style={{ width: 250 }}
-                />
+                        <Select onChange={handleChangeSubKategoriAkun}>
+                            <Option value="0">SEMUA</Option>
+                            {
+                                listHeaderAkun!==null?
+                                listHeaderAkun.map((item) =>
+                                    <Option key={item.id} value={item.id}>{item.nama.toUpperCase()}</Option>
+                                ):
+                                null
+                            }
+                        </Select>
+                    </Form.Item>
+                    <Form.Item 
+                        name="cari" style={{ width: 250, marginTop: 24}} 
+                        shouldUpdate={(prevValues, curValues) => prevValues.additional !== curValues.additional}
+                    >
+                        <Search                                    
+                            placeholder="pencarian"
+                            onSearch={handleCari}
+                            onChange={handleChange}
+                            addonBefore={selectBefore}
+                            disabled={isProgress===true}
+                        />
+                    </Form.Item>
+                    </div>
+                </Form> 
             </div>            
         </Toolbar>
     );
@@ -243,6 +286,7 @@ const mapDispatchToProps = dispatch => {
         getAkun: (url, headerAuthorization) => dispatch(getAkun(url, headerAuthorization)),
         setFilterAkun: (value) => dispatch(setFilterAkun(value)),
         setPaginationAkun: (value) => dispatch(setPaginationAkun(value)),
+        setIsProgress: (nilai) => dispatch(setIsProgress(nilai)),
         setUrutAkun: (value) => dispatch(setUrutAkun(value))
     };
 };
@@ -251,18 +295,25 @@ class TableAkun extends React.Component {
     constructor(props) {
         super(props); 
         this.state = {
+            listHeaderAkun: null,
         	openConfirmasiHapusAkun: false,
         	openFormAddAkun: false,
-        	openProcessingDialog: false, 
-        	mode: ''
+        	mode: '',
+            prefixSearch: 'm.nama',
         };
 
         this.itemAkun = {};
+        this.formRef = React.createRef();
+        this.filterAkunHeader = [{ field: "m.status_header", header: true }];
+        this.paginationAkunHeader = {current: 1, pageSize: 1000};
+        this.sortAkunHeader = {field: 'm.nama', order: 'asc' };
+        this.kodeAwalcari = '';
     }
 
     componentDidMount() {
-    	const { filterAkun, paginationAkun, urutAkun } = this.props;
-              
+    	const { paginationAkun, urutAkun } = this.props;
+        
+        this.loadHeaderAkun(this.filterAkunHeader, this.paginationAkunHeader, this.sortAkunHeader);
         this.loadAkun(null, paginationAkun, urutAkun);
     }
 
@@ -273,6 +324,8 @@ class TableAkun extends React.Component {
         } = this.props;
         let self = this;    
          
+        setIsProgress(true);
+
         axios({
             method: 'delete',
             url: `${restfulServer}/master/akun`,
@@ -280,10 +333,11 @@ class TableAkun extends React.Component {
             params: dataAkun
         })
         .then((r) => {  
-            self.setState({openProcessingDialog: false});  
+            setIsProgress(false);
             if(r.data.status === 200) {
                 self.itemAkun.id = null;
                 self.itemAkun.nama = null;
+                self.loadHeaderAkun(self.filterAkunHeader, self.paginationAkunHeader, self.sortAkunHeader);
                 self.loadAkun(
                     filterAkun,
                     paginationAkun,
@@ -298,8 +352,8 @@ class TableAkun extends React.Component {
         .catch((r) => { 
             self.itemAkun.id = null;
             self.itemAkun.nama = null;
-            self.setState({openProcessingDialog: false});
-            resetCredential();
+            setIsProgress(false);
+            // resetCredential();
         });
     }
 
@@ -316,36 +370,58 @@ class TableAkun extends React.Component {
         this.setState({openFormAddAkun: true, mode: 'edit'});
     }
 
-    handleChangeFilter = (v) => {
-        const { filterAkun, paginationAkun, setFilterAkun, urutAkun, setPaginationAkun } = this.props;
-        let tmpPagination = {...paginationAkun};
-        tmpPagination.current = 1;        
-        setPaginationAkun(tmpPagination);
+    handleChange = (e) => {
+        const { prefixSearch } = this.state;
 
-        let tmpFilter = [];
+        if(prefixSearch === 'm.id') {
+            let regex = new RegExp(this.kodeAwalcari);
+            if(!regex.test(e.target.value)) {
+                this.formRef.current.setFieldsValue({
+                    cari: this.kodeAwalcari
+                });
+            }
+        }
+    }
 
-        if(filterAkun !== null) {            
-            let idx = null;
-            tmpFilter = [...filterAkun];
-            idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama'});
-            if(idx < 0) {
-                tmpFilter = [];
+    handleChangeFilter = (value, event) => {
+        event.preventDefault();
+        // event.stopPropagation();
+        // event.nativeEvent.stopImmediatePropagation();
+        const { filterAkun, paginationAkun, urutAkun, setFilterAkun } = this.props; 
+        const { prefixSearch } = this.state;
+        
+        let tmpFilter = [];        
+        tmpFilter = [...filterAkun];
+        let idx = -1; 
+
+        if(prefixSearch==="m.nama") {
+            idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama'}); 
+            if(idx < 0) {            
                 tmpFilter.push(                        
-                    { field: "m.nama", search: v }
+                    { field: "m.nama", search: value }
                 );
             }
             else {
-                tmpFilter[idx].search = v;
-            } 
+                tmpFilter[idx].search = value;
+            }     
         }
         else {
-            tmpFilter.push(                        
-                { field: "m.nama", search: v }
-            );
+            idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.id'}); 
+            if(idx < 0) {            
+                tmpFilter.push(                        
+                    { field: "m.id", id: value }
+                );
+            }
+            else {
+                tmpFilter[idx].id = value;
+            }
         }
 
-        setFilterAkun(tmpFilter);
-        this.loadAkun(tmpFilter, tmpPagination, urutAkun);
+        setFilterAkun(tmpFilter); 
+        this.loadAkun(tmpFilter, paginationAkun, urutAkun);
+        setTimeout(() => {
+            this.formRef.current.getFieldInstance('cari').focus();
+        }, 300);
     }
 
     handleChangeRowsPerPage = (event) => {
@@ -369,13 +445,85 @@ class TableAkun extends React.Component {
         this.loadAkun(filterAkun, tmpPagination, urutAkun);
     }
 
+    handleChangePrefixSearch = (value) => {
+        const { filterAkun, paginationAkun, urutAkun, setFilterAkun } = this.props;         
+        this.setState({prefixSearch: value});
+        let tmpFilter = [];
+        let idx = -1;         
+        tmpFilter = [...filterAkun];
+        idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.id'});             
+        if(idx < 0) {            
+            tmpFilter.push(                        
+                { field: "m.id", id: this.kodeAwalcari }
+            );
+        }
+        else {
+            tmpFilter[idx].id = this.kodeAwalcari;
+        }
+
+        if(value === 'm.id') {
+            idx = _.findIndex(tmpFilter, function(o){return o.field === 'm.nama'}); 
+            if(idx >= 0) {            
+                tmpFilter.splice(idx,1);
+            }       
+        
+            this.formRef.current.setFieldsValue({
+                cari: this.kodeAwalcari
+            });
+        }
+        else {
+            this.formRef.current.setFieldsValue({
+                cari: ''
+            });
+        }
+
+        setFilterAkun(tmpFilter); 
+        this.loadAkun(tmpFilter, paginationAkun, urutAkun);
+        setTimeout(() => {this.formRef.current.getFieldInstance('cari').focus();}, 100);
+    }
+
+    handleChangeSubKategoriAkun = (v) => {
+        const { filterAkun, paginationAkun, urutAkun, setFilterAkun } = this.props;       
+        const { prefixSearch } = this.state;
+
+        let tmpFilter = [];
+        let idx = -1;  
+
+        if(filterAkun!==null) {
+            idx = _.findIndex(filterAkun, function(o){return o.field === 'm.id'}); 
+            tmpFilter = [...filterAkun];
+        }
+        
+        this.kodeAwalcari = v.split("0")[0];
+       
+        if(prefixSearch === 'm.id') {
+            this.formRef.current.setFieldsValue({
+                cari: this.kodeAwalcari
+            });
+        }
+
+        if(idx < 0) {            
+            tmpFilter.push(                        
+                { field: "m.id", id: this.kodeAwalcari }
+            );
+        }
+        else {
+            tmpFilter[idx].id = this.kodeAwalcari;
+        }      
+        setFilterAkun(tmpFilter); 
+        this.loadAkun(tmpFilter, paginationAkun, urutAkun);
+        setTimeout(() => {
+            this.formRef.current.getFieldInstance('cari').focus();
+        }, 300);
+    }
+
     handleCloseFormAddAkun = () => {
         this.setState({openFormAddAkun: false});
     }
 
     handleDeleteAkun = (status) => {        
         if(status === true) {
-            this.setState({openConfirmasiHapusAkun: false, openProcessingDialog: true});
+            this.setState({openConfirmasiHapusAkun: false});
             this.deleteAkun(this.itemAkun);
         }
         else {
@@ -398,10 +546,6 @@ class TableAkun extends React.Component {
         this.loadAkun(filterAkun, paginationAkun, tmpUrut);
     }
 
-    handleToggleOpenProgressDialog = () => {
-        this.setState({openProcessingDialog: !this.state.openProcessingDialog});
-    }
-
     loadAkun = (filter, pagination, urut) => {
         const { getAkun, headerAuthorization, restfulServer } = this.props; 
         let url;
@@ -415,9 +559,42 @@ class TableAkun extends React.Component {
         getAkun(url, headerAuthorization);
     }
 
+    loadHeaderAkun = (f, p, s) => {
+        const { headerAuthorization, restfulServer } = this.props;
+        let self = this;  
+        
+        setIsProgress(true);
+        
+        let tmpFilter = [];
+        tmpFilter.push(                        
+            { field: "m.status_header", header: true }
+        );
+
+        axios({
+            method: 'get',
+            url: `${restfulServer}/master/akun`,
+            headers: {...headerAuthorization},
+            params: {
+                filter:  JSON.stringify(f),
+                pagination: p,
+                sorter: s
+            }
+        })
+	    .then((r) => { 
+            setIsProgress(false);   
+            if(r.data.status === 200) {
+                self.setState({listHeaderAkun: r.data.keterangan.data});
+            }
+	    })
+	    .catch((r) => {
+	    	// console.log(r.toString());
+            setIsProgress(false);
+	    });
+    }
+
     render() {
-        const { classes, listAkun, paginationAkun, title, urutAkun } = this.props;
-		const { openConfirmasiHapusAkun, openFormAddAkun, openProcessingDialog, mode } = this.state;
+        const { classes, isProgress, listAkun, paginationAkun, title, urutAkun } = this.props;
+		const { listHeaderAkun, openConfirmasiHapusAkun, openFormAddAkun, mode, prefixSearch } = this.state;
 
         let pageAdd = null;
         let pageRender = null;
@@ -429,16 +606,23 @@ class TableAkun extends React.Component {
                 visible={openFormAddAkun} 
                 handleClose={this.handleCloseFormAddAkun}
                 mode={mode}
-                handleToggleOpenProgressDialog={this.handleToggleOpenProgressDialog}
+                loadHeaderAkun={this.loadHeaderAkun}
             />;
         }
 
         pageRender =
 		<div className={classes.root}>
 			<EnhancedTableToolbar 
+                acuan={this.formRef}
+                listHeaderAkun={listHeaderAkun}
                 handleOpen={this.handleOpenFormAddAkun}  
                 title={title}
                 handleCari={this.handleChangeFilter}
+                handleChange={this.handleChange}
+                handleChangeSubKategoriAkun={this.handleChangeSubKategoriAkun}
+                prefixSearch={prefixSearch}
+                handleChangePrefixSearch={this.handleChangePrefixSearch}
+                isProgress={isProgress}
             />
             <TableContainer className={classes.tableWrapper}>
             	<Table aria-labelledby="tableakun">
@@ -505,7 +689,6 @@ class TableAkun extends React.Component {
                 onChangePage={this.handleChangePage}
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
             />
-            <ProcessingDialog open={openProcessingDialog} />
             <KonfirmasiDialog 
                 open={openConfirmasiHapusAkun} 
                 aksi={this.handleDeleteAkun} 
