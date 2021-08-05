@@ -159,7 +159,40 @@ class FormLaporanLabaRugiProyek extends React.Component {
         >
             <div className="content-flex-center">
                 <div className="kontainer-left-lp-labarugi">
-                    
+                    <div className="content-flex-left">
+                        <Form.Item
+                            label="No. Job"
+                            name="no_job"
+                            style={{marginBottom: 16, marginRight: 16}}
+                        >
+                            <Input 
+                                data-jenis="nojob"
+                                disabled={true}
+                                style={{ width: 150, color: '#646463'}}
+                            />
+                        </Form.Item>
+                        <Form.Item 
+                            label="Client"
+                            name="nama_customer"
+                            style={{flexGrow: 1, marginBottom: 16, marginRight: 16}}
+                        >
+                            <Input disabled={true} style={{color: '#646463'}}/>
+                        </Form.Item>
+                        <Form.Item 
+                            label="Proyek"
+                            name="nama_proyek"
+                            style={{ flexGrow: 1, marginBottom: 16, marginRight: 8}}
+                        >
+                            <Input disabled={true} style={{color: '#646463'}}/>
+                        </Form.Item>
+                        <Form.Item name="btncariproyek" label=" ">
+                            <Button 
+                                type="dashed" 
+                                icon={<FilterOutlined />} 
+                                disabled={false}
+                                onClick={this.handleOpenWindowProyekSearch} />
+                        </Form.Item>
+                    </div>
                 </div>
             </div>
         </Form>;
