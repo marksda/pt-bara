@@ -45,6 +45,7 @@ class FormAddAkun extends Component {
                
         if(mode === 'edit') {
             this.itemAkun = {...data};
+            setTimeout(() => {this.formRef.current.getFieldInstance('id').focus();}, 300);
         }
         else {
             this.itemAkun.status_header = false;
@@ -90,7 +91,14 @@ class FormAddAkun extends Component {
 
     loadAkun = (filter, pagination, urut) => {
         const { getAkun, headerAuthorization, restfulServer } = this.props; 
-        let url = `${restfulServer}/master/akun?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        let url;
+        if(filter === null) {
+            url = `${restfulServer}/master/akun?pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        }
+        else {
+            url = `${restfulServer}/master/akun?filter=${JSON.stringify(filter)}&pagination=${JSON.stringify(pagination)}&sorter=${JSON.stringify(urut)}`; 
+        }
+        
         getAkun(url, headerAuthorization);
     }
 

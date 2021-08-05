@@ -139,6 +139,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
 
     render() {
         const { anchorEl, listLaporanLabaRugi } = this.state;
+        const { itemProyekSelected } = this.props;
 
         let page = 
         <Form
@@ -193,8 +194,89 @@ class FormLaporanLabaRugiProyek extends React.Component {
                                 onClick={this.handleOpenWindowProyekSearch} />
                         </Form.Item>
                     </div>
+                    <div className="content-flex-left">
+                        <Form.Item
+                            label="Nilai Kontrak/PO"
+                            name="nilai_kontrak"
+                            style={{marginBottom: 16, marginRight: 16}}
+                        >
+                            <InputNumber
+                                disabled={true}
+                                style={{width: 150, color: '#646463'}}
+                                formatter={this.formatterRupiah}
+                                parser={this.parserRupiah}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Jumlah Budget"
+                            name="total_budget"
+                            style={{marginBottom: 16, marginRight: 16}}
+                        >
+                            <InputNumber
+                                disabled={true}
+                                style={{width: 150, color: '#646463'}}
+                                formatter={this.formatterRupiah}
+                                parser={this.parserRupiah}
+                            />
+                        </Form.Item>
+                    </div>
+                    <Paper elevation={4} square style={{width: '100%', height: 400, padding: 16}}>
+                        <div>
+                            <span>LAPORAN LABA / RUGI</span>
+                        </div>
+                        <div>
+
+                        </div>
+                    </Paper>
+                </div>                
+                <div className="kontainer-right-lp-labarugi">  
+                    <div className="content-flex-center" style={{marginBottom: 8}}>
+                        <Text strong>Download</Text>
+                    </div>     
+                    <div className="content-flex-center"> 
+                        <Form.Item name="btnexcel" style={{marginBottom: 8}}>             
+                            <Button 
+                                size="default"
+                                htmlType="button" 
+                                onClick={this.handleEdit} 
+                                style={{width: 120}}
+                                icon={<FileExcelTwoTone twoToneColor="#40D536" />}
+                                shape="round"
+                            >
+                                EXCEL
+                            </Button>
+                        </Form.Item> 
+                    </div> 
+                    <div className="content-flex-center">               
+                        <Form.Item name="btnpdf" style={{marginBottom: 8}}>             
+                            <Button 
+                                size="default"
+                                onClick={this.handleEdit} 
+                                style={{width: 120}}
+                                icon={<FilePdfTwoTone twoToneColor="#CF0000" />}
+                                shape="round"
+                            >
+                                PDF
+                            </Button>
+                        </Form.Item> 
+                    </div>
                 </div>
             </div>
+            <Popover
+                open={anchorEl===null?false:true}
+                anchorEl={anchorEl}
+                onClose={this.handleCloseWindowProyekSearch}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+            >
+                <FormPencarianProyek formRef={this.formRef} handleCloseWindowProyekSearch={this.handleCloseWindowProyekSearch} />
+            </Popover> 
         </Form>;
 
         return(page);

@@ -383,7 +383,8 @@
     width: 85%;
     min-width: 900px;
 }
-.kontainer-right-lp-budget {
+.kontainer-right-lp-budget,
+.kontainer-right-lp-labarugi {
     display: flex;
     flex-direction: column;
     max-width: 15%;
