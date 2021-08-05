@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from "react-redux";
 import { Divider, Radio } from 'antd';
-import FormBudget from '../forms/Form-Budget';
 import FormMonitoring from '../forms/Form-Monitoring';
 import FormLaporanPiutangProyek from '../forms/Form-Laporan-Piutang-Proyek';
 import FormLaporanBudgetProyek from '../forms/Form-Laporan-Budget-Proyek';
+import FormLaporanLabaRugiProyek from '../forms/Form-Laporan-LabaRugi-Proyek';
 
 
 import { resetStatusProyekSelected, setStatusProyekSelected, resetItemProyekSelected } from "../../actions/master-action";
@@ -56,11 +56,11 @@ class LaporanProyek extends React.Component {
                 break;
             case 'Budget':
                 subPage =
-                <FormLaporanBudgetProyek  />;
+                <FormLaporanBudgetProyek />;
                 break;
             case 'L/R':
                 subPage =
-                <FormBudget  />;
+                <FormLaporanLabaRugiProyek />;
                 break;
             case 'Pendapatan':
                 subPage =

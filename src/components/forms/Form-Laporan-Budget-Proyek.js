@@ -82,6 +82,34 @@ class FormLaporanBudgetProyek extends React.Component {
         }
     }
 
+    getTotalBudget = (noJob, totalRealisasi) => {
+        const { headerAuthorization, restfulServer, setIsProgress } = this.props;
+        setIsProgress(true);
+        let self = this;    
+                
+        axios({
+            method: 'get',
+            url: `${restfulServer}/master/totalbudget`,
+            headers: {...headerAuthorization},
+            params: { no_job: noJob }
+        })
+        .then((r) => {         
+            if(r.data.status === 200) {
+                setIsProgress(false);
+                self.formRef.current.setFieldsValue({
+                    total_budget: r.data.keterangan,
+                    realisasi_biaya: totalRealisasi,
+                    persentase_realisasi_biaya: (totalRealisasi/r.data.keterangan*100).toFixed(2)
+                });
+                self.getMonitoring(r.data.keterangan);
+            }
+        })
+        .catch((r) => {         
+            self.setState({disabledInput: false});
+            setIsProgress(false);
+        });        
+    }
+
     parserRupiah = (value) => {
         value = value.replace(/Rp\s?|(\.*)/g, '')
         return value.replace(/\,/g, '.');
@@ -119,13 +147,17 @@ class FormLaporanBudgetProyek extends React.Component {
         })
 	    .then((r) => {  
             setIsProgress(false);
-            // console.log(r.data.keterangan);
-	    	if(r.data.status === 200) {        
-			     self.setState({listLaporanBudget: r.data.keterangan});
+	    	if(r.data.status === 200) {      
+			    self.setState({listLaporanBudget: r.data.keterangan});  
+                let i = 0, p = r.data.keterangan.length;
+                let ttlRealisasi = 0;
+                for(i;i<p; i++) {
+                    if(r.data.keterangan[i].status_header === true) {
+                        ttlRealisasi = ttlRealisasi + r.data.keterangan[i].realisasi;
+                    }
+                }
+                self.getTotalBudget(noJob, ttlRealisasi);
 	    	} 
-	    	// self.handleReset();
-            // self.setState({disabledInput: false});
-            // handleToggleOpenProgressDialog();
 	    })
 	    .catch((r) => {
 	    	setIsProgress(false);
@@ -134,9 +166,6 @@ class FormLaporanBudgetProyek extends React.Component {
 
     render() {
         const { anchorEl, listLaporanBudget } = this.state;
-        const { itemProyekSelected } = this.props;
-
-        console.log(itemProyekSelected);
 
         let page = 
         <Form
@@ -226,6 +255,18 @@ class FormLaporanBudgetProyek extends React.Component {
                                 style={{width: 150, color: '#646463'}}
                                 formatter={this.formatterRupiah}
                                 parser={this.parserRupiah}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label=" "
+                            name="persentase_realisasi_biaya"
+                            style={{marginBottom: 16}}
+                        >
+                            <InputNumber
+                                disabled={true}
+                                style={{width: 75, color: '#646463'}}
+                                formatter={this.formatterPersen}
+                                parser={this.parserPersen}
                             />
                         </Form.Item>
                     </div>
