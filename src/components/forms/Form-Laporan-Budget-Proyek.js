@@ -161,6 +161,7 @@ class FormLaporanBudgetProyek extends React.Component {
 	    })
 	    .catch((r) => {
 	    	setIsProgress(false);
+            console.log(r.toString());
 	    });
 	}    
 
