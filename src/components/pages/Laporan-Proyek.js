@@ -36,6 +36,11 @@ class LaporanProyek extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        const { resetItemProyekSelected } = this.props;  
+        resetItemProyekSelected(); 
+    }
+
     handleChangeItemTab = (e) => {
         this.setState({ itemTabSelected: e.target.value });
     } 
