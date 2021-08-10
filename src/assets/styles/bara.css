@@ -418,7 +418,12 @@
     flex-direction: column;
     overflow-y: auto;
 }
-.lp-budget-item {
+.lp-labarugi-body {
+    display: flex;
+    flex-direction: column;
+    overflow-y: none;
+}
+.lp-budget-item, .lp-labarugi-item {
     display: flex;
     justify-content: center;
     vertical-align: top;

@@ -297,7 +297,7 @@ class FormLaporanBudgetProyek extends React.Component {
                         <div className="lp-budget-body" style={{height: 400}}>
                         {
                             listLaporanBudget !== null?
-                            listLaporanBudget.map((item, index) => (
+                            listLaporanBudget.map((item) => (
                                 <div className="lp-budget-item" key={item.id}>
                                     <div style={{flexGrow: 1}}>
                                     {

@@ -32,7 +32,8 @@ class FormLaporanLabaRugiProyek extends React.Component {
 		super(props);
         this.state = {
             anchorEl: null,
-            listLaporanLabaRugi: null
+            listLaporanLabaRugi: null,
+            nilaiLabaRugi: null
         }
 
         this.formRef = React.createRef();
@@ -82,7 +83,28 @@ class FormLaporanLabaRugiProyek extends React.Component {
             }
         })
         .catch((r) => {         
-            self.setState({disabledInput: false});
+            setIsProgress(false);
+        });        
+    }
+
+    getLabaRugi = (noJob) => {
+        const { headerAuthorization, restfulServer, setIsProgress } = this.props;
+        setIsProgress(true);
+        let self = this;    
+                
+        axios({
+            method: 'get',
+            url: `${restfulServer}/master/laporan_laba_rugi_proyek`,
+            headers: {...headerAuthorization},
+            params: { no_job: noJob }
+        })
+        .then((r) => {         
+            if(r.data.status === 200) {
+                setIsProgress(false);
+                self.setState({nilaiLabaRugi: r.data.keterangan});
+            }
+        })
+        .catch((r) => {         
             setIsProgress(false);
         });        
     }
@@ -121,7 +143,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
 
 	    axios({
             method: 'get',
-            url: `${restfulServer}/master/laporan_labarugi`,
+            url: `${restfulServer}/master/laporan_rincian_laba_rugi_proyek`,
             headers: {...headerAuthorization},
             params: {no_job: noJob}
         })
@@ -130,6 +152,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
 	    	if(r.data.status === 200) {      
 			    self.setState({listLaporanLabaRugi: r.data.keterangan});  
                 self.getTotalBudget(noJob);
+                // self.getLabaRugi(noJob);
 	    	} 
 	    })
 	    .catch((r) => {
@@ -138,8 +161,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
 	}
 
     render() {
-        const { anchorEl, listLaporanLabaRugi } = this.state;
-        const { itemProyekSelected } = this.props;
+        const { anchorEl, listLaporanLabaRugi, nilaiLabaRugi } = this.state;
 
         let page = 
         <Form
@@ -220,12 +242,94 @@ class FormLaporanLabaRugiProyek extends React.Component {
                             />
                         </Form.Item>
                     </div>
-                    <Paper elevation={4} square style={{width: '100%', height: 400, padding: 16}}>
-                        <div>
+                    <Paper elevation={4} square style={{width: '100%', padding: '16px 32px', minHeight: 200}}>
+                        <div style={{marginBottom: 20}}>
                             <span>LAPORAN LABA / RUGI</span>
                         </div>
-                        <div>
-
+                        <div className="lp-labarugi-body">
+                        {
+                            listLaporanLabaRugi !== null?
+                            listLaporanLabaRugi.map((item) => (
+                                <div className="lp-labarugi-item" style={{justifyContent: 'left'}} key={item.id}>                                    
+                                    {
+                                        item.status_header===true?
+                                        <>
+                                        <div 
+                                            style={{
+                                                width: 350, 
+                                                marginTop: 12, 
+                                                marginBottom: 2, 
+                                                backgroundColor: item.level_akun===2?'#9dc8fa':'#ffffff'
+                                            }}
+                                        >
+                                            <span style={{marginLeft: (item.level_akun-2)*16+8}}><b>{item.nama}</b></span>
+                                        </div>
+                                        <div 
+                                            style={{
+                                                marginBottom: 2, 
+                                                marginTop: 12,
+                                                width: (5-item.level_akun)*200,
+                                                textAlign: 'right', backgroundColor: item.level_akun===2?'#9dc8fa':'#ffffff'
+                                            }}
+                                        >
+                                            <span style={{padding: 8}}>
+                                                <b>{`Rp ${new Intl.NumberFormat('id').format(item.nilai)}`}</b>
+                                            </span>
+                                        </div>
+                                        </>
+                                        :
+                                        <>
+                                        <div style={{width: 350, marginBottom: 2}}>
+                                            <span style={{marginLeft: (item.level_akun-2)*16+8, padding: 8}}>{item.nama}</span>
+                                        </div>
+                                        <div style={{marginBottom: 2, width: (5-item.level_akun)*200, textAlign: 'right'}}>
+                                            <span style={{padding: 8}}>
+                                                {
+                                                    item.nilai !== null ?
+                                                    `Rp ${new Intl.NumberFormat('id').format(item.nilai)}`:
+                                                    '-'
+                                                }
+                                            </span>
+                                        </div>
+                                        </>
+                                    }
+                                </div>
+                            )):null
+                        }
+                        {
+                            listLaporanLabaRugi !== null?
+                            <>
+                                <div className="lp-labarugi-item" style={{justifyContent: 'left'}}>
+                                    <div 
+                                        style={{
+                                            width: 350, 
+                                            marginTop: 12, 
+                                            marginBottom: 2, 
+                                            backgroundColor: '#9dc8fa',
+                                            paddingTop: 16,
+                                            paddingBlock: 16
+                                        }}
+                                    >
+                                        <span style={{marginLeft: 8}}><b>LABA (RUGI) PROYEK</b></span>
+                                    </div>
+                                    <div 
+                                        style={{
+                                            marginBottom: 2, 
+                                            marginTop: 12,
+                                            width: 600,
+                                            textAlign: 'right', 
+                                            backgroundColor: '#9dc8fa',
+                                            paddingTop: 16,
+                                            paddingBlock: 16
+                                        }}
+                                    >
+                                        <span style={{padding: 8}}>
+                                            <b>{`Rp ${new Intl.NumberFormat('id').format(nilaiLabaRugi)}`}</b>
+                                        </span>
+                                    </div>
+                                </div>
+                            </>:null
+                        }   
                         </div>
                     </Paper>
                 </div>                
