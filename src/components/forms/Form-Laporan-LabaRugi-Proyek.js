@@ -152,7 +152,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
 	    	if(r.data.status === 200) {      
 			    self.setState({listLaporanLabaRugi: r.data.keterangan});  
                 self.getTotalBudget(noJob);
-                // self.getLabaRugi(noJob);
+                self.getLabaRugi(noJob);
 	    	} 
 	    })
 	    .catch((r) => {
