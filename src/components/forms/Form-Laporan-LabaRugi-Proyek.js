@@ -33,7 +33,8 @@ class FormLaporanLabaRugiProyek extends React.Component {
         this.state = {
             anchorEl: null,
             listLaporanLabaRugi: null,
-            nilaiLabaRugi: null
+            nilaiLabaRugi: null,
+            heighKontainer: 200
         }
 
         this.formRef = React.createRef();
@@ -161,7 +162,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
 	}
 
     render() {
-        const { anchorEl, listLaporanLabaRugi, nilaiLabaRugi } = this.state;
+        const { anchorEl, heighKontainer, listLaporanLabaRugi, nilaiLabaRugi } = this.state;
 
         let page = 
         <Form
@@ -180,8 +181,8 @@ class FormLaporanLabaRugiProyek extends React.Component {
                 }
             }     
         >
-            <div className="content-flex-center">
-                <div className="kontainer-left-lp-labarugi">
+            <div className="content-flex-center scrool-bar-cso" style={{height: `Calc(100vh - ${heighKontainer}px)`, overflow: 'auto', paddingRight: 16}}>
+                <div className="kontainer-left-lp-labarugi-proyek">
                     <div className="content-flex-left">
                         <Form.Item
                             label="No. Job"
@@ -220,7 +221,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
                         <Form.Item
                             label="Nilai Kontrak/PO"
                             name="nilai_kontrak"
-                            style={{marginBottom: 16, marginRight: 16}}
+                            style={{marginBottom: 24, marginRight: 16}}
                         >
                             <InputNumber
                                 disabled={true}
@@ -232,7 +233,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
                         <Form.Item
                             label="Jumlah Budget"
                             name="total_budget"
-                            style={{marginBottom: 16, marginRight: 16}}
+                            style={{marginBottom: 24, marginRight: 16}}
                         >
                             <InputNumber
                                 disabled={true}
@@ -242,7 +243,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
                             />
                         </Form.Item>
                     </div>
-                    <Paper elevation={4} square style={{width: '100%', padding: '16px 32px', minHeight: 200}}>
+                    <Paper elevation={4} square style={{width: '100%', padding: 32}}>
                         <div style={{marginBottom: 20}}>
                             <span>LAPORAN LABA / RUGI</span>
                         </div>
@@ -306,8 +307,8 @@ class FormLaporanLabaRugiProyek extends React.Component {
                                             marginTop: 12, 
                                             marginBottom: 2, 
                                             backgroundColor: '#9dc8fa',
-                                            paddingTop: 16,
-                                            paddingBlock: 16
+                                            paddingTop: 4,
+                                            paddingBottom: 4
                                         }}
                                     >
                                         <span style={{marginLeft: 8}}><b>LABA (RUGI) PROYEK</b></span>
@@ -319,8 +320,8 @@ class FormLaporanLabaRugiProyek extends React.Component {
                                             width: 600,
                                             textAlign: 'right', 
                                             backgroundColor: '#9dc8fa',
-                                            paddingTop: 16,
-                                            paddingBlock: 16
+                                            paddingTop: 4,
+                                            paddingBottom: 4
                                         }}
                                     >
                                         <span style={{padding: 8}}>
@@ -328,10 +329,12 @@ class FormLaporanLabaRugiProyek extends React.Component {
                                         </span>
                                     </div>
                                 </div>
-                            </>:null
+                            </>:
+                            <div style={{height: `Calc(100vh - 490px)`}}></div>
                         }   
                         </div>
                     </Paper>
+                    <div style={{minHeight: 10}}></div>
                 </div>                
                 <div className="kontainer-right-lp-labarugi">  
                     <div className="content-flex-center" style={{marginBottom: 8}}>

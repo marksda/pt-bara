@@ -5,6 +5,7 @@ import FormMonitoring from '../forms/Form-Monitoring';
 import FormLaporanPiutangProyek from '../forms/Form-Laporan-Piutang-Proyek';
 import FormLaporanBudgetProyek from '../forms/Form-Laporan-Budget-Proyek';
 import FormLaporanLabaRugiProyek from '../forms/Form-Laporan-LabaRugi-Proyek';
+import FormLaporanPendapatanProyek from '../forms/Form-Laporan-Pendapatan-Proyek';
 
 
 import { resetStatusProyekSelected, setStatusProyekSelected, resetItemProyekSelected } from "../../actions/master-action";
@@ -69,6 +70,10 @@ class LaporanProyek extends React.Component {
                 break;
             case 'Pendapatan':
                 subPage =
+                <FormLaporanPendapatanProyek />;
+                break;
+            case 'Pendapatan':
+                subPage =
                 <FormMonitoring  />;
                 break;
             case 'Biaya':
@@ -90,7 +95,7 @@ class LaporanProyek extends React.Component {
                     <Radio.Button value="Biaya" disabled={isProgress===true?true:disabledRadioMonitoring}>Biaya</Radio.Button>
                 </Radio.Group>  
             </div>                  
-            <Divider style={{borderTop: '1px solid rgba(17, 123, 236, 0.54)'}}/>
+            <Divider style={{borderTop: '1px solid rgba(191, 192, 194, 0.7)'}}/>
             {subPage}
         </>;
 
