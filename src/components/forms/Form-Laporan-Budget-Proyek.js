@@ -189,7 +189,7 @@ class FormLaporanBudgetProyek extends React.Component {
             <div className="content-flex-center">
                 <div className="kontainer-left-lp-budget scrool-bar-cso"
                     style={{
-                        height: `Calc(100vh - 200px)`, 
+                        height: `Calc(100vh - 194px)`, 
                         overflow: 'auto', paddingLeft: 16, paddingRight: 16
                     }}
                 >
@@ -231,7 +231,7 @@ class FormLaporanBudgetProyek extends React.Component {
                         <Form.Item
                             label="Nilai Kontrak/PO"
                             name="nilai_kontrak"
-                            style={{marginBottom: 16, marginRight: 16}}
+                            style={{marginBottom: 24, marginRight: 16}}
                         >
                             <InputNumber
                                 disabled={true}
@@ -243,7 +243,7 @@ class FormLaporanBudgetProyek extends React.Component {
                         <Form.Item
                             label="Jumlah Budget"
                             name="total_budget"
-                            style={{marginBottom: 16, marginRight: 16}}
+                            style={{marginBottom: 24, marginRight: 16}}
                         >
                             <InputNumber
                                 disabled={true}
@@ -255,7 +255,7 @@ class FormLaporanBudgetProyek extends React.Component {
                         <Form.Item
                             label="Realisasi Biaya"
                             name="realisasi_biaya"
-                            style={{marginBottom: 16, marginRight: 4}}
+                            style={{marginBottom: 24, marginRight: 4}}
                         >
                             <InputNumber
                                 disabled={true}
@@ -267,7 +267,7 @@ class FormLaporanBudgetProyek extends React.Component {
                         <Form.Item
                             label=" "
                             name="persentase_realisasi_biaya"
-                            style={{marginBottom: 16}}
+                            style={{marginBottom: 24}}
                         >
                             <InputNumber
                                 disabled={true}
@@ -280,12 +280,11 @@ class FormLaporanBudgetProyek extends React.Component {
                     <Paper 
                         elevation={4} 
                         square 
-                        style={{
-                            width: '100%', 
-                            padding: 16,
-                            minHeight: `Calc(100vh - 375px)`
-                        }}
+                        style={{width: '100%', padding: 32}}
                     >
+                        <div style={{marginBottom: 20}}>
+                            <span><b>LAPORAN BUDGET</b></span>
+                        </div>
                         <div className="lp-budget-header">
                             <div style={{flexGrow: 1}}>                                
                                 <span>Post Budget</span>
@@ -353,11 +352,15 @@ class FormLaporanBudgetProyek extends React.Component {
                             )):
                             null
                         }
+                        {
+                            listLaporanBudget === null?
+                            <div style={{height: `Calc(100vh - 508px)`}}></div>:null
+                        }
                         </div>
                     </Paper>
                     <div style={{minHeight: 10}}></div>
                 </div>
-                <div className="kontainer-right-lp-budget">  
+                <div className="kontainer-right-lp-budget" style={{marginLeft: 16}}>  
                     <div className="content-flex-center" style={{marginBottom: 8}}>
                         <Text strong>Download</Text>
                     </div>     

@@ -32,8 +32,7 @@ class FormLaporanPendapatanProyek extends React.Component {
 		super(props);
         this.state = {
             anchorEl: null,
-            listLaporanPendapatan: null,
-            heighKontainer: 200
+            listLaporanPendapatan: null
         }
 
         this.formRef = React.createRef();
@@ -115,7 +114,7 @@ class FormLaporanPendapatanProyek extends React.Component {
 	}
 
     render() {
-        const { anchorEl, heighKontainer, listLaporanLabaRugi, nilaiLabaRugi } = this.state;
+        const { anchorEl, listLaporanPendapatan } = this.state;
 
         let page = 
         <Form
@@ -134,14 +133,14 @@ class FormLaporanPendapatanProyek extends React.Component {
                 }
             }     
         >
-            <div 
-                className="content-flex-center scrool-bar-cso" 
-                style={{
-                    height: `Calc(100vh - ${heighKontainer}px)`, 
-                    overflow: 'auto', paddingRight: 16
-                }}
-            >
-                <div className="kontainer-left-lp-pendapatan-proyek">
+            <div className="content-flex-center">
+                <div 
+                    className="kontainer-left-lp-pendapatan-proyek scrool-bar-cso"
+                    style={{
+                        height: `Calc(100vh - 194px)`, 
+                        overflow: 'auto', paddingLeft: 16, paddingRight: 16
+                    }}
+                >
                     <div className="content-flex-left">
                         <Form.Item
                             label="No. Job"
@@ -207,15 +206,65 @@ class FormLaporanPendapatanProyek extends React.Component {
                             <span><b>LAPORAN PENDAPATAN DAN PIUTANG</b></span>
                         </div>
                         <div className="lp-pendapatan-proyek-header" style={{marginTop: 8}}>
-                            <div>sisi kiri</div>
-                            <div>sisi tengah</div>
-                            <div>sisi kanan</div>
+                            <div>
+                                <div>PENAGIHAN</div>
+                                <div>
+                                    <div>Tgl.</div>
+                                    <div>No. Invoice</div>
+                                    <div>Nilai</div>
+                                    <div>Tgl. JT</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div>PEMBAYARAN</div>
+                                <div>
+                                    <div>Tgl.</div>
+                                    <div>Nilai</div>
+                                </div>
+                            </div>
+                            <div>Hari Terlambat</div>
+                            <div>Status</div>
+                            <div>Keterangan</div>
                         </div>
                         <div className="lp-pendapatan-proyek-body">
-                            
+                            {
+                                listLaporanPendapatan===null?<div style={{height: `Calc(100vh - 538px)`}}></div>:null
+                            }
                         </div>
                     </Paper>
-                    <div style={{minHeight: 10}}></div>
+                    <div style={{minHeight: 2}}></div>
+                </div>                
+                <div className="kontainer-right-lp-budget" style={{marginLeft: 16}}>  
+                    <div className="content-flex-center" style={{marginBottom: 8}}>
+                        <Text strong>Download</Text>
+                    </div>     
+                    <div className="content-flex-center"> 
+                        <Form.Item name="btnexcel" style={{marginBottom: 8}}>             
+                            <Button 
+                                size="default"
+                                htmlType="button" 
+                                onClick={this.handleEdit} 
+                                style={{width: 120}}
+                                icon={<FileExcelTwoTone twoToneColor="#40D536" />}
+                                shape="round"
+                            >
+                                EXCEL
+                            </Button>
+                        </Form.Item> 
+                    </div> 
+                    <div className="content-flex-center">               
+                        <Form.Item name="btnpdf" style={{marginBottom: 8}}>             
+                            <Button 
+                                size="default"
+                                onClick={this.handleEdit} 
+                                style={{width: 120}}
+                                icon={<FilePdfTwoTone twoToneColor="#CF0000" />}
+                                shape="round"
+                            >
+                                PDF
+                            </Button>
+                        </Form.Item> 
+                    </div>
                 </div>
             </div>
             <Popover

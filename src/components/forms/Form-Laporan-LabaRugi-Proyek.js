@@ -33,8 +33,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
         this.state = {
             anchorEl: null,
             listLaporanLabaRugi: null,
-            nilaiLabaRugi: null,
-            heighKontainer: 200
+            nilaiLabaRugi: null
         }
 
         this.formRef = React.createRef();
@@ -184,7 +183,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
             <div className="content-flex-center">
                 <div className="kontainer-left-lp-labarugi-proyek scrool-bar-cso"
                     style={{
-                        height: `Calc(100vh - ${heighKontainer}px)`, 
+                        height: `Calc(100vh - 194px)`, 
                         overflow: 'auto', paddingRight: 16, paddingLeft: 16
                     }}
                 >
@@ -335,7 +334,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
                                     </div>
                                 </div>
                             </>:
-                            <div style={{height: `Calc(100vh - 490px)`}}></div>
+                            <div style={{height: `Calc(100vh - 482px)`}}></div>
                         }   
                         </div>
                     </Paper>

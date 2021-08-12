@@ -472,23 +472,64 @@
     padding-right: 8px;
 }
 
-.lp-pendapatan-proyek-header div {
+.lp-pendapatan-proyek-header>div {
     font-weight: 700;
     text-align: center;
-    padding: 2px 4px;
+    /* padding: 2px 4px; */
 }
-.lp-pendapatan-proyek-header div:nth-child(1) {
-    background-color: #9dc8fa;
+.lp-pendapatan-proyek-header>div:nth-child(1) {
+    background-color: #f5d99e;
     min-width: 250px;
     flex-grow: 1;    
-    border-right: 4px solid white;
+    border-right: 8px solid white;
+    display: flex;
+    flex-direction: column;
 }
-.lp-pendapatan-proyek-header div:nth-child(2) {
-    background-color: #f5d99e;
-    min-width: 350px;
-    border-right: 4px solid white;
+.lp-pendapatan-proyek-header>div:nth-child(1)>div:nth-child(1),
+.lp-pendapatan-proyek-header>div:nth-child(2)>div:nth-child(1) {
+    border-bottom: 3px solid white;
+    padding: 4px;
 }
-.lp-pendapatan-proyek-header div:nth-child(3) {
+.lp-pendapatan-proyek-header>div:nth-child(1)>div:nth-child(2),
+.lp-pendapatan-proyek-header>div:nth-child(2)>div:nth-child(2) {
+    display: flex;
+    flex-direction: row;
+}
+.lp-pendapatan-proyek-header>div:nth-child(1)>div:nth-child(2)>div,
+.lp-pendapatan-proyek-header>div:nth-child(2)>div:nth-child(2)>div {
+    padding: 4px;
+    border-right: 2px solid white;
+    width: 100px;
+}
+.lp-pendapatan-proyek-header>div:nth-child(1)>div:nth-child(2)>div:nth-child(2),
+.lp-pendapatan-proyek-header>div:nth-child(1)>div:nth-child(2)>div:nth-child(3),
+.lp-pendapatan-proyek-header>div:nth-child(2)>div:nth-child(2)>div:nth-child(2) {
+    flex-grow: 1;
+}
+.lp-pendapatan-proyek-header>div:nth-child(1)>div:nth-child(2)>div:nth-child(4),
+.lp-pendapatan-proyek-header>div:nth-child(2)>div:nth-child(2)>div:nth-child(2) {
+    border-right: none;
+}
+
+.lp-pendapatan-proyek-header>div:nth-child(2) {
+    background-color: #9dc8fa;
+    min-width: 240px;
+    border-right: 8px solid white;
+    display: flex;
+    flex-direction: column;
+}
+
+.lp-pendapatan-proyek-header>div:nth-child(3),
+.lp-pendapatan-proyek-header>div:nth-child(4),
+.lp-pendapatan-proyek-header>div:nth-child(5) {
     background-color: #d8d7d6;
-    min-width: 350px;
+    width: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 8px solid white;
+}
+.lp-pendapatan-proyek-header>div:nth-child(5) {
+    min-width: 250px;
+    border-right: none;
 }
