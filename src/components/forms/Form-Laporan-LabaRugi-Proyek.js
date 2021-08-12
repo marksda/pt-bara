@@ -181,14 +181,13 @@ class FormLaporanLabaRugiProyek extends React.Component {
                 }
             }     
         >
-            <div 
-                className="content-flex-center scrool-bar-cso" 
-                style={{
-                    height: `Calc(100vh - ${heighKontainer}px)`, 
-                    overflow: 'auto', paddingRight: 16
-                }}
-            >
-                <div className="kontainer-left-lp-labarugi-proyek">
+            <div className="content-flex-center">
+                <div className="kontainer-left-lp-labarugi-proyek scrool-bar-cso"
+                    style={{
+                        height: `Calc(100vh - ${heighKontainer}px)`, 
+                        overflow: 'auto', paddingRight: 16, paddingLeft: 16
+                    }}
+                >
                     <div className="content-flex-left">
                         <Form.Item
                             label="No. Job"
@@ -251,7 +250,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
                     </div>
                     <Paper elevation={4} square style={{width: '100%', padding: 32}}>
                         <div style={{marginBottom: 20}}>
-                            <span>LAPORAN LABA / RUGI</span>
+                            <span><b>LAPORAN LABA / RUGI</b></span>
                         </div>
                         <div className="lp-labarugi-proyek-body">
                         {

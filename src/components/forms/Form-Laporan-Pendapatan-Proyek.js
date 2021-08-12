@@ -204,14 +204,15 @@ class FormLaporanPendapatanProyek extends React.Component {
                     </div>
                     <Paper elevation={4} square style={{width: '100%', padding: 32}}>
                         <div style={{marginBottom: 20}}>
-                            <span>LAPORAN PENDAPATAN DAN PIUTANG</span>
+                            <span><b>LAPORAN PENDAPATAN DAN PIUTANG</b></span>
+                        </div>
+                        <div className="lp-pendapatan-proyek-header" style={{marginTop: 8}}>
+                            <div>sisi kiri</div>
+                            <div>sisi tengah</div>
+                            <div>sisi kanan</div>
                         </div>
                         <div className="lp-pendapatan-proyek-body">
-                            <div className="lp-pendapatan-proyek-header" style={{marginTop: 8}}>
-                                <div>sisi kiri</div>
-                                <div>sisi tengah</div>
-                                <div>sisi kanan</div>
-                            </div>
+                            
                         </div>
                     </Paper>
                     <div style={{minHeight: 10}}></div>

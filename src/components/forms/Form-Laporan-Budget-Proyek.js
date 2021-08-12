@@ -32,7 +32,8 @@ class FormLaporanBudgetProyek extends React.Component {
 		super(props);
         this.state = {
             anchorEl: null,
-            listLaporanBudget: null
+            listLaporanBudget: null,
+            heighKontainer: 200
         }
 
         this.formRef = React.createRef();
@@ -166,7 +167,7 @@ class FormLaporanBudgetProyek extends React.Component {
 	}    
 
     render() {
-        const { anchorEl, listLaporanBudget } = this.state;
+        const { anchorEl, listLaporanBudget, heighKontainer } = this.state;
 
         let page = 
         <Form
@@ -187,7 +188,12 @@ class FormLaporanBudgetProyek extends React.Component {
             }     
         >
             <div className="content-flex-center">
-                <div className="kontainer-left-lp-budget">
+                <div className="kontainer-left-lp-budget scrool-bar-cso"
+                    style={{
+                        height: `Calc(100vh - ${heighKontainer}px)`, 
+                        overflow: 'auto', paddingLeft: 16, paddingRight: 16
+                    }}
+                >
                     <div className="content-flex-left">
                         <Form.Item
                             label="No. Job"
