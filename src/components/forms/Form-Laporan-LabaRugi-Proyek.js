@@ -336,7 +336,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
                     </Paper>
                     <div style={{minHeight: 10}}></div>
                 </div>                
-                <div className="kontainer-right-lp-labarugi">  
+                <div className="kontainer-right-lp-labarugi" style={{marginLeft: 16}}>  
                     <div className="content-flex-center" style={{marginBottom: 8}}>
                         <Text strong>Download</Text>
                     </div>     

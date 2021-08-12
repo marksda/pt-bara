@@ -63,6 +63,10 @@ class FormLaporanPendapatanProyek extends React.Component {
         return true;
     }
 
+    handleOpenWindowProyekSearch = (e) => {
+        this.setState({anchorEl: e.currentTarget});
+    }
+
     render() {
         const { anchorEl, heighKontainer, listLaporanLabaRugi, nilaiLabaRugi } = this.state;
 
@@ -116,8 +120,40 @@ class FormLaporanPendapatanProyek extends React.Component {
                             style={{ flexGrow: 1, marginBottom: 16, marginRight: 8}}
                         >
                             <Input disabled={true} style={{color: '#646463'}}/>
+                        </Form.Item>        
+                        <Form.Item name="btncariproyek" label=" ">
+                            <Button 
+                                type="dashed" 
+                                icon={<FilterOutlined />} 
+                                disabled={false}
+                                onClick={this.handleOpenWindowProyekSearch} />
+                        </Form.Item>                
+                    </div>
+                    <div className="content-flex-left">
+                        <Form.Item
+                            label="Nilai Kontrak/PO"
+                            name="nilai_kontrak"
+                            style={{marginBottom: 24, marginRight: 16}}
+                        >
+                            <InputNumber
+                                disabled={true}
+                                style={{width: 150, color: '#646463'}}
+                                formatter={this.formatterRupiah}
+                                parser={this.parserRupiah}
+                            />
                         </Form.Item>
-                        
+                        <Form.Item
+                            label="Jumlah Budget"
+                            name="total_budget"
+                            style={{marginBottom: 24, marginRight: 16}}
+                        >
+                            <InputNumber
+                                disabled={true}
+                                style={{width: 150, color: '#646463'}}
+                                formatter={this.formatterRupiah}
+                                parser={this.parserRupiah}
+                            />
+                        </Form.Item>
                     </div>
                 </div>
             </div>
