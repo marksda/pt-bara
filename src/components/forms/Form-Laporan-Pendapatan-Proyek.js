@@ -57,15 +57,62 @@ class FormLaporanPendapatanProyek extends React.Component {
                 nama_proyek: nextProps.itemProyekSelected.nama_proyek,
                 nilai_kontrak:  nextProps.itemProyekSelected.nilai_kontrak
             });
-            // this.loadLaporanLabaRugi(nextProps.itemProyekSelected.no_job);
+            // this.loadLaporanPendapatan(nextProps.itemProyekSelected.no_job);
         }
 
         return true;
     }
 
+    formatterRupiah = (value) => {        
+        let tmp = value.split('.');
+        if(tmp.length>1){
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]},${tmp[1]}`;
+        }
+        else {
+            tmp[0] = tmp[0].replace(/\B(?=(\d{3})+(?!\d))/g, '\.');
+            return `Rp ${tmp[0]}`;
+        }
+    }
+
+    parserRupiah = (value) => {
+        value = value.replace(/Rp\s?|(\.*)/g, '')
+        return value.replace(/\,/g, '.');
+    }
+
+    handleCloseWindowProyekSearch = () => {
+        this.setState({anchorEl: null});
+    }
+
     handleOpenWindowProyekSearch = (e) => {
         this.setState({anchorEl: e.currentTarget});
     }
+
+    loadLaporanPendapatan = (noJob) => {
+		const { 
+			headerAuthorization, restfulServer, setIsProgress
+		} = this.props;
+	    let self = this;
+        setIsProgress(true);
+
+	    axios({
+            method: 'get',
+            url: `${restfulServer}/master/laporan_rincian_pendapatan_proyek`,
+            headers: {...headerAuthorization},
+            params: {no_job: noJob}
+        })
+	    .then((r) => {  
+            setIsProgress(false);
+	    	if(r.data.status === 200) {      
+			    self.setState({listLaporanLabaRugi: r.data.keterangan});  
+                self.getTotalBudget(noJob);
+                self.getLabaRugi(noJob);
+	    	} 
+	    })
+	    .catch((r) => {
+	    	setIsProgress(false);
+	    });
+	}
 
     render() {
         const { anchorEl, heighKontainer, listLaporanLabaRugi, nilaiLabaRugi } = this.state;
@@ -155,8 +202,36 @@ class FormLaporanPendapatanProyek extends React.Component {
                             />
                         </Form.Item>
                     </div>
+                    <Paper elevation={4} square style={{width: '100%', padding: 32}}>
+                        <div style={{marginBottom: 20}}>
+                            <span>LAPORAN PENDAPATAN DAN PIUTANG</span>
+                        </div>
+                        <div className="lp-pendapatan-proyek-body">
+                            <div className="lp-pendapatan-proyek-header" style={{marginTop: 8}}>
+                                <div>sisi kiri</div>
+                                <div>sisi tengah</div>
+                                <div>sisi kanan</div>
+                            </div>
+                        </div>
+                    </Paper>
+                    <div style={{minHeight: 10}}></div>
                 </div>
             </div>
+            <Popover
+                open={anchorEl===null?false:true}
+                anchorEl={anchorEl}
+                onClose={this.handleCloseWindowProyekSearch}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+            >
+                <FormPencarianProyek formRef={this.formRef} handleCloseWindowProyekSearch={this.handleCloseWindowProyekSearch} />
+            </Popover> 
         </Form>;
 
         return(page);

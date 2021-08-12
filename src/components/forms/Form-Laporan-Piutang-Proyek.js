@@ -132,7 +132,7 @@ class FormLaporanPiutangProyek extends React.Component {
                     onChange={this.changeRangeDate}
                 />
             </Space>
-            <div className="lp-piutang-header" style={{marginTop: 8}}>
+            <div className="lp-piutang-proyek-header" style={{marginTop: 8}}>
                 <span>No.</span>
                 <span>No. Job</span>
                 <span>Client</span>
@@ -141,11 +141,11 @@ class FormLaporanPiutangProyek extends React.Component {
                 <span>Piutang</span>
                 <span>Pilihan</span>
             </div>
-            <div className="lp-piutang-body" style={{height: 300}}>
+            <div className="lp-piutang-proyek-body" style={{height: 300}}>
             {
                 listProyek !== null?
                 listProyek.data.map((item, index) => (
-                    <div className="lp-piutang-item" key={item.no_job}>
+                    <div className="lp-piutang-proyek-item" key={item.no_job}>
                         <span>{`${index+1}.`}</span>
                         <span>{item.no_job}</span>
                         <span>{item.nama_customer}</span>

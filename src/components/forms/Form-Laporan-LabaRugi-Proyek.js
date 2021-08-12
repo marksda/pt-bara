@@ -181,7 +181,13 @@ class FormLaporanLabaRugiProyek extends React.Component {
                 }
             }     
         >
-            <div className="content-flex-center scrool-bar-cso" style={{height: `Calc(100vh - ${heighKontainer}px)`, overflow: 'auto', paddingRight: 16}}>
+            <div 
+                className="content-flex-center scrool-bar-cso" 
+                style={{
+                    height: `Calc(100vh - ${heighKontainer}px)`, 
+                    overflow: 'auto', paddingRight: 16
+                }}
+            >
                 <div className="kontainer-left-lp-labarugi-proyek">
                     <div className="content-flex-left">
                         <Form.Item
@@ -247,7 +253,7 @@ class FormLaporanLabaRugiProyek extends React.Component {
                         <div style={{marginBottom: 20}}>
                             <span>LAPORAN LABA / RUGI</span>
                         </div>
-                        <div className="lp-labarugi-body">
+                        <div className="lp-labarugi-proyek-body">
                         {
                             listLaporanLabaRugi !== null?
                             listLaporanLabaRugi.map((item) => (
