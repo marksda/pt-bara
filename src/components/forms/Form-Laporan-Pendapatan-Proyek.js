@@ -40,7 +40,7 @@ class FormLaporanPendapatanProyek extends React.Component {
     }
 
     componentDidMount() {
-        // setTimeout(() => {this.formRef.current.getFieldInstance('btncariproyek').focus();}, 100);
+        setTimeout(() => {this.formRef.current.getFieldInstance('btncariproyek').focus();}, 100);
     }
 
     componentWillUnmount() {
@@ -56,7 +56,7 @@ class FormLaporanPendapatanProyek extends React.Component {
                 nama_proyek: nextProps.itemProyekSelected.nama_proyek,
                 nilai_kontrak:  nextProps.itemProyekSelected.nilai_kontrak
             });
-            // this.loadLaporanPendapatan(nextProps.itemProyekSelected.no_job);
+            this.loadLaporanPendapatan(nextProps.itemProyekSelected.no_job);
         }
 
         return true;
@@ -77,6 +77,30 @@ class FormLaporanPendapatanProyek extends React.Component {
     parserRupiah = (value) => {
         value = value.replace(/Rp\s?|(\.*)/g, '')
         return value.replace(/\,/g, '.');
+    }
+    
+    getTotalBudget = (noJob) => {
+        const { headerAuthorization, restfulServer, setIsProgress } = this.props;
+        setIsProgress(true);
+        let self = this;    
+                
+        axios({
+            method: 'get',
+            url: `${restfulServer}/master/totalbudget`,
+            headers: {...headerAuthorization},
+            params: { no_job: noJob }
+        })
+        .then((r) => {         
+            if(r.data.status === 200) {
+                setIsProgress(false);
+                self.formRef.current.setFieldsValue({
+                    total_budget: r.data.keterangan
+                });
+            }
+        })
+        .catch((r) => {         
+            setIsProgress(false);
+        });        
     }
 
     handleCloseWindowProyekSearch = () => {
@@ -103,9 +127,8 @@ class FormLaporanPendapatanProyek extends React.Component {
 	    .then((r) => {  
             setIsProgress(false);
 	    	if(r.data.status === 200) {      
-			    self.setState({listLaporanLabaRugi: r.data.keterangan});  
+			    self.setState({listLaporanPendapatan: r.data.keterangan});  
                 self.getTotalBudget(noJob);
-                self.getLabaRugi(noJob);
 	    	} 
 	    })
 	    .catch((r) => {
