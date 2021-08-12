@@ -33,7 +33,6 @@ class FormLaporanBudgetProyek extends React.Component {
         this.state = {
             anchorEl: null,
             listLaporanBudget: null,
-            heighKontainer: 200
         }
 
         this.formRef = React.createRef();
@@ -190,7 +189,7 @@ class FormLaporanBudgetProyek extends React.Component {
             <div className="content-flex-center">
                 <div className="kontainer-left-lp-budget scrool-bar-cso"
                     style={{
-                        height: `Calc(100vh - ${heighKontainer}px)`, 
+                        height: `Calc(100vh - 200px)`, 
                         overflow: 'auto', paddingLeft: 16, paddingRight: 16
                     }}
                 >
@@ -278,7 +277,15 @@ class FormLaporanBudgetProyek extends React.Component {
                             />
                         </Form.Item>
                     </div>
-                    <Paper elevation={4} square style={{width: '100%', height: 400, padding: 16}}>
+                    <Paper 
+                        elevation={4} 
+                        square 
+                        style={{
+                            width: '100%', 
+                            padding: 16,
+                            minHeight: `Calc(100vh - 375px)`
+                        }}
+                    >
                         <div className="lp-budget-header">
                             <div style={{flexGrow: 1}}>                                
                                 <span>Post Budget</span>
@@ -300,7 +307,7 @@ class FormLaporanBudgetProyek extends React.Component {
                                 <span>Sisa-Budget</span>
                             </div> 
                         </div>
-                        <div className="lp-budget-body" style={{height: 400}}>
+                        <div className="lp-budget-body">
                         {
                             listLaporanBudget !== null?
                             listLaporanBudget.map((item) => (
@@ -348,6 +355,7 @@ class FormLaporanBudgetProyek extends React.Component {
                         }
                         </div>
                     </Paper>
+                    <div style={{minHeight: 10}}></div>
                 </div>
                 <div className="kontainer-right-lp-budget">  
                     <div className="content-flex-center" style={{marginBottom: 8}}>

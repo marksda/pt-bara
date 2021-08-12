@@ -141,7 +141,13 @@ class FormLaporanPiutangProyek extends React.Component {
                 <span>Piutang</span>
                 <span>Pilihan</span>
             </div>
-            <div className="lp-piutang-proyek-body" style={{height: 300}}>
+            <div className="lp-piutang-proyek-body scrool-bar-cso" 
+                style={{
+                    height: `Calc(100vh - 290px)`, 
+                    overflow: 'auto',
+                    paddingTop: 4
+                }}
+            >
             {
                 listProyek !== null?
                 listProyek.data.map((item, index) => (
